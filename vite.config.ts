@@ -5,6 +5,7 @@ import vue from '@vitejs/plugin-vue'
 import vueDevTools from 'vite-plugin-vue-devtools'
 import { ElectronBuildPlugin } from './plugins/vite.electron.build'
 import { ElectronDevPlugin } from './plugins/vite.electron.dev'
+import vuetify from 'vite-plugin-vuetify'
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [
@@ -12,6 +13,7 @@ export default defineConfig({
     vueDevTools(),
     ElectronBuildPlugin(),
     ElectronDevPlugin(),
+    vuetify({ autoImport: true }),
   ],
   base: './',
   resolve: {
