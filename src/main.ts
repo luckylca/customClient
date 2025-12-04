@@ -14,6 +14,16 @@ import * as directives from 'vuetify/directives'
 const vuetify = createVuetify({
     components,
     directives,
+    theme: {
+        defaultTheme: 'light',
+        themes: {
+            light: {
+                colors: {
+                    background: '#f5f5f5',  // 设置背景色，可根据需要修改
+                }
+            }
+        }
+    }
 })
 const app = createApp(App)
 

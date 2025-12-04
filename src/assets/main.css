@@ -1,5 +1,20 @@
 @import './base.css';
 
+/* 隐藏滑条 */
+html, body {
+  overflow: hidden;
+}
+
+/* Chrome, Safari, Edge 滑条隐藏 */
+::-webkit-scrollbar {
+  display: none;
+}
+
+/* Firefox 滑条隐藏 */
+* {
+  scrollbar-width: none;
+}
+
 #app {
   max-width: 1280px;
   margin: 0 auto;
@@ -30,6 +45,6 @@ a,
   #app {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    padding: 0 2rem;
+    padding: 0 0rem;
   }
 }

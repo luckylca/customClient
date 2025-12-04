@@ -4,8 +4,9 @@ import { app, BrowserWindow } from 'electron'
 
 app.whenReady().then(() => {
     const win = new BrowserWindow({
-        width: 800,
-        height: 600,
+        fullscreen: false,
+        width: 1200,
+        height: 800,
         webPreferences: {
             nodeIntegration: true,
             contextIsolation: false,
