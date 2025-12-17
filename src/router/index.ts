@@ -5,6 +5,7 @@ import Engineer from '../views/engineer/index.vue'
 import Hero from '../views/hero/index.vue'
 import InfantryFirst from '../views/infantryFirst/index.vue'
 import InfantrySecond from '../views/infantrySecond/index.vue'
+import Setting from '../views/setting/index.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -39,6 +40,11 @@ const router = createRouter({
       name: 'infantry2',
       component: InfantrySecond,
     },
+    {
+      path: '/setting',
+      name: 'setting',
+      component: Setting,
+    }
   ],
 })
 

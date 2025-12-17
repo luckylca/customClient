@@ -73,6 +73,7 @@
 import { ref } from 'vue'
 import { useRobotStore } from '@/stores/robotData'
 import { useRouter } from 'vue-router';
+const { ipcRenderer } = window.require('electron');
 
 const items = ref(['步兵 1', '步兵 2', '无人机', '英雄', '工程'])
 const router = useRouter();
@@ -115,6 +116,7 @@ function finishSet() {
             loading.value = false
             // alert(`您选择了${selectedItem.value}机甲`)
             robotStore.initRobot(selectedColor.value, selectedItem.value)
+            ipcRenderer.send('app-toggle-fullscreen')
             switch(selectedItem.value) {
                 case '步兵 1':
                     router.push('/infantry1')
@@ -133,6 +135,7 @@ function finishSet() {
                     break
             }
         }, 1000)
+        
     }
 }
 </script>

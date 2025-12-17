@@ -8,7 +8,14 @@ import { RouterLink, RouterView } from 'vue-router'
   </v-app>
 </template>
 
-<style scoped>
+<style>
+html, body, #app {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden; /* 建议加上，防止出现默认滚动条 */
+}
 header {
   line-height: 1.5;
   max-height: 100vh;
