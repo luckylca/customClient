@@ -7,18 +7,20 @@ import { ElectronBuildPlugin } from './plugins/vite.electron.build'
 import { ElectronDevPlugin } from './plugins/vite.electron.dev'
 import vuetify from 'vite-plugin-vuetify'
 // https://vite.dev/config/
-export default defineConfig({
-  plugins: [
-    vue(),
-    vueDevTools(),
-    ElectronBuildPlugin(),
-    ElectronDevPlugin(),
-    vuetify({ autoImport: true }),
-  ],
-  base: './',
-  resolve: {
-    alias: {
-      '@': fileURLToPath(new URL('./src', import.meta.url))
+export default defineConfig(({ command }) => {
+  return {
+    plugins: [
+      vue(),
+      vueDevTools(),
+      command === 'build' ? ElectronBuildPlugin() : null,
+      ElectronDevPlugin(),
+      vuetify({ autoImport: true }),
+    ].filter((p) => p !== null),
+    base: './',
+    resolve: {
+      alias: {
+        '@': fileURLToPath(new URL('./src', import.meta.url))
+      },
     },
-  },
+  }
 })

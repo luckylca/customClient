@@ -5,6 +5,9 @@ import esbuild from 'esbuild';
 import electron from 'electron';
 import fs from 'fs';
 
+const pkg = JSON.parse(fs.readFileSync('package.json', 'utf-8'));
+const dependencies = Object.keys(pkg.dependencies || {});
+
 const buildBackground = () => {
     esbuild.buildSync({
         entryPoints: ['src/background.ts'],
@@ -12,7 +15,7 @@ const buildBackground = () => {
         outfile: 'dist/background.js',
         platform: 'node',
         format: 'esm',
-        external: ['electron'],
+        external: ['electron', ...dependencies],
     });
 };
 export const ElectronDevPlugin = (): Plugin => {

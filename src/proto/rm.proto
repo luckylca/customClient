@@ -1,0 +1,253 @@
+syntax = "proto3";
+
+package rm;
+
+// 2.2.1 RemoteControl - 传输鼠标键盘输入和自定义数据
+message RemoteControl {
+    float mouse_x = 1;
+    float mouse_y = 2;
+    float mouse_z = 3;
+    bool left_button_down = 4;
+    bool right_button_down = 5;
+    uint32 keyboard_value = 6;
+    bool mid_button_down = 7;
+    bytes data = 8;
+}
+
+// 2.2.2 GameStatus - 同步比赛全局状态信息
+message GameStatus {
+    int32 current_round = 1;
+    int32 total_rounds = 2;
+    int32 red_score = 3;
+    int32 blue_score = 4;
+    int32 current_stage = 5;
+    int32 stage_countdown_sec = 6;
+    int32 stage_elapsed_sec = 7;
+    bool is_paused = 8;
+}
+
+// 2.2.3 GlobalUnitStatus - 同步基地、前哨站和所有机器人状态
+message GlobalUnitStatus {
+    int32 base_health = 1;
+    int32 base_status = 2;
+    int32 base_shield = 3;
+    int32 outpost_health = 4;
+    int32 outpost_status = 5;
+    repeated int32 robot_health = 6;
+    repeated int32 robot_bullets = 7;
+    int32 total_damage_red = 8;
+    int32 total_damage_blue = 9;
+}
+
+// 2.2.4 GlobalLogisticsStatus - 同步全局后勤信息
+message GlobalLogisticsStatus {
+    int32 remaining_economy = 1;
+    int64 total_economy_obtained = 2;
+    int32 tech_level = 3;
+    int32 encryption_level = 4;
+}
+
+// 2.2.5 GlobalSpecialMechanism - 同步正在生效的全局特殊机制
+message GlobalSpecialMechanism {
+    repeated int32 mechanism_id = 1;
+    repeated int32 mechanism_time_sec = 2;
+}
+
+// 2.2.6 Event - 全局事件通知
+message Event {
+    int32 event_id = 1;
+    string param = 2;
+}
+
+// 2.2.7 RobotInjuryStat - 机器人一次存活期间累计受伤统计
+message RobotInjuryStat {
+    int32 total_damage = 1;
+    int32 collision_damage = 2;
+    int32 small_projectile_damage = 3;
+    int32 large_projectile_damage = 4;
+    int32 dart_splash_damage = 5;
+    int32 module_offline_damage = 6;
+    int32 wifi_offline_damage = 7;
+    int32 penalty_damage = 8;
+    int32 server_kill_damage = 9;
+    int32 killer_id = 10;
+}
+
+// 2.2.8 RobotRespawnStatus - 机器人复活状态同步
+message RobotRespawnStatus {
+    bool is_pending_respawn = 1;
+    int32 total_respawn_progress = 2;
+    int32 current_respawn_progress = 3;
+    bool can_free_respawn = 4;
+    int32 gold_cost_for_respawn = 5;
+    bool can_pay_for_respawn = 6;
+}
+
+// 2.2.9 RobotStaticStatus - 机器人固定属性和配置
+message RobotStaticStatus {
+    int32 connection_state = 1;
+    int32 field_state = 2;
+    int32 alive_state = 3;
+    int32 robot_id = 4;
+    int32 robot_type = 5;
+    int32 performance_system_shooter = 6;
+    int32 performance_system_chassis = 7;
+    int32 level = 8;
+    int32 max_health = 9;
+    int32 max_heat = 10;
+    int32 heat_cooldown_rate = 11;
+    int32 max_power = 12;
+    int32 max_buffer_energy = 13;
+    int32 max_chassis_energy = 14;
+}
+
+// 2.2.10 RobotDynamicStatus - 机器人实时数据
+message RobotDynamicStatus {
+    int32 current_health = 1;
+    int32 current_heat = 2;
+    int32 last_projectile_fire_rate = 3;
+    int32 current_chassis_energy = 4;
+    int32 current_buffer_energy = 5;
+    int32 current_experience = 6;
+    int32 experience_for_upgrade = 7;
+    int32 total_projectiles_fired = 8;
+    int32 remaining_ammo = 9;
+    bool is_out_of_combat = 10;
+    int32 out_of_combat_countdown = 11;
+    bool can_remote_heal = 12;
+    bool can_remote_ammo = 13;
+}
+
+// 2.2.11 RobotModuleStatus - 机器人各模块运行状态
+message RobotModuleStatus {
+    int32 power_manager = 1;
+    int32 rfid = 2;
+    int32 light_strip = 3;
+    int32 small_shooter = 4;
+    int32 big_shooter = 5;
+    int32 uwb = 6;
+    int32 armor = 7;
+    int32 video_transmission = 8;
+    int32 capacitor = 9;
+    int32 main_controller = 10;
+}
+
+// 2.2.12 RobotPosition - 机器人空间坐标和朝向
+message RobotPosition {
+    float x = 1;
+    float y = 2;
+    float z = 3;
+    float yaw = 4;
+}
+
+// 2.2.13 Buff - Buff 效果信息
+message Buff {
+    int32 robot_id = 1;
+    int32 buff_type = 2;
+    float buff_level = 3;
+    int32 buff_max_time = 4;
+    int32 buff_left_time = 5;
+    string msg_params = 6;
+}
+
+// 2.2.14 PenaltyInfo - 判罚信息同步
+message PenaltyInfo {
+    int32 penalty_type = 1;
+    int32 penalty_effect_sec = 2;
+    int32 total_penalty_num = 3;
+}
+
+// 2.2.15 RobotPathPlanInfo - 哨兵轨迹规划信息
+message RobotPathPlanInfo {
+    int32 intention = 1;
+    float start_pos_x = 2;
+    float start_pos_y = 3;
+    repeated float offset_x = 4;
+    repeated float offset_y = 5;
+    int32 sender_id = 6;
+}
+
+// 2.2.16 MapClickInfoNotify - 云台手地图点击标记
+message MapClickInfoNotify {
+    int32 is_send_all = 1;
+    bytes robot_id = 2;
+    int32 mode = 3;
+    int32 enemy_id = 4;
+    int32 ascii = 5;
+    int32 type = 6;
+    float screen_x = 7;
+    float screen_y = 8;
+    float map_x = 9;
+    float map_y = 10;
+}
+
+// 2.2.17 RaderInfoToClient - 雷达发送的机器人位置信息
+message RaderInfoToClient {
+    int32 target_robot_id = 1;
+    float target_pos_x = 2;
+    float target_pos_y = 3;
+    float torward_angle = 4;
+    int32 is_high_light = 5;
+}
+
+// 2.2.18 CustomByteBlock - 机器人自定义上传数据流
+message CustomByteBlock {
+    bytes data = 1;
+}
+
+// 2.2.19 AssemblyCommand - 工程装配指令
+message AssemblyCommand {
+    int32 operation = 1;
+    int32 difficulty = 2;
+}
+
+// 2.2.20 TechCoreMotionStateSync - 科技核心运动状态同步
+message TechCoreMotionStateSync {
+    int32 maximum_difficulty_level = 1;
+    int32 status = 2;
+}
+
+// 2.2.21 & 2.2.22 PerformanceSelection - 步兵/英雄性能体系相关
+message PerformanceSelection {
+    int32 shooter = 1;
+    int32 chassis = 2;
+}
+
+// 2.2.23 & 2.2.24 HeroDeployMode - 英雄部署模式相关
+message HeroDeployMode {
+    int32 mode_or_status = 1;
+}
+
+// 2.2.25 & 2.2.26 RuneStatus - 能量机关相关
+message RuneStatus {
+    int32 activate = 1;
+    int32 rune_status = 2;
+    int32 activated_arms = 3;
+    int32 average_rings = 4;
+}
+
+// 2.2.27 SentinelStatusSync - 哨兵姿态和弱化状态
+message SentinelStatusSync {
+    int32 posture_id = 1;
+    bool is_weakened = 2;
+}
+
+// 2.2.28 & 2.2.29 DartInfo - 飞镖相关
+message DartInfo {
+    int32 target_id = 1;
+    bool open = 2;
+}
+
+// 2.2.30 & 2.2.31 GuardCtrl - 哨兵控制相关
+message GuardCtrl {
+    int32 command_id = 1;
+    int32 result_code = 2;
+}
+
+// 2.2.32 & 2.2.33 AirSupport - 空中支援相关
+message AirSupport {
+    int32 command_id = 1;
+    int32 airsupport_status = 2;
+    int32 left_time = 3;
+    int32 cost_coins = 4;
+}

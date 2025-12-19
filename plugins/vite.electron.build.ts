@@ -6,17 +6,20 @@ import * as electronBuilder from 'electron-builder';
 import fs from 'fs';
 import path from 'path';
 const buildBackground = () => {
+    const pkg = JSON.parse(fs.readFileSync('package.json', 'utf-8'));
+    const dependencies = Object.keys(pkg.dependencies || {});
+
     esbuild.buildSync({
         entryPoints: ['src/background.ts'],
         bundle: true,
         outfile: 'dist/background.js',
         platform: 'node',
         format: 'esm',
-        external: ['electron'],
+        external: ['electron', ...dependencies],
     });
 };
 
-export const ElectronBuildPlugin = (): Plugin => { 
+export const ElectronBuildPlugin = (): Plugin => {
     return {
         name: 'vite:electron-build',
         closeBundle() {

@@ -1,6 +1,7 @@
 //electron主进程文件
 import { app, BrowserWindow, ipcMain } from 'electron'
-import { VideoHandler } from './videoHandler';
+import { VideoHandler } from './services/VideoHandler';
+import { MqttService } from './services/MqttService';
 
 app.whenReady().then(() => {
     const win = new BrowserWindow({
@@ -15,7 +16,15 @@ app.whenReady().then(() => {
     })
     win.removeMenu()
     const videoHandler = new VideoHandler(win);
-    if(process.argv[2]) {
+
+    // Initialize MQTT Service
+    const mqttService = new MqttService();
+    mqttService.connect();
+
+    // Store mqttService reference if needed for IPC later
+    (global as any).mqttService = mqttService;
+
+    if (process.argv[2]) {
         win.loadURL(process.argv[2])
     }
     else {
