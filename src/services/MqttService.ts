@@ -3,7 +3,7 @@ import * as rm from '../proto/rm_pb';
 
 export class MqttService {
     private client: mqtt.MqttClient | null = null;
-    private readonly host: string = '192.168.12.1';
+    private readonly host: string = '127.0.0.1';
     private readonly port: number = 3333;
 
     constructor() {
@@ -35,9 +35,14 @@ export class MqttService {
         });
     }
 
-    public publish<T>(topic: string, message: any, messageType: any): void {
+    private lastLogTime = 0;
+    public publish<T>(topic: string, message: any, messageType: any, qos: 0 | 1 | 2 = 0): void {
         if (!this.client || !this.client.connected) {
-            console.warn('Cannot publish: MQTT client not connected');
+            const now = Date.now();
+            if (now - this.lastLogTime > 5000) {
+                console.warn('Cannot publish: MQTT client not connected (throttled log)');
+                this.lastLogTime = now;
+            }
             return;
         }
 
@@ -52,11 +57,11 @@ export class MqttService {
             // Encode to Uint8Array
             const buffer = messageType.encode(msg).finish();
 
-            this.client.publish(topic, buffer, { qos: 0 }, (err) => {
+            this.client.publish(topic, buffer as Buffer, { qos }, (err) => {
                 if (err) {
                     console.error(`Failed to publish to ${topic}:`, err);
                 } else {
-                    console.log(`Published to ${topic}`);
+                    // console.log(`Published to ${topic} with QoS ${qos}`);
                 }
             });
         } catch (e) {

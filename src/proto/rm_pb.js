@@ -136,11 +136,11 @@ export const rm = $root.rm = (() => {
             if (!writer)
                 writer = $Writer.create();
             if (message.mouseX != null && Object.hasOwnProperty.call(message, "mouseX"))
-                writer.uint32(/* id 1, wireType 5 =*/13).float(message.mouseX);
+                writer.uint32(/* id 1, wireType 0 =*/8).int32(message.mouseX);
             if (message.mouseY != null && Object.hasOwnProperty.call(message, "mouseY"))
-                writer.uint32(/* id 2, wireType 5 =*/21).float(message.mouseY);
+                writer.uint32(/* id 2, wireType 0 =*/16).int32(message.mouseY);
             if (message.mouseZ != null && Object.hasOwnProperty.call(message, "mouseZ"))
-                writer.uint32(/* id 3, wireType 5 =*/29).float(message.mouseZ);
+                writer.uint32(/* id 3, wireType 0 =*/24).int32(message.mouseZ);
             if (message.leftButtonDown != null && Object.hasOwnProperty.call(message, "leftButtonDown"))
                 writer.uint32(/* id 4, wireType 0 =*/32).bool(message.leftButtonDown);
             if (message.rightButtonDown != null && Object.hasOwnProperty.call(message, "rightButtonDown"))
@@ -186,15 +186,15 @@ export const rm = $root.rm = (() => {
                 let tag = reader.uint32();
                 switch (tag >>> 3) {
                     case 1: {
-                        message.mouseX = reader.float();
+                        message.mouseX = reader.int32();
                         break;
                     }
                     case 2: {
-                        message.mouseY = reader.float();
+                        message.mouseY = reader.int32();
                         break;
                     }
                     case 3: {
-                        message.mouseZ = reader.float();
+                        message.mouseZ = reader.int32();
                         break;
                     }
                     case 4: {
@@ -253,14 +253,14 @@ export const rm = $root.rm = (() => {
             if (typeof message !== "object" || message === null)
                 return "object expected";
             if (message.mouseX != null && message.hasOwnProperty("mouseX"))
-                if (typeof message.mouseX !== "number")
-                    return "mouseX: number expected";
+                if (!$util.isInteger(message.mouseX))
+                    return "mouseX: integer expected";
             if (message.mouseY != null && message.hasOwnProperty("mouseY"))
-                if (typeof message.mouseY !== "number")
-                    return "mouseY: number expected";
+                if (!$util.isInteger(message.mouseY))
+                    return "mouseY: integer expected";
             if (message.mouseZ != null && message.hasOwnProperty("mouseZ"))
-                if (typeof message.mouseZ !== "number")
-                    return "mouseZ: number expected";
+                if (!$util.isInteger(message.mouseZ))
+                    return "mouseZ: integer expected";
             if (message.leftButtonDown != null && message.hasOwnProperty("leftButtonDown"))
                 if (typeof message.leftButtonDown !== "boolean")
                     return "leftButtonDown: boolean expected";
@@ -292,11 +292,11 @@ export const rm = $root.rm = (() => {
                 return object;
             let message = new $root.rm.RemoteControl();
             if (object.mouseX != null)
-                message.mouseX = Number(object.mouseX);
+                message.mouseX = object.mouseX | 0;
             if (object.mouseY != null)
-                message.mouseY = Number(object.mouseY);
+                message.mouseY = object.mouseY | 0;
             if (object.mouseZ != null)
-                message.mouseZ = Number(object.mouseZ);
+                message.mouseZ = object.mouseZ | 0;
             if (object.leftButtonDown != null)
                 message.leftButtonDown = Boolean(object.leftButtonDown);
             if (object.rightButtonDown != null)
@@ -343,11 +343,11 @@ export const rm = $root.rm = (() => {
                 }
             }
             if (message.mouseX != null && message.hasOwnProperty("mouseX"))
-                object.mouseX = options.json && !isFinite(message.mouseX) ? String(message.mouseX) : message.mouseX;
+                object.mouseX = message.mouseX;
             if (message.mouseY != null && message.hasOwnProperty("mouseY"))
-                object.mouseY = options.json && !isFinite(message.mouseY) ? String(message.mouseY) : message.mouseY;
+                object.mouseY = message.mouseY;
             if (message.mouseZ != null && message.hasOwnProperty("mouseZ"))
-                object.mouseZ = options.json && !isFinite(message.mouseZ) ? String(message.mouseZ) : message.mouseZ;
+                object.mouseZ = message.mouseZ;
             if (message.leftButtonDown != null && message.hasOwnProperty("leftButtonDown"))
                 object.leftButtonDown = message.leftButtonDown;
             if (message.rightButtonDown != null && message.hasOwnProperty("rightButtonDown"))

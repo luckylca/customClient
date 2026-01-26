@@ -1,5 +1,19 @@
 <script setup lang="ts">
 import { RouterLink, RouterView } from 'vue-router'
+import { onMounted, onUnmounted } from 'vue';
+import { InputHandler } from './services/InputHandler';
+
+let inputHandler: InputHandler | null = null;
+
+onMounted(() => {
+  inputHandler = new InputHandler();
+});
+
+onUnmounted(() => {
+  if (inputHandler) {
+    inputHandler.destroy();
+  }
+});
 </script>
 
 <template>

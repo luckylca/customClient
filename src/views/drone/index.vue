@@ -2,17 +2,18 @@
     <v-app>
         <v-main class="fill-height">
             <div class="container">
-                内容
+                <imageTransmit />
             </div>
         </v-main>
-        <escMenu v-model:modelValue="overlay" />
+        <escMenu v-model="overlay" />
     </v-app>
 </template>
 
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue';
 import escMenu from '@/components/escMenu.vue';
-
+import { ipcRenderer } from 'electron';
+import imageTransmit from '@/components/imageTransmission.vue';
 const overlay = ref(false);
 
 const handleGlobalEsc = (event: KeyboardEvent) => {

@@ -4,9 +4,9 @@ package rm;
 
 // 2.2.1 RemoteControl - 传输鼠标键盘输入和自定义数据
 message RemoteControl {
-    float mouse_x = 1;
-    float mouse_y = 2;
-    float mouse_z = 3;
+    int32 mouse_x = 1;
+    int32 mouse_y = 2;
+    int32 mouse_z = 3;
     bool left_button_down = 4;
     bool right_button_down = 5;
     uint32 keyboard_value = 6;
