@@ -26,6 +26,7 @@ function continueGame() {
 function goHome() {
     router.push({ name: 'layout' });
     ipcRenderer.send('app-toggle-fullscreen')
+    ipcRenderer.send('stop-mqtt-service')
 }
 function openSettings() {
     router.push({ name: 'setting' });

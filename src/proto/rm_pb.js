@@ -8356,6 +8356,20 @@ export const rm = $root.rm = (() => {
         return AirSupport;
     })();
 
+    // Aliases for protocol names in documentation
+    rm.RobotPerformanceSelectionCommand = rm.PerformanceSelection;
+    rm.RobotPerformanceSelectionSync = rm.PerformanceSelection;
+    rm.HeroDeployModeEventCommand = rm.HeroDeployMode;
+    rm.DeployModeStatusSync = rm.HeroDeployMode;
+    rm.RuneActivateCommand = rm.RuneStatus;
+    rm.RuneStatusSync = rm.RuneStatus;
+    rm.DartCommand = rm.DartInfo;
+    rm.DartSelectTargetStatusSync = rm.DartInfo;
+    rm.GuardCtrlCommand = rm.GuardCtrl;
+    rm.GuardCtrlResult = rm.GuardCtrl;
+    rm.AirSupportCommand = rm.AirSupport;
+    rm.AirSupportStatusSync = rm.AirSupport;
+
     return rm;
 })();
 

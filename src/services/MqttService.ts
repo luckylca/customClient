@@ -5,9 +5,11 @@ export class MqttService {
     private client: mqtt.MqttClient | null = null;
     private readonly host: string = '127.0.0.1';
     private readonly port: number = 3333;
+    private onMessageCallback?: (topic: string, data: unknown) => void;
 
-    constructor() {
+    constructor(onMessageCallback?: (topic: string, data: unknown) => void) {
         console.log('Initializing MQTT Service...');
+        this.onMessageCallback = onMessageCallback;
     }
 
     public connect(): void {
@@ -75,36 +77,16 @@ export class MqttService {
         // Subscribe to topics defined in the protocol
         // You might want to make this dynamic or list all topics involved
         const topics = [
-            'RemoteControl',
-            'GameStatus',
-            'GlobalUnitStatus',
-            'GlobalLogisticsStatus',
-            'GlobalSpecialMechanism',
-            'Event',
-            'RobotInjuryStat',
-            'RobotRespawnStatus',
-            'RobotStaticStatus',
-            'RobotDynamicStatus',
-            'RobotModuleStatus',
-            'RobotPosition',
-            'Buff',
-            'PenaltyInfo',
-            'RobotPathPlanInfo',
-            'MapClickInfoNotify',
-            'RaderInfoToClient',
-            'CustomByteBlock',
-            'AssemblyCommand',
-            'TechCoreMotionStateSync',
-            'PerformanceSelection',
-            'HeroDeployMode',
-            'RuneStatus',
-            'SentinelStatusSync',
-            'DartInfo',
-            'GuardCtrl',
-            'AirSupport'
+            'GameStatus', 'GlobalUnitStatus', 'GlobalLogisticsStatus', 'GlobalSpecialMechanism',
+            'Event', 'RobotInjuryStat', 'RobotRespawnStatus', 'RobotStaticStatus',
+            'RobotDynamicStatus', 'RobotModuleStatus', 'RobotPosition', 'Buff',
+            'PenaltyInfo', 'RobotPathPlanInfo', 'RaderInfoToClient', 'CustomByteBlock',
+            'TechCoreMotionStateSync', 'RobotPerformanceSelectionSync', 'DeployModeStatusSync',
+            'RuneStatusSync', 'SentinelStatusSync', 'DartSelectTargetStatusSync',
+            'GuardCtrlResult', 'AirSupportStatusSync'
         ];
 
-        this.client.subscribe(topics, (err) => {
+        this.client.subscribe(topics,{qos: 1}, (err) => {
             if (err) {
                 console.error('Subscription error:', err);
             } else {
@@ -127,9 +109,10 @@ export class MqttService {
                     bytes: String,
                 });
                 console.log(`Received ${topic}:`, object);
+                if (this.onMessageCallback) {
+                    this.onMessageCallback(topic, object);
+                }
 
-                // TODO: Emit this to the renderer process via IPC if needed
-                // For now, we will leave it as console log or extend as needed
             } else {
                 console.warn(`Unknown topic/type: ${topic}`);
             }

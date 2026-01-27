@@ -75,7 +75,7 @@ import { useRobotStore } from '@/stores/robotData'
 import { useRouter } from 'vue-router';
 const { ipcRenderer } = window.require('electron');
 
-const items = ref(['步兵 1', '步兵 2', '无人机', '英雄', '工程'])
+const items = ref(['步兵1', '步兵2','步兵3','无人机', '英雄', '工程'])
 const router = useRouter();
 const loading = ref(false)
 const robotStore = useRobotStore()
@@ -117,12 +117,16 @@ function finishSet() {
             // alert(`您选择了${selectedItem.value}机甲`)
             robotStore.initRobot(selectedColor.value, selectedItem.value)
             ipcRenderer.send('app-toggle-fullscreen')
+            ipcRenderer.send('start-mqtt-service')
             switch(selectedItem.value) {
-                case '步兵 1':
+                case '步兵1':
                     router.push('/infantry1')
                     break
-                case '步兵 2':
+                case '步兵2':
                     router.push('/infantry2')
+                    break
+                case '步兵3':
+                    router.push('/infantry3')
                     break
                 case '无人机':
                     router.push('/drone')
@@ -147,7 +151,20 @@ function finishSet() {
     align-items: center
     height: 100vh
     width: 100vw  
-
+    &::before
+        content: ""
+        position: absolute
+        top: 0px
+        left: 0px
+        width: 100px  
+        height: 100px 
+        background-image: url('@/assets/background.jpg') 
+        background-size: contain
+        background-repeat: no-repeat
+        background-position: left top
+        opacity: 0.4 
+        z-index: 0   
+        pointer-events: none
     .colorCard
         display: flex
         justify-content: center

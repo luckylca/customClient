@@ -19,7 +19,11 @@ app.whenReady().then(() => {
 
     // Initialize MQTT Service
 
-    const mqttService = new MqttService();
+    const mqttService = new MqttService((topic, data) => {
+        if (win && !win.isDestroyed()) {
+            win.webContents.send('mqtt-message', { topic, data });
+        }
+    });
     mqttService.connect();
 
     // Store mqttService reference if needed for IPC later
@@ -37,17 +41,23 @@ ipcMain.on('app-toggle-fullscreen', (event) => {
     const win = BrowserWindow.fromWebContents(event.sender)
     if (win) {
         win.setFullScreen(!win.isFullScreen())
-        win.webContents.insertCSS('html, body { cursor: none !important; }');
+        // win.webContents.insertCSS('html, body { cursor: none !important; }');
     }
 })
-
+let canSentMqtt = false;
+ipcMain.on('start-mqtt-service', (event) => {
+    canSentMqtt = true;
+})
+ipcMain.on('stop-mqtt-service', (event) => {
+    canSentMqtt = false;
+})
 // IPC listener for RemoteControl
 import * as rm from './proto/rm_pb';
 ipcMain.on('send-remote-control', (event, data) => {
     const mqttService = (global as any).mqttService as MqttService;
     if (mqttService) {
-        // Topic 'RemoteControl' corresponds to rm.RemoteControl message type
-        // QoS 1 as per protocol
-        mqttService.publish('RemoteControl', data, rm.rm.RemoteControl, 1);
+        if (canSentMqtt) {
+            mqttService.publish('RemoteControl', data, rm.rm.RemoteControl, 1);
+        }
     }
 });

@@ -3311,4 +3311,41 @@ export namespace rm {
          */
         public static getTypeUrl(typeUrlPrefix?: string): string;
     }
+
+    /** Aliases for protocol names in documentation */
+    const RobotPerformanceSelectionCommand: typeof PerformanceSelection;
+    type RobotPerformanceSelectionCommand = PerformanceSelection;
+
+    const RobotPerformanceSelectionSync: typeof PerformanceSelection;
+    type RobotPerformanceSelectionSync = PerformanceSelection;
+
+    const HeroDeployModeEventCommand: typeof HeroDeployMode;
+    type HeroDeployModeEventCommand = HeroDeployMode;
+
+    const DeployModeStatusSync: typeof HeroDeployMode;
+    type DeployModeStatusSync = HeroDeployMode;
+
+    const RuneActivateCommand: typeof RuneStatus;
+    type RuneActivateCommand = RuneStatus;
+
+    const RuneStatusSync: typeof RuneStatus;
+    type RuneStatusSync = RuneStatus;
+
+    const DartCommand: typeof DartInfo;
+    type DartCommand = DartInfo;
+
+    const DartSelectTargetStatusSync: typeof DartInfo;
+    type DartSelectTargetStatusSync = DartInfo;
+
+    const GuardCtrlCommand: typeof GuardCtrl;
+    type GuardCtrlCommand = GuardCtrl;
+
+    const GuardCtrlResult: typeof GuardCtrl;
+    type GuardCtrlResult = GuardCtrl;
+
+    const AirSupportCommand: typeof AirSupport;
+    type AirSupportCommand = AirSupport;
+
+    const AirSupportStatusSync: typeof AirSupport;
+    type AirSupportStatusSync = AirSupport;
 }

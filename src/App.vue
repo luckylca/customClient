@@ -2,16 +2,33 @@
 import { RouterLink, RouterView } from 'vue-router'
 import { onMounted, onUnmounted } from 'vue';
 import { InputHandler } from './services/InputHandler';
+import { useGlobalStore } from './stores/globalData';
+import { useRobotStore } from './stores/robotData';
 
 let inputHandler: InputHandler | null = null;
+const globalStore = useGlobalStore();
+const robotStore = useRobotStore();
+const { ipcRenderer } = (window as any).require ? (window as any).require('electron') : { ipcRenderer: null };
+
+const handleMqttMessage = (_event: any, payload: { topic: string; data: unknown }) => {
+  if (!payload || !payload.topic) return;
+  globalStore.setGlobalMessage(payload.topic, payload.data);
+  robotStore.setRobotMessage(payload.topic, payload.data);
+};
 
 onMounted(() => {
   inputHandler = new InputHandler();
+  if (ipcRenderer) {
+    ipcRenderer.on('mqtt-message', handleMqttMessage);
+  }
 });
 
 onUnmounted(() => {
   if (inputHandler) {
     inputHandler.destroy();
+  }
+  if (ipcRenderer) {
+    ipcRenderer.removeListener('mqtt-message', handleMqttMessage);
   }
 });
 </script>

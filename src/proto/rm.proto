@@ -207,19 +207,38 @@ message TechCoreMotionStateSync {
     int32 status = 2;
 }
 
-// 2.2.21 & 2.2.22 PerformanceSelection - 步兵/英雄性能体系相关
-message PerformanceSelection {
+// 2.2.21 RobotPerformanceSelectionCommand - 步兵/英雄选择性能体系
+message RobotPerformanceSelectionCommand {
     int32 shooter = 1;
     int32 chassis = 2;
 }
 
-// 2.2.23 & 2.2.24 HeroDeployMode - 英雄部署模式相关
-message HeroDeployMode {
+// 2.2.22 RobotPerformanceSelectionSync - 步兵/英雄性能体系状态同步
+message RobotPerformanceSelectionSync {
+    int32 shooter = 1;
+    int32 chassis = 2;
+}
+
+// 2.2.23 HeroDeployModeEventCommand - 英雄部署模式相关指令
+message HeroDeployModeEventCommand {
     int32 mode_or_status = 1;
 }
 
-// 2.2.25 & 2.2.26 RuneStatus - 能量机关相关
-message RuneStatus {
+// 2.2.24 DeployModeStatusSync - 英雄部署模式状态同步
+message DeployModeStatusSync {
+    int32 mode_or_status = 1;
+}
+
+// 2.2.25 RuneActivateCommand - 能量机关激活指令
+message RuneActivateCommand {
+    int32 activate = 1;
+    int32 rune_status = 2;
+    int32 activated_arms = 3;
+    int32 average_rings = 4;
+}
+
+// 2.2.26 RuneStatusSync - 能量机关状态同步
+message RuneStatusSync {
     int32 activate = 1;
     int32 rune_status = 2;
     int32 activated_arms = 3;
@@ -232,20 +251,40 @@ message SentinelStatusSync {
     bool is_weakened = 2;
 }
 
-// 2.2.28 & 2.2.29 DartInfo - 飞镖相关
-message DartInfo {
+// 2.2.28 DartCommand - 飞镖控制指令
+message DartCommand {
     int32 target_id = 1;
     bool open = 2;
 }
 
-// 2.2.30 & 2.2.31 GuardCtrl - 哨兵控制相关
-message GuardCtrl {
+// 2.2.29 DartSelectTargetStatusSync - 飞镖目标选择状态同步
+message DartSelectTargetStatusSync {
+    int32 target_id = 1;
+    bool open = 2;
+}
+
+// 2.2.30 GuardCtrlCommand - 哨兵控制指令请求
+message GuardCtrlCommand {
     int32 command_id = 1;
     int32 result_code = 2;
 }
 
-// 2.2.32 & 2.2.33 AirSupport - 空中支援相关
-message AirSupport {
+// 2.2.31 GuardCtrlResult - 哨兵控制指令结果反馈
+message GuardCtrlResult {
+    int32 command_id = 1;
+    int32 result_code = 2;
+}
+
+// 2.2.32 AirSupportCommand - 空中支援指令
+message AirSupportCommand {
+    int32 command_id = 1;
+    int32 airsupport_status = 2;
+    int32 left_time = 3;
+    int32 cost_coins = 4;
+}
+
+// 2.2.33 AirSupportStatusSync - 空中支援状态反馈
+message AirSupportStatusSync {
     int32 command_id = 1;
     int32 airsupport_status = 2;
     int32 left_time = 3;

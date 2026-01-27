@@ -41,6 +41,11 @@ const router = createRouter({
       component: InfantrySecond,
     },
     {
+      path: '/infantry3',
+      name: 'infantry3',
+      component: () => import('../views/infantryThird/index.vue'),
+    },
+    {
       path: '/setting',
       name: 'setting',
       component: Setting,
