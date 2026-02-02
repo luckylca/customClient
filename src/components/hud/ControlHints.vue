@@ -13,12 +13,14 @@
 .control-hints
     display: flex
     flex-direction: column
-    gap: 6px
+    gap: 8px
     font-size: 12px
     color: var(--hud-text-secondary)
+    padding: 4px
 
 .hint
-    padding: 6px 8px
-    border-radius: 8px
-    background: rgba(255, 255, 255, 0.06)
+    padding: 8px 10px
+    border-radius: 10px
+    background: rgba(255, 255, 255, 0.08)
+    border: 1px solid rgba(255, 255, 255, 0.08)
 </style>

@@ -52,25 +52,29 @@ const statusClass = (status: number) => {
 
 <style scoped lang="sass">
 .module-status
+    padding: 4px
     display: grid
     grid-template-columns: repeat(2, minmax(0, 1fr))
-    gap: 10px
+    gap: 12px
 
 .module-item
     display: flex
     align-items: center
     justify-content: space-between
     gap: 8px
-    padding: 8px
-    background: rgba(255, 255, 255, 0.06)
-    border-radius: 10px
+    padding: 10px 12px
+    background: rgba(255, 255, 255, 0.08)
+    border: 1px solid rgba(255, 255, 255, 0.08)
+    border-radius: 12px
+    min-height: 40px
 
 .module-name
     font-size: 12px
     color: var(--hud-text-secondary)
+    letter-spacing: 0.02em
 
 .module-chip
-    padding: 4px 10px
+    padding: 4px 12px
     border-radius: 999px
     font-size: 11px
     font-weight: 600

@@ -66,14 +66,15 @@
                     <div v-else class="hud-editor">
                         <div class="hud-topbar">
                             <v-btn
-                                variant="tonal"
+                                color="white"
+                                variant="flat"
                                 prepend-icon="mdi-arrow-left"
                                 @click="requestExitHud"
                             >
                                 返回设置列表
                             </v-btn>
                             <v-btn
-                                color="secondary"
+                                color="white"
                                 variant="tonal"
                                 prepend-icon="mdi-file-import"
                                 @click="hudDrawer = true"
@@ -294,139 +295,332 @@ onUnmounted(() => {
 </script>
 
 <style scoped lang="sass">
+// ==========================================
+// Settings Page - 明亮优雅主题
+// ==========================================
+
+// 动画定义
+@keyframes fadeInUp
+    from
+        opacity: 0
+        transform: translateY(20px)
+    to
+        opacity: 1
+        transform: translateY(0)
+
+@keyframes fadeInLeft
+    from
+        opacity: 0
+        transform: translateX(-20px)
+    to
+        opacity: 1
+        transform: translateX(0)
+
+@keyframes scaleIn
+    from
+        opacity: 0
+        transform: scale(0.95)
+    to
+        opacity: 1
+        transform: scale(1)
+
+@keyframes shimmer
+    0%
+        background-position: -200% 0
+    100%
+        background-position: 200% 0
+
+@keyframes float
+    0%, 100%
+        transform: translateY(0)
+    50%
+        transform: translateY(-6px)
+
+// 明亮色系
+$bg-base: #F8F7FC
+$bg-surface: #FFFFFF
+$bg-surface-variant: #F3EDF7
+$bg-hover: #EDE8F2
+$text-primary: #1C1B1F
+$text-secondary: #49454F
+$text-hint: #79747E
+$accent: #6750A4
+$accent-light: #E8DEF8
+$accent-container: #EADDFF
+$border: #CAC4D0
+$border-light: #E7E0EC
+$shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.06)
+$shadow-md: 0 4px 16px rgba(0, 0, 0, 0.08)
+$shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.12)
+
 .settings-main
     padding: 0 !important
-    background: #0a0c12
-    color: #f5f7ff
+    background: linear-gradient(135deg, $bg-base 0%, #F0EBF5 100%)
+    color: $text-primary
+    font-family: 'Roboto', 'Noto Sans SC', sans-serif
+    min-height: 100vh
 
 .settings-layout
     display: grid
     grid-template-columns: minmax(0, 1fr)
-    gap: 16px
+    gap: 32px
     height: 100vh
-    padding: 16px
+    padding: 40px 48px
     box-sizing: border-box
+    animation: fadeInUp 0.5s ease-out
+    max-width: 1200px
+    margin: 0 auto
 
+// HUD模式 - 全屏，无max-width限制
 .settings-layout.hud-mode
-    grid-template-columns: minmax(0, 1fr)
+    max-width: none
+    width: 100vw
+    height: 100vh
+    padding: 0
+    margin: 0
+    gap: 0
 
 .left-pane
     position: relative
     display: flex
     flex-direction: column
-    gap: 16px
+    gap: 24px
 
+// HUD Editor Container - 全屏
 .hud-editor
-    position: relative
-    border-radius: 16px
-    overflow: hidden
-    background: #0c1018
-    flex: 1
-
-.settings-topbar
-    position: absolute
-    top: 16px
-    left: 16px
-    right: 16px
-    z-index: 2
-    display: flex
-    align-items: center
-    justify-content: space-between
-    gap: 12px
-
-.topbar-title
-    font-size: 16px
-    font-weight: 600
-    color: rgba(255, 255, 255, 0.88)
-
-.preview-bg
     position: absolute
     inset: 0
-    background: radial-gradient(circle at top, rgba(255, 255, 255, 0.08), transparent 55%), linear-gradient(180deg, rgba(12, 16, 24, 0.95), rgba(12, 16, 24, 0.65))
-    pointer-events: none
+    overflow: hidden
+    background: #0a0a14
 
-.settings-panel
-    display: flex
-    flex-direction: column
-    gap: 16px
-
-.panel-card
-    padding: 16px
-    background: rgba(24, 26, 34, 0.96)
-    color: rgba(255, 255, 255, 0.92)
-
-.panel-title
-    font-size: 16px
-    font-weight: 600
-    margin-bottom: 12px
-
-.panel-actions
-    display: flex
-    gap: 12px
-    margin-top: 12px
-
-.panel-hint
-    margin-top: 8px
-    font-size: 12px
-    color: rgba(255, 255, 255, 0.6)
-
-.panel-text
-    font-size: 13px
-    color: rgba(255, 255, 255, 0.76)
-    margin-bottom: 6px
-
+// Top Bar
 .settings-topbar
-    position: sticky
-    top: 0
     display: flex
     align-items: center
     justify-content: space-between
-    gap: 12px
-    z-index: 5
-    padding: 12px 0
-    background: #0a0c12
+    gap: 20px
+    padding: 8px 0 20px
+    animation: fadeInLeft 0.4s ease-out
 
 .topbar-title
-    font-size: 18px
-    font-weight: 600
-    color: rgba(255, 255, 255, 0.88)
-
-.list-card
-    margin-top: 8px
-    padding-top: 8px
-
-.entry-card
-    padding: 16px
-    margin: 8px 0 12px
-    background: rgba(20, 24, 32, 0.9)
-    border: 1px solid rgba(255, 255, 255, 0.08)
-    border-radius: 12px
-
-.entry-title
-    font-size: 15px
-    font-weight: 600
-    margin-bottom: 6px
-
-.entry-subtitle
-    font-size: 12px
-    color: rgba(255, 255, 255, 0.6)
-    margin-bottom: 10px
+    font-size: 28px
+    font-weight: 500
+    color: $text-primary
+    letter-spacing: -0.02em
+    background: linear-gradient(90deg, $accent, #9A82DB)
+    -webkit-background-clip: text
+    -webkit-text-fill-color: transparent
+    background-clip: text
 
 .topbar-actions
     display: flex
     align-items: center
-    gap: 8px
+    gap: 12px
 
+// Preview Background for HUD Mode
+.preview-bg
+    position: absolute
+    inset: 0
+    background: radial-gradient(ellipse at top center, rgba(103, 80, 164, 0.15) 0%, transparent 60%)
+    pointer-events: none
+
+// Panel Cards - 更大的内边距
+.panel-card
+    padding: 36px 40px
+    background: $bg-surface
+    color: $text-primary
+    border-radius: 28px
+    border: 1px solid $border-light
+    box-shadow: $shadow-sm
+    transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1)
+    animation: fadeInUp 0.5s ease-out
+    margin-bottom: 8px
+
+    &:hover
+        box-shadow: $shadow-md
+        transform: translateY(-2px)
+        border-color: $border
+
+.panel-title
+    font-size: 20px
+    font-weight: 500
+    margin-bottom: 20px
+    color: $text-primary
+    display: flex
+    align-items: center
+    gap: 10px
+
+    &::before
+        content: ''
+        width: 4px
+        height: 24px
+        background: linear-gradient(180deg, $accent, #9A82DB)
+        border-radius: 2px
+
+.panel-actions
+    display: flex
+    gap: 14px
+    margin-top: 20px
+    flex-wrap: wrap
+
+.panel-hint
+    margin-top: 14px
+    font-size: 13px
+    color: $text-hint
+    line-height: 1.5
+
+.panel-text
+    font-size: 14px
+    color: $text-secondary
+    margin-bottom: 10px
+    line-height: 1.6
+
+// List Card
+.list-card
+    margin-top: 0
+
+// Entry Card - 内嵌卡片，更多空间
+.entry-card
+    padding: 28px 32px
+    margin: 20px 0 28px
+    background: $bg-surface-variant
+    border: 1px solid $border-light
+    border-radius: 20px
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1)
+
+    &:hover
+        background: $bg-hover
+        border-color: $accent-light
+        transform: translateY(-3px)
+        box-shadow: $shadow-md
+
+.entry-title
+    font-size: 17px
+    font-weight: 500
+    margin-bottom: 8px
+    color: $text-primary
+
+.entry-subtitle
+    font-size: 14px
+    color: $text-secondary
+    margin-bottom: 18px
+    line-height: 1.6
+
+// HUD Editor Top Bar
 .hud-topbar
     position: absolute
-    top: 16px
-    left: 16px
+    top: 24px
+    left: 24px
     display: flex
-    gap: 8px
+    gap: 12px
     z-index: 6
+    animation: fadeInLeft 0.4s ease-out 0.2s both
 
+// HUD Import/Export Drawer
 .hud-import-drawer
-    padding: 16px
-    background: rgba(18, 18, 22, 0.96)
-    color: rgba(255, 255, 255, 0.92)
+    padding: 28px
+    background: $bg-surface
+    color: $text-primary
+
+    :deep(.v-field)
+        border-radius: 14px
+        background: $bg-surface-variant
+
+    :deep(.v-btn)
+        border-radius: 999px
+
+// Vuetify 组件深度覆盖
+:deep(.v-card)
+    background: $bg-surface !important
+    color: $text-primary !important
+    border-radius: 20px !important
+    overflow: visible !important
+
+:deep(.v-card-title)
+    padding: 24px 28px 16px !important
+    font-size: 18px !important
+    color: $text-primary !important
+
+:deep(.v-card-text)
+    padding: 16px 28px !important
+    color: $text-secondary !important
+
+:deep(.v-card-actions)
+    padding: 16px 28px 24px !important
+
+// Expansion Panels - 更大的内边距
+:deep(.v-expansion-panels)
+    border-radius: 24px
+    overflow: hidden
+    border: 1px solid $border-light
+    background: transparent
+    box-shadow: $shadow-sm
+    margin-top: 12px
+
+:deep(.v-expansion-panel)
+    background: $bg-surface !important
+    color: $text-primary !important
+    margin: 0 !important
+
+    &:not(:last-child)
+        border-bottom: 1px solid $border-light
+
+:deep(.v-expansion-panel-title)
+    font-size: 16px
+    font-weight: 500
+    padding: 24px 32px
+    color: $text-primary !important
+    min-height: 68px
+    transition: all 0.25s ease
+
+    &:hover
+        background: $bg-surface-variant !important
+
+:deep(.v-expansion-panel-text)
+    background: $bg-surface !important
+
+:deep(.v-expansion-panel-text__wrapper)
+    padding: 16px 32px 32px
+
+// Switch & Slider
+:deep(.v-switch),
+:deep(.v-slider)
+    margin: 10px 0
+
+:deep(.v-switch .v-label),
+:deep(.v-slider .v-label)
+    color: $text-primary !important
+    opacity: 1 !important
+
+:deep(.v-input__details)
+    display: none
+
+// Dialog
+:deep(.v-dialog)
+    .v-card
+        background: $bg-surface !important
+        border-radius: 28px !important
+        border: 1px solid $border-light
+        box-shadow: $shadow-lg
+
+// 按钮动画增强
+:deep(.v-btn)
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important
+    font-weight: 500
+
+    &:hover
+        transform: translateY(-2px)
+        box-shadow: $shadow-md
+
+    &:active
+        transform: scale(0.97)
+
+// 滑动进入动画
+.entry-card,
+:deep(.v-expansion-panel)
+    animation: fadeInUp 0.4s ease-out backwards
+
+    @for $i from 1 through 5
+        &:nth-child(#{$i})
+            animation-delay: #{$i * 0.08}s
 </style>

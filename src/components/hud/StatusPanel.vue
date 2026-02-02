@@ -95,16 +95,24 @@ const healthColor = computed(() => {
 .status-panel
     display: flex
     flex-direction: column
-    gap: 12px
+    gap: 14px
+    padding: 4px
 
 .section
     display: flex
     flex-direction: column
     gap: 6px
+    padding-bottom: 6px
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08)
+
+.section:last-child
+    border-bottom: none
+    padding-bottom: 0
 
 .section-title
     font-size: 12px
     color: var(--hud-text-secondary)
+    letter-spacing: 0.03em
 
 .value-row
     display: flex

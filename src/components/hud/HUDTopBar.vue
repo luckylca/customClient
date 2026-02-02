@@ -88,83 +88,99 @@ const blueScore = computed(() =>
 </script>
 
 <style scoped lang="sass">
+// ==========================================
+// HUD TopBar - Material Design 3 Styles
+// ==========================================
+
 .hud-topbar
     display: flex
     align-items: center
-    gap: 16px
+    gap: var(--md-spacing-lg)
     height: 100%
+    font-family: var(--md-font-family)
 
+// Team Pills - MD3 Pill Style
 .team-pill
-    padding: 6px 12px
-    border-radius: 999px
-    font-size: 12px
-    font-weight: 600
+    padding: var(--md-spacing-xs) var(--md-spacing-md)
+    border-radius: var(--md-radius-full)
+    font-size: var(--md-label-medium)
+    font-weight: 500
     letter-spacing: 0.06em
+    transition: all var(--md-duration-short4) var(--md-easing-standard)
 
 .team-red
     background: rgba(229, 57, 53, 0.2)
-    color: #ff8a80
+    color: var(--md-team-red)
 
 .team-blue
     background: rgba(30, 136, 229, 0.2)
-    color: #82b1ff
+    color: var(--md-team-blue)
 
 .team-neutral
-    background: rgba(255, 255, 255, 0.12)
-    color: rgba(255, 255, 255, 0.7)
+    background: var(--hud-bg-glass)
+    color: var(--hud-text-secondary)
 
+// Stage Display
 .stage
     display: flex
     flex-direction: column
     gap: 2px
 
 .stage-label
-    font-size: 12px
+    font-size: var(--md-label-medium)
     color: var(--hud-text-secondary)
 
 .stage-time
-    font-size: 20px
-    font-weight: 600
+    font-size: var(--md-title-large)
+    font-weight: 500
+    font-variant-numeric: tabular-nums
 
+// Score Display
 .score
     display: flex
     align-items: center
-    gap: 8px
+    gap: var(--md-spacing-sm)
     margin-left: auto
 
 .score-item
     display: flex
     align-items: center
-    gap: 6px
-    font-size: 12px
+    gap: var(--md-spacing-xs)
+    font-size: var(--md-label-medium)
 
 .score-item .value
-    font-size: 18px
-    font-weight: 600
+    font-size: var(--md-title-medium)
+    font-weight: 500
+    font-variant-numeric: tabular-nums
 
 .score-item .value.red
-    color: #ff8a80
+    color: var(--md-team-red)
 
 .score-item .value.blue
-    color: #82b1ff
+    color: var(--md-team-blue)
 
 .score-divider
     opacity: 0.4
+    color: var(--hud-text-tertiary)
 
+// Status Pill
 .status-pill
-    padding: 6px 12px
-    border-radius: 999px
+    padding: var(--md-spacing-xs) var(--md-spacing-md)
+    border-radius: var(--md-radius-full)
     background: rgba(46, 125, 50, 0.2)
-    color: #a5d6a7
-    font-size: 12px
+    color: var(--md-health-high)
+    font-size: var(--md-label-medium)
+    font-weight: 500
 
 .status-pill.paused
     background: rgba(255, 152, 0, 0.2)
-    color: #ffe0b2
+    color: var(--md-health-medium)
 
+// Robot Pill
 .robot-pill
-    padding: 6px 12px
-    border-radius: 999px
-    background: rgba(255, 255, 255, 0.12)
-    font-size: 12px
+    padding: var(--md-spacing-xs) var(--md-spacing-md)
+    border-radius: var(--md-radius-full)
+    background: var(--hud-bg-glass)
+    font-size: var(--md-label-medium)
+    color: var(--hud-text-primary)
 </style>

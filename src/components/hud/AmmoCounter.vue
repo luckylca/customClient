@@ -82,18 +82,21 @@ const heatColor = computed(() => {
 .ammo-counter
     display: flex
     flex-direction: column
-    gap: 10px
+    gap: 12px
+    padding: 4px
 
 .ammo-row,
 .heat-row
     display: flex
     align-items: center
     justify-content: space-between
+    padding: 2px 0
 
 .ammo-title,
 .heat-title
     font-size: 12px
     color: var(--hud-text-secondary)
+    letter-spacing: 0.02em
 
 .ammo-value
     font-size: 24px
@@ -108,4 +111,6 @@ const heatColor = computed(() => {
     justify-content: space-between
     font-size: 12px
     color: var(--hud-text-tertiary)
+    padding-top: 4px
+    border-top: 1px solid rgba(255, 255, 255, 0.08)
 </style>

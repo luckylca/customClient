@@ -14,6 +14,12 @@ export interface StoredHudWidget {
     locked: boolean;
     z: number;
     props?: Record<string, unknown>;
+    customSettings?: {
+        opacity?: number;
+        backgroundMode?: 'mask' | 'blur' | 'inherit';
+        blurIntensity?: number;
+        maskOpacity?: number;
+    };
 }
 
 export interface StoredHudSettings {
@@ -25,7 +31,9 @@ export interface StoredHudSettings {
     compactHeader: boolean;
     showDemoBadge: boolean;
     hudOpacity: number;
-    glassBlur: number;
+    backgroundMode: 'mask' | 'blur';
+    blurIntensity: number;
+    widgetOpacity: number;
     fontScale: number;
     performanceMode: boolean;
     demoMode: boolean;
@@ -69,18 +77,24 @@ export const exportHudConfig = () => {
 };
 
 export const importHudConfig = (raw: string) => {
-    const parsed = JSON.parse(raw) as {
-        layout?: StoredHudWidget[];
-        settings?: Partial<StoredHudSettings>;
-    };
-    if (parsed.layout) {
-        saveHudLayout(parsed.layout);
-    }
-    if (parsed.settings) {
-        const merged = {
-            ...(loadHudSettings() ?? {}),
-            ...parsed.settings,
-        } as StoredHudSettings;
-        saveHudSettings(merged);
+    try {
+        const parsed = JSON.parse(raw) as {
+            layout?: StoredHudWidget[];
+            settings?: Partial<StoredHudSettings>;
+        };
+        if (parsed.layout) {
+            saveHudLayout(parsed.layout);
+        }
+        if (parsed.settings) {
+            const merged = {
+                ...(loadHudSettings() ?? {}),
+                ...parsed.settings,
+            } as StoredHudSettings;
+            saveHudSettings(merged);
+        }
+        return true;
+    } catch (error) {
+        console.error('Import failed:', error);
+        return false;
     }
 };

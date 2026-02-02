@@ -4,7 +4,8 @@
         class="hud-layer"
         :class="{
             editing: settings.editMode,
-            'show-grid': settings.showGrid,
+            'mask-mode': settings.backgroundMode === 'mask',
+            'blur-mode': settings.backgroundMode === 'blur',
             'performance-mode': settings.performanceMode,
             compact: settings.compactHeader,
             minimal: props.minimal,
@@ -14,12 +15,14 @@
             '--hud-opacity': settings.hudOpacity.toString(),
             '--hud-font-scale': settings.fontScale.toString(),
             '--hud-grid': settings.gridSize + 'px',
+            '--hud-widget-opacity': settings.widgetOpacity.toString(),
+            '--hud-blur': settings.blurIntensity + 'px',
         }"
     >
         <div v-if="props.showToolbar" class="hud-toolbar">
             <v-btn
                 color="primary"
-                variant="tonal"
+                variant="flat"
                 size="small"
                 :prepend-icon="settings.editMode ? 'mdi-pencil' : 'mdi-pencil-off'"
                 @click="toggleEditMode"
@@ -28,7 +31,7 @@
             </v-btn>
             <v-btn
                 color="secondary"
-                variant="tonal"
+                variant="flat"
                 size="small"
                 prepend-icon="mdi-tune-variant"
                 @click="showSettings = true"
@@ -37,7 +40,7 @@
             </v-btn>
             <v-btn
                 color="info"
-                variant="tonal"
+                variant="flat"
                 size="small"
                 prepend-icon="mdi-refresh"
                 @click="resetLayout"
@@ -60,9 +63,15 @@
             v-for="widget in visibleWidgets"
             :key="widget.id"
             class="hud-widget"
-            :class="{ active: activeWidgetId === widget.id, locked: widget.locked }"
+            :class="{ 
+                active: activeWidgetId === widget.id, 
+                locked: widget.locked,
+                'bg-mask': widget.customSettings?.backgroundMode === 'mask',
+                'bg-blur': widget.customSettings?.backgroundMode === 'blur',
+                'bg-inherit': !widget.customSettings?.backgroundMode || widget.customSettings?.backgroundMode === 'inherit'
+            }"
             :style="widgetStyle(widget)"
-        >
+            @contextmenu.prevent="openWidgetMenu(widget, $event)">
             <div
                 v-if="!props.minimal"
                 class="hud-header"
@@ -76,6 +85,7 @@
                         icon="mdi-arrow-up-bold"
                         size="x-small"
                         variant="text"
+                        color="white"
                         :disabled="widget.locked || !settings.editMode"
                         @click.stop="bringToFront(widget.id)"
                     />
@@ -83,13 +93,14 @@
                         icon="mdi-lock"
                         size="x-small"
                         variant="text"
-                        :color="widget.locked ? 'warning' : undefined"
+                        :color="widget.locked ? 'warning' : 'white'"
                         @click.stop="toggleLock(widget.id)"
                     />
                     <v-btn
                         icon="mdi-eye-off"
                         size="x-small"
                         variant="text"
+                        color="white"
                         @click.stop="toggleWidget(widget.id)"
                     />
                 </div>
@@ -103,6 +114,90 @@
                 @pointerdown="startResize(widget, $event)"
             ></div>
         </div>
+
+        <!-- 右键菜单 -->
+        <v-card
+            v-if="widgetMenuVisible && widgetMenuTarget"
+            class="widget-context-menu"
+            :style="{ left: widgetMenuPosition.x + 'px', top: widgetMenuPosition.y + 'px' }"
+            elevation="8"
+            @click.stop
+        >
+            <v-card-title class="menu-title">
+                <v-icon start size="small">mdi-tune</v-icon>
+                {{ widgetMenuTarget.title }} 设置
+            </v-card-title>
+            <v-divider />
+            <v-card-text class="menu-content">
+                <div class="menu-section">
+                    <div class="menu-label">组件透明度</div>
+                    <v-slider
+                        :model-value="widgetMenuTarget.customSettings?.opacity ?? 1"
+                        @update:model-value="updateWidgetSetting('opacity', $event)"
+                        :min="0.3"
+                        :max="1"
+                        :step="0.05"
+                        hide-details
+                        thumb-label
+                        density="compact"
+                    />
+                </div>
+                <div class="menu-section">
+                    <div class="menu-label">背景模式</div>
+                    <v-btn-toggle
+                        :model-value="widgetMenuTarget.customSettings?.backgroundMode ?? 'inherit'"
+                        @update:model-value="updateWidgetSetting('backgroundMode', $event)"
+                        mandatory
+                        color="primary"
+                        density="compact"
+                        class="menu-toggle"
+                    >
+                        <v-btn value="inherit" size="x-small">继承</v-btn>
+                        <v-btn value="mask" size="x-small">遮罩</v-btn>
+                        <v-btn value="blur" size="x-small">模糊</v-btn>
+                    </v-btn-toggle>
+                </div>
+                <div v-if="widgetMenuTarget.customSettings?.backgroundMode === 'mask'" class="menu-section">
+                    <div class="menu-label">遮罩透明度</div>
+                    <v-slider
+                        :model-value="widgetMenuTarget.customSettings?.maskOpacity ?? settings.hudOpacity"
+                        @update:model-value="updateWidgetSetting('maskOpacity', $event)"
+                        :min="0.3"
+                        :max="0.95"
+                        :step="0.05"
+                        hide-details
+                        thumb-label
+                        density="compact"
+                    />
+                </div>
+                <div v-if="widgetMenuTarget.customSettings?.backgroundMode === 'blur'" class="menu-section">
+                    <div class="menu-label">模糊程度</div>
+                    <v-slider
+                        :model-value="widgetMenuTarget.customSettings?.blurIntensity ?? settings.blurIntensity"
+                        @update:model-value="updateWidgetSetting('blurIntensity', $event)"
+                        :min="4"
+                        :max="32"
+                        :step="2"
+                        hide-details
+                        thumb-label
+                        density="compact"
+                    />
+                </div>
+            </v-card-text>
+            <v-divider />
+            <v-card-actions class="menu-actions">
+                <v-btn size="small" variant="text" @click="resetWidgetSettings">
+                    <v-icon start size="small">mdi-refresh</v-icon>
+                    重置
+                </v-btn>
+                <v-spacer />
+                <v-btn size="small" color="primary" @click="closeWidgetMenu">
+                    完成
+                </v-btn>
+            </v-card-actions>
+        </v-card>
+        <!-- 菜单点击外部关闭 -->
+        <div v-if="widgetMenuVisible" class="menu-backdrop" @click="closeWidgetMenu" />
 
         <v-navigation-drawer
             v-if="props.showSettingsPanel"
@@ -132,30 +227,6 @@
                 </v-list-item>
                 <v-list-item>
                     <v-switch
-                        v-model="settings.showGrid"
-                        label="显示网格"
-                        inset
-                    />
-                </v-list-item>
-                <v-list-item>
-                    <v-switch
-                        v-model="settings.snapToGrid"
-                        label="吸附网格"
-                        inset
-                    />
-                </v-list-item>
-                <v-list-item>
-                    <v-slider
-                        v-model="settings.gridSize"
-                        :min="8"
-                        :max="64"
-                        :step="4"
-                        label="网格尺寸"
-                        hide-details
-                    />
-                </v-list-item>
-                <v-list-item>
-                    <v-switch
                         v-model="settings.compactHeader"
                         label="紧凑标题栏"
                         inset
@@ -169,15 +240,45 @@
                     />
                 </v-list-item>
                 <v-divider class="mt-3 mb-2" />
-                <v-list-subheader>视觉</v-list-subheader>
+                <v-list-subheader>视觉效果</v-list-subheader>
+                <v-list-item>
+                    <v-btn-toggle
+                        v-model="settings.backgroundMode"
+                        mandatory
+                        color="primary"
+                        density="compact"
+                        class="mb-3"
+                    >
+                        <v-btn value="mask" size="small">
+                            <v-icon start>mdi-circle-opacity</v-icon>
+                            黑色遮罩
+                        </v-btn>
+                        <v-btn value="blur" size="small">
+                            <v-icon start>mdi-blur</v-icon>
+                            高斯模糊
+                        </v-btn>
+                    </v-btn-toggle>
+                </v-list-item>
                 <v-list-item>
                     <v-slider
                         v-model="settings.hudOpacity"
-                        :min="0.5"
-                        :max="1"
+                        :min="0.3"
+                        :max="0.95"
                         :step="0.05"
-                        label="HUD 遮罩透明度"
+                        label="遮罩透明度"
                         hide-details
+                        thumb-label
+                    />
+                </v-list-item>
+                <v-list-item v-if="settings.backgroundMode === 'blur'">
+                    <v-slider
+                        v-model="settings.blurIntensity"
+                        :min="4"
+                        :max="32"
+                        :step="2"
+                        label="模糊程度"
+                        hide-details
+                        thumb-label
                     />
                 </v-list-item>
                 <v-list-item>
@@ -188,6 +289,17 @@
                         :step="0.05"
                         label="文字缩放"
                         hide-details
+                    />
+                </v-list-item>
+                <v-list-item>
+                    <v-slider
+                        v-model="settings.widgetOpacity"
+                        :min="0.4"
+                        :max="1.0"
+                        :step="0.05"
+                        label="组件透明度"
+                        hide-details
+                        thumb-label
                     />
                 </v-list-item>
                 <v-divider class="mt-3 mb-2" />
@@ -240,7 +352,7 @@
 </template>
 
 <script setup lang="ts">
-import { markRaw, onMounted, onUnmounted, reactive, ref, computed, watch, provide } from 'vue';
+import { markRaw, onMounted, onUnmounted, reactive, ref, computed, watch, provide, nextTick } from 'vue';
 import HUDTopBar from './HUDTopBar.vue';
 import StatusPanel from './StatusPanel.vue';
 import AmmoCounter from './AmmoCounter.vue';
@@ -268,41 +380,27 @@ const props = withDefaults(
         showToolbar: false,
         showSettingsPanel: false,
         enableEdit: false,
-        minimal: true,
+        minimal: false,
     }
 );
 
-type WidgetComponent = typeof HUDTopBar;
+const emit = defineEmits<{
+    (e: 'closeSettings'): void;
+}>();
 
-interface HudWidget {
-    id: string;
-    title: string;
-    component: WidgetComponent;
-    x: number;
-    y: number;
-    w: number;
-    h: number;
-    minW: number;
-    minH: number;
-    visible: boolean;
-    locked: boolean;
-    z: number;
-    props?: Record<string, unknown>;
-}
+const containerRef = ref<HTMLElement | null>(null);
+const containerSize = reactive({ width: 1920, height: 1080 });
 
-interface HudSettings {
-    autosave: boolean;
-    editMode: boolean;
-    showGrid: boolean;
-    snapToGrid: boolean;
-    gridSize: number;
-    compactHeader: boolean;
-    showDemoBadge: boolean;
-    hudOpacity: number;
-    fontScale: number;
-    performanceMode: boolean;
-    demoMode: boolean;
-}
+const showSettings = ref(false);
+const activeWidgetId = ref<string | null>(null);
+const dragState = ref<DragState | null>(null);
+const resizeState = ref<ResizeState | null>(null);
+const rafId = ref<number | null>(null);
+
+// 右键菜单状态
+const widgetMenuVisible = ref(false);
+const widgetMenuPosition = reactive({ x: 0, y: 0 });
+const widgetMenuTarget = ref<StoredHudWidget | null>(null); // Use StoredHudWidget
 
 interface DragState {
     id: string;
@@ -320,15 +418,15 @@ interface ResizeState {
     originH: number;
 }
 
-const containerRef = ref<HTMLDivElement | null>(null);
-const containerSize = reactive({ width: 1920, height: 1080 });
-const showSettings = ref(false);
-const activeWidgetId = ref<string | null>(null);
-const dragState = ref<DragState | null>(null);
-const resizeState = ref<ResizeState | null>(null);
-const rafId = ref<number | null>(null);
+type WidgetComponent = typeof HUDTopBar;
 
-const settings = reactive<HudSettings>({
+// Use StoredHudWidget + component
+interface HudWidget extends StoredHudWidget {
+    component?: WidgetComponent;
+}
+
+// Local settings ref
+const settings = reactive<StoredHudSettings>({
     autosave: true,
     editMode: false,
     showGrid: false,
@@ -337,6 +435,9 @@ const settings = reactive<HudSettings>({
     compactHeader: false,
     showDemoBadge: false,
     hudOpacity: 0.78,
+    backgroundMode: 'mask',
+    blurIntensity: 12,
+    widgetOpacity: 1.0,
     fontScale: 1,
     performanceMode: false,
     demoMode: true,
@@ -381,6 +482,30 @@ const updateFps = () => {
     }
     if (showFps.value) {
         requestAnimationFrame(updateFps);
+    }
+};
+
+// Components map for hydration
+const widgetComponentById = (id: string) => {
+    switch (id) {
+        case 'top-bar':
+            return markRaw(HUDTopBar);
+        case 'module-status':
+            return markRaw(ModuleStatus);
+        case 'ammo-counter':
+            return markRaw(AmmoCounter);
+        case 'status-panel':
+            return markRaw(StatusPanel);
+        case 'minimap':
+            return markRaw(Minimap);
+        case 'event-log':
+            return markRaw(EventLog);
+        case 'buff-list':
+            return markRaw(BuffList);
+        case 'control-hints':
+            return markRaw(ControlHints);
+        default:
+            return markRaw(StatusPanel);
     }
 };
 
@@ -439,16 +564,16 @@ const defaultWidgets = (width = 1920, height = 1080): HudWidget[] => {
             x: leftColumnX,
             y: 640,
             w: 360,
-            h: 230,
+            h: 220,
             minW: 280,
-            minH: 180,
+            minH: 160,
             visible: true,
             locked: false,
             z: 4,
         },
         {
             id: 'event-log',
-            title: '赛事事件',
+            title: '事件日志',
             component: markRaw(EventLog),
             x: leftColumnX,
             y: height - 210,
@@ -462,7 +587,7 @@ const defaultWidgets = (width = 1920, height = 1080): HudWidget[] => {
         },
         {
             id: 'buff-list',
-            title: '增益状态',
+            title: '机器增强',
             component: markRaw(BuffList),
             x: rightColumnX,
             y: 160,
@@ -511,13 +636,43 @@ const visibleWidgets = computed(() =>
     widgets.value.filter((widget) => widget.visible)
 );
 
+const isLayoutValid = (layout: HudWidget[]) => {
+    if (!layout.length) return false;
+    const allNumeric = layout.every(
+        (widget) =>
+            Number.isFinite(widget.x) &&
+            Number.isFinite(widget.y) &&
+            Number.isFinite(widget.w) &&
+            Number.isFinite(widget.h) &&
+            widget.w > 0 &&
+            widget.h > 0
+    );
+    if (!allNumeric) return false;
+    const first = layout[0];
+    const allSame = layout.every(
+        (widget) =>
+            widget.x === first.x &&
+            widget.y === first.y &&
+            widget.w === first.w &&
+            widget.h === first.h
+    );
+    return !allSame;
+};
+
+// Load/Save Logic
+
 const loadLayout = () => {
     const parsed = loadHudLayout();
     if (!parsed || !parsed.length) return false;
-    widgets.value = parsed.map((item) => ({
+    const rebuilt = parsed.map((item) => ({
         ...item,
         component: widgetComponentById(item.id),
-    }));
+    })) as HudWidget[];
+    
+    // Safety Guard: Check Validity
+    if (!isLayoutValid(rebuilt)) return false;
+
+    widgets.value = rebuilt;
     return true;
 };
 
@@ -529,44 +684,27 @@ const loadSettings = () => {
 
 const saveLayout = (force = false) => {
     if (!settings.autosave && !force) return;
-    const serialized: StoredHudWidget[] = widgets.value.map((widget) => ({
-        ...widget,
-        component: undefined,
-    }));
+    const serialized: StoredHudWidget[] = widgets.value.map((widget) => {
+        const { component, ...rest } = widget;
+        return rest;
+    });
     saveHudLayout(serialized);
 };
 
 const saveSettings = (force = false) => {
     if (!settings.autosave && !force) return;
-    saveHudSettings(settings as StoredHudSettings);
+    saveHudSettings(settings);
 };
 
-const widgetComponentById = (id: string): WidgetComponent => {
-    switch (id) {
-        case 'top-bar':
-            return markRaw(HUDTopBar);
-        case 'status-panel':
-            return markRaw(StatusPanel);
-        case 'ammo-counter':
-            return markRaw(AmmoCounter);
-        case 'minimap':
-            return markRaw(Minimap);
-        case 'module-status':
-            return markRaw(ModuleStatus);
-        case 'event-log':
-            return markRaw(EventLog);
-        case 'buff-list':
-            return markRaw(BuffList);
-        case 'control-hints':
-            return markRaw(ControlHints);
-        default:
-            return markRaw(StatusPanel);
-    }
-};
+// Hydrate widgets is no longer needed in this form as we loadLayout directly
+// But we keep isLayoutValid helper for loadLayout checks
+
 
 const updateContainerSize = () => {
     if (!containerRef.value) return;
     const rect = containerRef.value.getBoundingClientRect();
+    if (rect.width === 0 || rect.height === 0) return; // Guard against hidden/unmounted state
+    
     containerSize.width = rect.width;
     containerSize.height = rect.height;
     normalizeLayout();
@@ -576,6 +714,9 @@ const clamp = (value: number, min: number, max: number) =>
     Math.min(Math.max(value, min), max);
 
 const normalizeLayout = () => {
+    // Safety check: Don't normalize if container is too small (e.g. initial load)
+    if (containerSize.width < 100 || containerSize.height < 100) return;
+
     widgets.value = widgets.value.map((widget) => {
         const width = clamp(widget.w, widget.minW, Math.max(widget.minW, containerSize.width - widget.x));
         const height = clamp(widget.h, widget.minH, Math.max(widget.minH, containerSize.height - widget.y));
@@ -604,7 +745,47 @@ const widgetStyle = (widget: HudWidget) => ({
     width: `${widget.w}px`,
     height: `${widget.h}px`,
     zIndex: widget.z,
+    // 单独组件自定义样式
+    '--widget-opacity': widget.customSettings?.opacity?.toString() ?? 'inherit',
+    '--widget-mask-opacity': widget.customSettings?.maskOpacity?.toString() ?? 'inherit',
+    '--widget-blur': widget.customSettings?.blurIntensity ? `${widget.customSettings.blurIntensity}px` : 'inherit',
 });
+
+// 右键菜单相关函数
+const openWidgetMenu = (widget: HudWidget, event: MouseEvent) => {
+    if (!settings.editMode) return;
+    widgetMenuTarget.value = widget;
+    widgetMenuPosition.x = event.clientX;
+    widgetMenuPosition.y = event.clientY;
+    widgetMenuVisible.value = true;
+};
+
+const closeWidgetMenu = () => {
+    widgetMenuVisible.value = false;
+    widgetMenuTarget.value = null;
+};
+
+const updateWidgetSetting = <K extends keyof NonNullable<HudWidget['customSettings']>>(
+    key: K, 
+    value: NonNullable<HudWidget['customSettings']>[K]
+) => {
+    if (!widgetMenuTarget.value) return;
+    const widget = widgets.value.find(w => w.id === widgetMenuTarget.value?.id);
+    if (!widget) return;
+    
+    if (!widget.customSettings) {
+        widget.customSettings = {};
+    }
+    widget.customSettings[key] = value;
+};
+
+const resetWidgetSettings = () => {
+    if (!widgetMenuTarget.value) return;
+    const widget = widgets.value.find(w => w.id === widgetMenuTarget.value?.id);
+    if (!widget) return;
+    widget.customSettings = undefined;
+    closeWidgetMenu();
+};
 
 const startDrag = (widget: HudWidget, event: PointerEvent) => {
     if (!props.enableEdit || !settings.editMode || widget.locked) return;
@@ -739,6 +920,7 @@ const handleKeyDown = (event: KeyboardEvent) => {
     }
 };
 
+
 watch(
     () => settings,
     () => saveSettings(),
@@ -749,9 +931,7 @@ watch(
     () => widgets.value.map((widget) => ({ ...widget, component: undefined })),
     () => saveLayout(),
     { deep: true }
-);
-
-watch(
+);watch(
     () => showFps.value,
     (next) => {
         if (next) {
@@ -762,23 +942,44 @@ watch(
     }
 );
 
-onMounted(() => {
-    updateContainerSize();
-    const loaded = loadLayout();
-    loadSettings();
-    showSettings.value = false;
-    if (!props.enableEdit) {
-        settings.editMode = false;
-        settings.showGrid = false;
-    }
-    if (loaded) {
-        normalizeLayout();
-    } else {
-        widgets.value = defaultWidgets(containerSize.width, containerSize.height);
-    }
-    if (showFps.value) {
-        requestAnimationFrame(updateFps);
-    }
+onMounted(async () => {
+    // 使用 nextTick 确保 DOM 完全渲染后再获取容器尺寸
+    await nextTick();
+    
+    // 延迟一帧确保容器尺寸正确
+    requestAnimationFrame(() => {
+        updateContainerSize();
+        
+        const loaded = loadLayout();
+        loadSettings();
+        
+        showSettings.value = false;
+        
+        if (!props.enableEdit) {
+            settings.editMode = false;
+            settings.showGrid = false;
+        }
+        
+        if (containerSize.width < 200 || containerSize.height < 200) {
+            // 容器尺寸异常时，延迟再校正一次
+            setTimeout(updateContainerSize, 50);
+        }
+
+        // 再次更新尺寸后归一化布局
+        // updateContainerSize(); // Already done
+        
+        if (loaded) {
+             updateContainerSize();
+             normalizeLayout();
+        } else {
+             widgets.value = defaultWidgets(containerSize.width, containerSize.height);
+        }
+        
+        if (showFps.value) {
+            requestAnimationFrame(updateFps);
+        }
+    });
+    
     window.addEventListener('resize', updateContainerSize);
     window.addEventListener('pointermove', handlePointerMove);
     window.addEventListener('pointerup', handlePointerUp);
@@ -804,6 +1005,8 @@ onUnmounted(() => {
     --hud-local-font: var(--hud-font-scale, 1)
     transform-origin: top left
     font-size: calc(14px * var(--hud-local-font))
+    user-select: none
+    -webkit-user-select: none
 
     &.performance-mode
         .hud-widget
@@ -845,9 +1048,9 @@ onUnmounted(() => {
     z-index: 3
     overflow: hidden
     outline: 1px solid rgba(255, 255, 255, 0.04)
-    overflow: hidden
-    transition: border-color var(--md-duration-short4) var(--md-easing-standard)
+    transition: border-color var(--md-duration-short4) var(--md-easing-standard), opacity 0.3s ease
     pointer-events: auto
+    opacity: var(--widget-opacity, var(--hud-widget-opacity, 1))
 
     &.active
         border-color: var(--md-primary)
@@ -902,7 +1105,9 @@ onUnmounted(() => {
 .hud-body
     flex: 1
     min-height: 0
-    padding: 14px
+    padding: 20px 24px
+    position: relative
+    z-index: 2
 
 .resize-handle
     position: absolute
@@ -922,71 +1127,159 @@ onUnmounted(() => {
         display: none
 
 .hud-settings
-    background: rgba(18, 18, 22, 0.96)
-    color: var(--hud-text-primary)
-    backdrop-filter: blur(12px)
+    background: #FFFFFF
+    color: #1C1B1F
+    border-left: 1px solid #E7E0EC
+    box-shadow: -4px 0 24px rgba(0, 0, 0, 0.1)
 
 .hud-settings :deep(.v-list-item),
 .hud-settings :deep(.v-list-subheader),
 .hud-settings :deep(.v-label)
-    color: rgba(255, 255, 255, 0.82)
+    color: #49454F !important
 
 .hud-settings :deep(.v-switch),
 .hud-settings :deep(.v-slider)
-    color: rgba(255, 255, 255, 0.9)
+    color: #1C1B1F
+
+.hud-settings :deep(.v-btn)
+    border-radius: 999px
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1)
+
+    &:hover
+        transform: translateY(-1px)
+
+.hud-settings :deep(.v-list)
+    background: transparent !important
+
+.hud-settings :deep(.v-list-subheader)
+    color: #6750A4 !important
+    font-weight: 500
+
+.hud-settings :deep(.v-btn-toggle)
+    border-radius: 12px
+    overflow: hidden
 
 .settings-header
-    padding: 20px 20px 10px
+    padding: 24px 24px 16px
     display: flex
     align-items: center
     justify-content: space-between
-    gap: 12px
+    gap: 16px
+    border-bottom: 1px solid #E7E0EC
+    background: #F8F7FC
 
 .settings-title
-    font-size: 18px
-    font-weight: 600
+    font-size: 20px
+    font-weight: 500
+    color: #1C1B1F
 
 .settings-subtitle
-    font-size: 12px
-    color: var(--hud-text-secondary)
+    font-size: 13px
+    color: #49454F
+    margin-top: 4px
 
 .settings-footer
-    padding: 16px 20px 24px
-    font-size: 12px
-    color: var(--hud-text-secondary)
+    padding: 20px 24px 28px
+    font-size: 13px
+    color: #49454F
+    border-top: 1px solid #E7E0EC
+    margin-top: 16px
+    background: #F8F7FC
 
 .settings-actions
     display: flex
     gap: 12px
-    padding: 0 20px 20px
+    padding: 0 24px 24px
 
 .shortcut-title
-    font-weight: 600
-    margin-bottom: 8px
+    font-weight: 500
+    margin-bottom: 10px
+    color: #1C1B1F
 
 .shortcut-row
-    line-height: 1.6
+    line-height: 1.7
+    color: #49454F
+    font-size: 13px
 
-.hud-widget::before
-    content: ''
-    position: absolute
-    inset: 0
-    background: rgba(0, 0, 0, var(--hud-local-opacity))
-    z-index: 0
-    pointer-events: none
+// Widget 背景效果 - 支持遮罩和模糊两种模式
+.hud-widget
+    border-radius: 12px
+    overflow: hidden
+
+    &::before
+        content: ''
+        position: absolute
+        inset: 0
+        z-index: 0
+        pointer-events: none
+        border-radius: inherit
+        transition: all 0.3s ease
+
+    &::after
+        content: ''
+        position: absolute
+        inset: 0
+        z-index: 0
+        pointer-events: none
+        border-radius: inherit
 
 .hud-widget > *
     position: relative
     z-index: 1
 
+// 全局遮罩
+.hud-layer
+    &.editing, &.performance-mode, &.compact, &.minimal, &.hide-cursor
+        // no-op, keep for specificity
+
+// 全局遮罩模式
+.hud-layer
+    &.mask-mode
+        .hud-widget::before
+            background: rgba(0, 0, 0, var(--hud-opacity, 0.78))
+        .hud-widget::after
+            display: none
+
+    &.blur-mode
+        .hud-widget::before
+            background: rgba(0, 0, 0, 0.25)
+        .hud-widget::after
+            backdrop-filter: blur(var(--hud-blur, 12px))
+            -webkit-backdrop-filter: blur(var(--hud-blur, 12px))
+            background: rgba(255, 255, 255, 0.08)
+
+// 单独组件背景覆盖
+.hud-widget.bg-mask::before
+    background: rgba(0, 0, 0, var(--widget-mask-opacity, var(--hud-opacity, 0.78))) !important
+
+.hud-widget.bg-mask::after
+    display: none !important
+
+.hud-widget.bg-blur::before
+    background: rgba(0, 0, 0, 0.25) !important
+
+.hud-widget.bg-blur::after
+    backdrop-filter: blur(var(--widget-blur, var(--hud-blur, 12px))) !important
+    -webkit-backdrop-filter: blur(var(--widget-blur, var(--hud-blur, 12px))) !important
+    background: rgba(255, 255, 255, 0.08) !important
+
+// 网格 - 修复显示bug，仅在编辑模式下显示
 .hud-grid
     position: absolute
     inset: 0
-    background-image: linear-gradient(rgba(0, 255, 255, 0.35) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 255, 255, 0.35) 1px, transparent 1px)
-    background-size: var(--hud-grid) var(--hud-grid)
-    z-index: 2
+    background-image: linear-gradient(rgba(103, 80, 164, 0.4) 1px, transparent 1px), linear-gradient(90deg, rgba(103, 80, 164, 0.4) 1px, transparent 1px)
+    background-size: var(--hud-grid, 24px) var(--hud-grid, 24px)
+    z-index: 100
     pointer-events: none
-    opacity: 0.9
+    opacity: 0.8
+    animation: gridFadeIn 0.3s ease-out
+
+@keyframes gridFadeIn
+    from
+        opacity: 0
+    to
+        opacity: 0.8
+
 
 .hud-grid::after
     content: ''
@@ -1043,4 +1336,61 @@ onUnmounted(() => {
     color: rgba(255, 255, 255, 0.9)
     font-size: 12px
     z-index: 2
+
+// 右键菜单样式
+.widget-context-menu
+    position: fixed
+    z-index: 1000
+    min-width: 280px
+    max-width: 320px
+    background: #FFFFFF !important
+    border-radius: 16px !important
+    border: 1px solid #E7E0EC
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2) !important
+    pointer-events: auto !important
+    user-select: text
+
+.menu-title
+    font-size: 16px !important
+    font-weight: 500
+    padding: 16px 20px !important
+    color: #1C1B1F
+
+.menu-content
+    padding: 16px 20px !important
+
+.menu-section
+    margin-bottom: 16px
+
+    &:last-child
+        margin-bottom: 0
+
+.menu-label
+    font-size: 13px
+    font-weight: 500
+    color: #49454F
+    margin-bottom: 8px
+
+.menu-toggle
+    width: 100%
+    border-radius: 12px
+    overflow: hidden
+
+    :deep(.v-btn)
+        flex: 1
+        border-radius: 0 !important
+
+.menu-actions
+    padding: 12px 16px !important
+
+// 菜单背景遮罩
+.menu-backdrop
+    position: fixed
+    inset: 0
+    z-index: 999
+    background: transparent
+
+// 单独组件自定义背景样式
+.hud-widget::before
+    background: rgba(0, 0, 0, var(--hud-opacity, 0.78))
 </style>

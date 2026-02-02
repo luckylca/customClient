@@ -66,18 +66,20 @@ watch(
 .event-log
     display: flex
     flex-direction: column
-    gap: 8px
+    gap: 10px
     max-height: 100%
     overflow: hidden
+    padding: 4px
 
 .event-item
     display: flex
     align-items: center
     gap: 8px
     font-size: 12px
-    padding: 6px 8px
-    background: rgba(255, 255, 255, 0.06)
-    border-radius: 8px
+    padding: 8px 10px
+    background: rgba(255, 255, 255, 0.08)
+    border-radius: 10px
+    border: 1px solid rgba(255, 255, 255, 0.08)
 
 .event-time
     color: var(--hud-text-tertiary)

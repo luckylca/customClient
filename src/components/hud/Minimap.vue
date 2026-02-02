@@ -47,6 +47,7 @@ const robotStyle = computed(() => ({
     background: rgba(13, 16, 23, 0.7)
     border-radius: var(--md-radius-lg)
     overflow: hidden
+    padding: 6px
 
 .map-grid
     position: absolute
@@ -90,8 +91,8 @@ const robotStyle = computed(() => ({
 
 .coords
     position: absolute
-    right: 12px
-    bottom: 12px
+    right: 14px
+    bottom: 14px
     font-size: 11px
     color: var(--hud-text-secondary)
     display: flex
