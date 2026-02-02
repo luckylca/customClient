@@ -1,15 +1,13 @@
 <template>
-    <div class="rm-video-player" :style="{ width: width + 'px', height: height + 'px' }">
-        <canvas ref="canvasRef" :width="width" :height="height"></canvas>
+    <div
+        ref="containerRef"
+        class="rm-video-player"
+        :style="containerStyle"
+    >
+        <canvas ref="canvasRef"></canvas>
         
-        <!-- 延迟显示 -->
-        <div class="latency-indicator" v-if="isStreaming">
-            <!-- <svg viewBox="0 0 24 24" class="icon">
-                <path fill="currentColor" d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M16.24,17.76L11.25,12.75V7H12.75V12.2L17.3,16.7L16.24,17.76Z" />
-            </svg> -->
-            <span :class="latencyColor">{{ latency }} ms</span>
-        </div>
-
+        <!-- 延迟显示已移至 HUDContainer 组件 -->
+        
         <div v-if="!isStreaming" class="placeholder">等待图传信号...</div>
     </div>
 </template>
@@ -20,14 +18,27 @@ import { ref, onMounted, onUnmounted, computed } from 'vue';
 // 定义属性：允许外部控制画布大小
 const props = defineProps({
     width: { type: Number, default: 1920 },
-    height: { type: Number, default: 1080 }
+    height: { type: Number, default: 1080 },
+    autoSize: { type: Boolean, default: true }
 });
 
 const canvasRef = ref<HTMLCanvasElement | null>(null);
+const containerRef = ref<HTMLDivElement | null>(null);
 const isStreaming = ref(false);
 const latency = ref(0);
 let decoder: VideoDecoder | null = null;
 let streamTimer: any = null;
+let resizeObserver: ResizeObserver | null = null;
+let handleResize: (() => void) | null = null;
+
+const renderSize = ref({ width: props.width, height: props.height });
+
+const containerStyle = computed(() => {
+    if (props.autoSize) {
+        return { width: '100%', height: '100%' };
+    }
+    return { width: props.width + 'px', height: props.height + 'px' };
+});
 
 // 根据延迟动态改变颜色
 const latencyColor = computed(() => {
@@ -65,7 +76,7 @@ const getFrameType = (buffer: Uint8Array): 'key' | 'delta' => {
 const initDecoder = (ctx: CanvasRenderingContext2D) => {
     decoder = new VideoDecoder({
         output: (frame) => {
-            ctx.drawImage(frame, 0, 0, props.width, props.height);
+            ctx.drawImage(frame, 0, 0, renderSize.value.width, renderSize.value.height);
             
             // 计算解码延迟
             const decodedTime = performance.now();
@@ -94,6 +105,38 @@ onMounted(() => {
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
+
+    const updateCanvasSize = () => {
+        const targetWidth = props.autoSize && containerRef.value
+            ? containerRef.value.clientWidth
+            : props.width;
+        const targetHeight = props.autoSize && containerRef.value
+            ? containerRef.value.clientHeight
+            : props.height;
+        renderSize.value = {
+            width: Math.max(1, Math.floor(targetWidth)),
+            height: Math.max(1, Math.floor(targetHeight)),
+        };
+        const dpr = window.devicePixelRatio || 1;
+        canvas.width = Math.floor(renderSize.value.width * dpr);
+        canvas.height = Math.floor(renderSize.value.height * dpr);
+        canvas.style.width = `${renderSize.value.width}px`;
+        canvas.style.height = `${renderSize.value.height}px`;
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    };
+    handleResize = () => updateCanvasSize();
+
+    updateCanvasSize();
+    if (props.autoSize && 'ResizeObserver' in window) {
+        resizeObserver = new ResizeObserver(() => updateCanvasSize());
+        if (containerRef.value) {
+            resizeObserver.observe(containerRef.value);
+        }
+    } else {
+        if (handleResize) {
+            window.addEventListener('resize', handleResize);
+        }
+    }
 
     initDecoder(ctx);
 
@@ -124,6 +167,12 @@ onUnmounted(() => {
         decoder.close();
     }
     clearTimeout(streamTimer);
+    if (resizeObserver) {
+        resizeObserver.disconnect();
+    }
+    if (handleResize) {
+        window.removeEventListener('resize', handleResize);
+    }
 });
 </script>
 

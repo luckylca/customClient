@@ -9,9 +9,11 @@
 </template>
 
 <script setup lang="ts">
-import router from '@/router';
 import { toRef } from 'vue';
+import { useRouter, useRoute } from 'vue-router';
 
+const router = useRouter();
+const route = useRoute();
 const { ipcRenderer } = window.require('electron');
 const props = defineProps<{ modelValue: boolean }>();
 const emit = defineEmits<{
@@ -29,7 +31,7 @@ function goHome() {
     ipcRenderer.send('stop-mqtt-service')
 }
 function openSettings() {
-    router.push({ name: 'setting' });
+    router.push({ name: 'setting', query: { from: route.fullPath } });
 }
 
 </script>
