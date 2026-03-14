@@ -2,8 +2,9 @@ import { AddressInfo } from 'net';
 import type { Plugin } from 'vite';
 import { spawn } from 'child_process';
 import esbuild from 'esbuild';
-import electron from 'electron';
 import fs from 'fs';
+
+const electronPath = '/usr/bin/electron39';
 
 const pkg = JSON.parse(fs.readFileSync('package.json', 'utf-8'));
 const dependencies = Object.keys(pkg.dependencies || {});
@@ -26,11 +27,11 @@ export const ElectronDevPlugin = (): Plugin => {
             server.httpServer?.on('listening', () => {
                 const address = server.httpServer?.address() as AddressInfo;
                 const IP = "http://localhost:" + address.port;
-                let electronProcess = spawn(electron as unknown as string, ['dist/background.js', IP]);
+                let electronProcess = spawn(electronPath, ['dist/background.js', IP]);
                 fs.watchFile('src/background.ts', () => {
                     electronProcess.kill();
                     buildBackground();
-                    electronProcess = spawn(electron as unknown as string, ['dist/background.js', IP]);
+                    electronProcess = spawn(electronPath, ['dist/background.js', IP]);
                 });
                 electronProcess.stderr.on('data', (data) => {
                     console.log(`electron: ${data}`);
