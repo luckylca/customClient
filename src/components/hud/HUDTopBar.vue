@@ -1,3 +1,6 @@
+// src/components/hud/HUDTopBar.vue
+// 显示HUD顶部信息栏的组件
+
 <template>
     <div class="hud-topbar">
         <div class="team-pill" :class="teamClass">{{ teamLabel }}</div>

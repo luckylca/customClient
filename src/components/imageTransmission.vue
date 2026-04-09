@@ -14,6 +14,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, computed } from 'vue';
+import { useVideoStatsStore } from '@/stores/videoStats';
 
 // 定义属性：允许外部控制画布大小
 const props = defineProps({
@@ -30,6 +31,8 @@ let decoder: VideoDecoder | null = null;
 let streamTimer: any = null;
 let resizeObserver: ResizeObserver | null = null;
 let handleResize: (() => void) | null = null;
+let handleVideoFrame: ((event: any, buffer: Buffer) => void) | null = null;
+const videoStatsStore = useVideoStatsStore();
 
 const renderSize = ref({ width: props.width, height: props.height });
 
@@ -77,6 +80,7 @@ const initDecoder = (ctx: CanvasRenderingContext2D) => {
     decoder = new VideoDecoder({
         output: (frame) => {
             ctx.drawImage(frame, 0, 0, renderSize.value.width, renderSize.value.height);
+            videoStatsStore.reportDecodedFrame();
             
             // 计算解码延迟
             const decodedTime = performance.now();
@@ -139,9 +143,10 @@ onMounted(() => {
     }
 
     initDecoder(ctx);
+    videoStatsStore.startDecodeFpsSampling();
 
     // 接收主进程封装好的完整图传帧 [cite: 552-554]
-    ipcRenderer.on('video-frame', (_event: any, buffer: Buffer) => {
+    handleVideoFrame = (_event: any, buffer: Buffer) => {
         const uint8Data = new Uint8Array(buffer);
 
         if (decoder && decoder.state === 'configured') {
@@ -158,14 +163,19 @@ onMounted(() => {
                 console.warn('解码失败，尝试重置解码器:', err);
             }
         }
-    });
+    };
+    ipcRenderer.on('video-frame', handleVideoFrame);
 });
 
 onUnmounted(() => {
-    ipcRenderer.removeAllListeners('video-frame');
+    if (handleVideoFrame) {
+        ipcRenderer.removeListener('video-frame', handleVideoFrame);
+        handleVideoFrame = null;
+    }
     if (decoder && decoder.state !== 'closed') {
         decoder.close();
     }
+    videoStatsStore.stopDecodeFpsSampling();
     clearTimeout(streamTimer);
     if (resizeObserver) {
         resizeObserver.disconnect();

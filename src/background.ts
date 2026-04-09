@@ -51,13 +51,22 @@ ipcMain.on('start-mqtt-service', (event) => {
 ipcMain.on('stop-mqtt-service', (event) => {
     canSentMqtt = false;
 })
-// IPC listener for RemoteControl
+// IPC listener for keyboard/mouse control
 import * as rm from './proto/rm_pb';
 ipcMain.on('send-remote-control', (event, data) => {
     const mqttService = (global as any).mqttService as MqttService;
     if (mqttService) {
         if (canSentMqtt) {
-            mqttService.publish('RemoteControl', data, rm.rm.RemoteControl, 1);
+            const controlData = {
+                mouseX: data?.mouseX ?? 0,
+                mouseY: data?.mouseY ?? 0,
+                mouseZ: data?.mouseZ ?? 0,
+                leftButtonDown: !!data?.leftButtonDown,
+                rightButtonDown: !!data?.rightButtonDown,
+                keyboardValue: data?.keyboardValue ?? 0,
+                midButtonDown: !!data?.midButtonDown,
+            };
+            mqttService.publish('KeyboardMouseControl', controlData, rm.rm.KeyboardMouseControl, 1);
         }
     }
 });

@@ -1,3 +1,6 @@
+// src/components/hud/EventLog.vue
+// 显示事件日志的组件
+
 <template>
     <div class="event-log">
         <div v-if="events.length === 0" class="empty">暂无事件</div>

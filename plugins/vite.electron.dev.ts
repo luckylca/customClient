@@ -4,7 +4,8 @@ import { spawn } from 'child_process';
 import esbuild from 'esbuild';
 import fs from 'fs';
 
-const electronPath = '/usr/bin/electron39';
+import electron from 'electron';
+const electronPath = electron as unknown as string;
 
 const pkg = JSON.parse(fs.readFileSync('package.json', 'utf-8'));
 const dependencies = Object.keys(pkg.dependencies || {});
@@ -16,6 +17,9 @@ const buildBackground = () => {
         outfile: 'dist/background.js',
         platform: 'node',
         format: 'esm',
+        alias: {
+            'protobufjs/minimal': 'protobufjs/minimal.js',
+        },
         external: ['electron', ...dependencies],
     });
 };

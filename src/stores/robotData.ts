@@ -1,6 +1,6 @@
 import { ref, computed } from 'vue'
 import { defineStore } from 'pinia'
-import type { RobotInjuryStat,RobotRespawnStatus,RobotStaticStatus,RobotDynamicStatus,RobotModuleStatus,RobotPosition,Buff,PenaltyInfo,RobotPathPlanInfo,MapClickInfoNotify,RaderInfoToClient,CustomByteBlock,AssemblyCommand,TechCoreMotionStateSync,PerformanceSelection,HeroDeployMode,RuneStatus,SentinelStatusSync,DartInfo,GuardCtrl,AirSupport } from '../types/rmType'
+import type { RobotInjuryStat,RobotRespawnStatus,RobotStaticStatus,RobotDynamicStatus,RobotModuleStatus,RobotPosition,Buff,PenaltyInfo,RobotPathPlanInfo,MapClickInfoNotify,RadarInfoToClient,CustomByteBlock,AssemblyCommand,TechCoreMotionStateSync,PerformanceSelection,HeroDeployMode,RuneStatus,SentinelStatusSync,DartInfo,GuardCtrl,AirSupport } from '../types/rmType'
 interface RobotData {
     color: string
     type: string
@@ -15,7 +15,7 @@ interface RobotData {
     PenaltyInfoData?: PenaltyInfo
     RobotPathPlanInfoData?: RobotPathPlanInfo
     MapClickInfoNotifyData?: MapClickInfoNotify
-    RaderInfoToClientData?: RaderInfoToClient
+    RadarInfoToClientData?: RadarInfoToClient
     CustomByteBlockData?: CustomByteBlock
     AssemblyCommandData?: AssemblyCommand
     TechCoreMotionStateSyncData?: TechCoreMotionStateSync
@@ -94,8 +94,8 @@ export const useRobotStore = defineStore('robot', () => {
             case 'MapClickInfoNotify':
                 robot.value.MapClickInfoNotifyData = data as MapClickInfoNotify
                 break
-            case 'RaderInfoToClient':
-                robot.value.RaderInfoToClientData = data as RaderInfoToClient
+            case 'RadarInfoToClient':
+                robot.value.RadarInfoToClientData = data as RadarInfoToClient
                 break
             case 'CustomByteBlock':
                 robot.value.CustomByteBlockData = data as CustomByteBlock

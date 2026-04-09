@@ -1,3 +1,6 @@
+// src/components/hud/ModuleStatus.vue
+// 显示模块状态的组件
+
 <template>
     <div class="module-status">
         <div v-for="item in modules" :key="item.key" class="module-item">

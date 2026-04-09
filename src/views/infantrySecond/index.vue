@@ -1,3 +1,6 @@
+// src/views/infantrySecond/index.vue
+// 步兵2号视角界面，显示图传和HUD
+
 <template>
     <v-app>
         <v-main class="fill-height hud-main">

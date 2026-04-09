@@ -1,3 +1,6 @@
+// src/views/layout/index.vue
+// 选择队伍和机甲的界面
+
 <template>
     <div class="layout-container">
         <v-window show-arrows>

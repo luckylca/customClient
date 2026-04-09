@@ -1,3 +1,6 @@
+// src/components/hud/HUDContainer.vue
+// 显示HUD容器的组件
+
 <template>
     <div
         ref="containerRef"
@@ -361,6 +364,8 @@ import ModuleStatus from './ModuleStatus.vue';
 import EventLog from './EventLog.vue';
 import BuffList from './BuffList.vue';
 import ControlHints from './ControlHints.vue';
+import { useSettingStore } from '@/stores/setting';
+import { useVideoStatsStore } from '@/stores/videoStats';
 import {
     loadHudLayout,
     saveHudLayout,
@@ -446,44 +451,14 @@ const settings = reactive<StoredHudSettings>({
 const demoMode = computed(() => settings.demoMode);
 provide('hudDemoMode', demoMode);
 
-const APP_SETTINGS_KEY = 'rm-app-settings';
-const appSettings = reactive({
-    hideCursor: true,
-    showCrosshair: true,
-    showFps: false,
-    showNotifications: true,
-});
-const loadAppSettings = () => {
-    try {
-        const raw = localStorage.getItem(APP_SETTINGS_KEY);
-        if (!raw) return;
-        const parsed = JSON.parse(raw);
-        Object.assign(appSettings, parsed);
-    } catch (error) {
-        console.warn('App settings load failed:', error);
-    }
-};
-loadAppSettings();
-const showCrosshair = computed(() => appSettings.showCrosshair);
-const showFps = computed(() => appSettings.showFps);
-const showNotifications = computed(() => appSettings.showNotifications);
+const settingStore = useSettingStore();
+const videoStatsStore = useVideoStatsStore();
+const appSettings = computed(() => settingStore.appSettings);
+const showCrosshair = computed(() => appSettings.value.showCrosshair);
+const showFps = computed(() => appSettings.value.showFps);
+const showNotifications = computed(() => appSettings.value.showNotifications);
 provide('hudShowNotifications', showNotifications);
-
-const fpsValue = ref(0);
-let fpsFrame = 0;
-let fpsLast = performance.now();
-const updateFps = () => {
-    fpsFrame += 1;
-    const now = performance.now();
-    if (now - fpsLast >= 500) {
-        fpsValue.value = Math.round((fpsFrame * 1000) / (now - fpsLast));
-        fpsFrame = 0;
-        fpsLast = now;
-    }
-    if (showFps.value) {
-        requestAnimationFrame(updateFps);
-    }
-};
+const fpsValue = computed(() => videoStatsStore.decodedFps);
 
 // Components map for hydration
 const widgetComponentById = (id: string) => {
@@ -931,15 +906,6 @@ watch(
     () => widgets.value.map((widget) => ({ ...widget, component: undefined })),
     () => saveLayout(),
     { deep: true }
-);watch(
-    () => showFps.value,
-    (next) => {
-        if (next) {
-            fpsFrame = 0;
-            fpsLast = performance.now();
-            requestAnimationFrame(updateFps);
-        }
-    }
 );
 
 onMounted(async () => {
@@ -975,9 +941,6 @@ onMounted(async () => {
              widgets.value = defaultWidgets(containerSize.width, containerSize.height);
         }
         
-        if (showFps.value) {
-            requestAnimationFrame(updateFps);
-        }
     });
     
     window.addEventListener('resize', updateContainerSize);

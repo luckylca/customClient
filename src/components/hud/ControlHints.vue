@@ -1,3 +1,6 @@
+// src/components/hud/ControlHints.vue
+// 显示控制提示的组件
+
 <template>
     <div class="control-hints">
         <div class="hint">按 P 打开菜单，连接图传源</div>

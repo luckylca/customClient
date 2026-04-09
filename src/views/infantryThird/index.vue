@@ -1,3 +1,6 @@
+// src/views/infantryThird/index.vue
+// 步兵3号视角界面，显示图传和HUD
+
 <template>
     <v-app>
         <v-main class="fill-height hud-main">

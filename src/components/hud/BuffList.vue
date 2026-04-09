@@ -1,3 +1,6 @@
+// src/components/hud/BuffList.vue
+// 显示当前增益状态的组件
+
 <template>
     <div class="buff-list">
         <div v-if="buffs.length === 0" class="empty">当前无增益</div>
@@ -46,7 +49,7 @@ const buffs = computed(() => {
     }
     return (robot.BuffData ?? []).map((buff, index) => ({
         id: `${buff.robot_id}-${index}`,
-        label: buffLabel(buff.buff_type),
+        label: buffLabel(buff.buff_type ?? 0),
         left: buff.buff_left_time ?? 0,
     }));
 });

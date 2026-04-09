@@ -15,6 +15,9 @@ const buildBackground = () => {
         outfile: 'dist/background.js',
         platform: 'node',
         format: 'esm',
+        alias: {
+            'protobufjs/minimal': 'protobufjs/minimal.js',
+        },
         external: ['electron', ...dependencies],
     });
 };

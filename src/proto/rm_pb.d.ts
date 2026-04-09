@@ -3,139 +3,230 @@ import Long = require("long");
 /** Namespace rm. */
 export namespace rm {
 
-    /** Properties of a RemoteControl. */
-    interface IRemoteControl {
+    /** Properties of a KeyboardMouseControl. */
+    interface IKeyboardMouseControl {
 
-        /** RemoteControl mouseX */
+        /** KeyboardMouseControl mouseX */
         mouseX?: (number|null);
 
-        /** RemoteControl mouseY */
+        /** KeyboardMouseControl mouseY */
         mouseY?: (number|null);
 
-        /** RemoteControl mouseZ */
+        /** KeyboardMouseControl mouseZ */
         mouseZ?: (number|null);
 
-        /** RemoteControl leftButtonDown */
+        /** KeyboardMouseControl leftButtonDown */
         leftButtonDown?: (boolean|null);
 
-        /** RemoteControl rightButtonDown */
+        /** KeyboardMouseControl rightButtonDown */
         rightButtonDown?: (boolean|null);
 
-        /** RemoteControl keyboardValue */
+        /** KeyboardMouseControl keyboardValue */
         keyboardValue?: (number|null);
 
-        /** RemoteControl midButtonDown */
+        /** KeyboardMouseControl midButtonDown */
         midButtonDown?: (boolean|null);
-
-        /** RemoteControl data */
-        data?: (Uint8Array|null);
     }
 
-    /** Represents a RemoteControl. */
-    class RemoteControl implements IRemoteControl {
+    /** Represents a KeyboardMouseControl. */
+    class KeyboardMouseControl implements IKeyboardMouseControl {
 
         /**
-         * Constructs a new RemoteControl.
+         * Constructs a new KeyboardMouseControl.
          * @param [properties] Properties to set
          */
-        constructor(properties?: rm.IRemoteControl);
+        constructor(properties?: rm.IKeyboardMouseControl);
 
-        /** RemoteControl mouseX. */
+        /** KeyboardMouseControl mouseX. */
         public mouseX: number;
 
-        /** RemoteControl mouseY. */
+        /** KeyboardMouseControl mouseY. */
         public mouseY: number;
 
-        /** RemoteControl mouseZ. */
+        /** KeyboardMouseControl mouseZ. */
         public mouseZ: number;
 
-        /** RemoteControl leftButtonDown. */
+        /** KeyboardMouseControl leftButtonDown. */
         public leftButtonDown: boolean;
 
-        /** RemoteControl rightButtonDown. */
+        /** KeyboardMouseControl rightButtonDown. */
         public rightButtonDown: boolean;
 
-        /** RemoteControl keyboardValue. */
+        /** KeyboardMouseControl keyboardValue. */
         public keyboardValue: number;
 
-        /** RemoteControl midButtonDown. */
+        /** KeyboardMouseControl midButtonDown. */
         public midButtonDown: boolean;
 
-        /** RemoteControl data. */
-        public data: Uint8Array;
-
         /**
-         * Creates a new RemoteControl instance using the specified properties.
+         * Creates a new KeyboardMouseControl instance using the specified properties.
          * @param [properties] Properties to set
-         * @returns RemoteControl instance
+         * @returns KeyboardMouseControl instance
          */
-        public static create(properties?: rm.IRemoteControl): rm.RemoteControl;
+        public static create(properties?: rm.IKeyboardMouseControl): rm.KeyboardMouseControl;
 
         /**
-         * Encodes the specified RemoteControl message. Does not implicitly {@link rm.RemoteControl.verify|verify} messages.
-         * @param message RemoteControl message or plain object to encode
+         * Encodes the specified KeyboardMouseControl message. Does not implicitly {@link rm.KeyboardMouseControl.verify|verify} messages.
+         * @param message KeyboardMouseControl message or plain object to encode
          * @param [writer] Writer to encode to
          * @returns Writer
          */
-        public static encode(message: rm.IRemoteControl, writer?: $protobuf.Writer): $protobuf.Writer;
+        public static encode(message: rm.IKeyboardMouseControl, writer?: $protobuf.Writer): $protobuf.Writer;
 
         /**
-         * Encodes the specified RemoteControl message, length delimited. Does not implicitly {@link rm.RemoteControl.verify|verify} messages.
-         * @param message RemoteControl message or plain object to encode
+         * Encodes the specified KeyboardMouseControl message, length delimited. Does not implicitly {@link rm.KeyboardMouseControl.verify|verify} messages.
+         * @param message KeyboardMouseControl message or plain object to encode
          * @param [writer] Writer to encode to
          * @returns Writer
          */
-        public static encodeDelimited(message: rm.IRemoteControl, writer?: $protobuf.Writer): $protobuf.Writer;
+        public static encodeDelimited(message: rm.IKeyboardMouseControl, writer?: $protobuf.Writer): $protobuf.Writer;
 
         /**
-         * Decodes a RemoteControl message from the specified reader or buffer.
+         * Decodes a KeyboardMouseControl message from the specified reader or buffer.
          * @param reader Reader or buffer to decode from
          * @param [length] Message length if known beforehand
-         * @returns RemoteControl
+         * @returns KeyboardMouseControl
          * @throws {Error} If the payload is not a reader or valid buffer
          * @throws {$protobuf.util.ProtocolError} If required fields are missing
          */
-        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): rm.RemoteControl;
+        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): rm.KeyboardMouseControl;
 
         /**
-         * Decodes a RemoteControl message from the specified reader or buffer, length delimited.
+         * Decodes a KeyboardMouseControl message from the specified reader or buffer, length delimited.
          * @param reader Reader or buffer to decode from
-         * @returns RemoteControl
+         * @returns KeyboardMouseControl
          * @throws {Error} If the payload is not a reader or valid buffer
          * @throws {$protobuf.util.ProtocolError} If required fields are missing
          */
-        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): rm.RemoteControl;
+        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): rm.KeyboardMouseControl;
 
         /**
-         * Verifies a RemoteControl message.
+         * Verifies a KeyboardMouseControl message.
          * @param message Plain object to verify
          * @returns `null` if valid, otherwise the reason why it is not
          */
         public static verify(message: { [k: string]: any }): (string|null);
 
         /**
-         * Creates a RemoteControl message from a plain object. Also converts values to their respective internal types.
+         * Creates a KeyboardMouseControl message from a plain object. Also converts values to their respective internal types.
          * @param object Plain object
-         * @returns RemoteControl
+         * @returns KeyboardMouseControl
          */
-        public static fromObject(object: { [k: string]: any }): rm.RemoteControl;
+        public static fromObject(object: { [k: string]: any }): rm.KeyboardMouseControl;
 
         /**
-         * Creates a plain object from a RemoteControl message. Also converts values to other types if specified.
-         * @param message RemoteControl
+         * Creates a plain object from a KeyboardMouseControl message. Also converts values to other types if specified.
+         * @param message KeyboardMouseControl
          * @param [options] Conversion options
          * @returns Plain object
          */
-        public static toObject(message: rm.RemoteControl, options?: $protobuf.IConversionOptions): { [k: string]: any };
+        public static toObject(message: rm.KeyboardMouseControl, options?: $protobuf.IConversionOptions): { [k: string]: any };
 
         /**
-         * Converts this RemoteControl to JSON.
+         * Converts this KeyboardMouseControl to JSON.
          * @returns JSON object
          */
         public toJSON(): { [k: string]: any };
 
         /**
-         * Gets the default type url for RemoteControl
+         * Gets the default type url for KeyboardMouseControl
+         * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+         * @returns The default type url
+         */
+        public static getTypeUrl(typeUrlPrefix?: string): string;
+    }
+
+    /** Properties of a CustomControl. */
+    interface ICustomControl {
+
+        /** CustomControl data */
+        data?: (Uint8Array|null);
+    }
+
+    /** Represents a CustomControl. */
+    class CustomControl implements ICustomControl {
+
+        /**
+         * Constructs a new CustomControl.
+         * @param [properties] Properties to set
+         */
+        constructor(properties?: rm.ICustomControl);
+
+        /** CustomControl data. */
+        public data: Uint8Array;
+
+        /**
+         * Creates a new CustomControl instance using the specified properties.
+         * @param [properties] Properties to set
+         * @returns CustomControl instance
+         */
+        public static create(properties?: rm.ICustomControl): rm.CustomControl;
+
+        /**
+         * Encodes the specified CustomControl message. Does not implicitly {@link rm.CustomControl.verify|verify} messages.
+         * @param message CustomControl message or plain object to encode
+         * @param [writer] Writer to encode to
+         * @returns Writer
+         */
+        public static encode(message: rm.ICustomControl, writer?: $protobuf.Writer): $protobuf.Writer;
+
+        /**
+         * Encodes the specified CustomControl message, length delimited. Does not implicitly {@link rm.CustomControl.verify|verify} messages.
+         * @param message CustomControl message or plain object to encode
+         * @param [writer] Writer to encode to
+         * @returns Writer
+         */
+        public static encodeDelimited(message: rm.ICustomControl, writer?: $protobuf.Writer): $protobuf.Writer;
+
+        /**
+         * Decodes a CustomControl message from the specified reader or buffer.
+         * @param reader Reader or buffer to decode from
+         * @param [length] Message length if known beforehand
+         * @returns CustomControl
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): rm.CustomControl;
+
+        /**
+         * Decodes a CustomControl message from the specified reader or buffer, length delimited.
+         * @param reader Reader or buffer to decode from
+         * @returns CustomControl
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): rm.CustomControl;
+
+        /**
+         * Verifies a CustomControl message.
+         * @param message Plain object to verify
+         * @returns `null` if valid, otherwise the reason why it is not
+         */
+        public static verify(message: { [k: string]: any }): (string|null);
+
+        /**
+         * Creates a CustomControl message from a plain object. Also converts values to their respective internal types.
+         * @param object Plain object
+         * @returns CustomControl
+         */
+        public static fromObject(object: { [k: string]: any }): rm.CustomControl;
+
+        /**
+         * Creates a plain object from a CustomControl message. Also converts values to other types if specified.
+         * @param message CustomControl
+         * @param [options] Conversion options
+         * @returns Plain object
+         */
+        public static toObject(message: rm.CustomControl, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+        /**
+         * Converts this CustomControl to JSON.
+         * @returns JSON object
+         */
+        public toJSON(): { [k: string]: any };
+
+        /**
+         * Gets the default type url for CustomControl
          * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
          * @returns The default type url
          */
@@ -299,17 +390,32 @@ export namespace rm {
         /** GlobalUnitStatus outpostStatus */
         outpostStatus?: (number|null);
 
+        /** GlobalUnitStatus enemyBaseHealth */
+        enemyBaseHealth?: (number|null);
+
+        /** GlobalUnitStatus enemyBaseStatus */
+        enemyBaseStatus?: (number|null);
+
+        /** GlobalUnitStatus enemyBaseShield */
+        enemyBaseShield?: (number|null);
+
+        /** GlobalUnitStatus enemyOutpostHealth */
+        enemyOutpostHealth?: (number|null);
+
+        /** GlobalUnitStatus enemyOutpostStatus */
+        enemyOutpostStatus?: (number|null);
+
         /** GlobalUnitStatus robotHealth */
         robotHealth?: (number[]|null);
 
         /** GlobalUnitStatus robotBullets */
         robotBullets?: (number[]|null);
 
-        /** GlobalUnitStatus totalDamageRed */
-        totalDamageRed?: (number|null);
+        /** GlobalUnitStatus totalDamageAlly */
+        totalDamageAlly?: (number|null);
 
-        /** GlobalUnitStatus totalDamageBlue */
-        totalDamageBlue?: (number|null);
+        /** GlobalUnitStatus totalDamageEnemy */
+        totalDamageEnemy?: (number|null);
     }
 
     /** Represents a GlobalUnitStatus. */
@@ -336,17 +442,32 @@ export namespace rm {
         /** GlobalUnitStatus outpostStatus. */
         public outpostStatus: number;
 
+        /** GlobalUnitStatus enemyBaseHealth. */
+        public enemyBaseHealth: number;
+
+        /** GlobalUnitStatus enemyBaseStatus. */
+        public enemyBaseStatus: number;
+
+        /** GlobalUnitStatus enemyBaseShield. */
+        public enemyBaseShield: number;
+
+        /** GlobalUnitStatus enemyOutpostHealth. */
+        public enemyOutpostHealth: number;
+
+        /** GlobalUnitStatus enemyOutpostStatus. */
+        public enemyOutpostStatus: number;
+
         /** GlobalUnitStatus robotHealth. */
         public robotHealth: number[];
 
         /** GlobalUnitStatus robotBullets. */
         public robotBullets: number[];
 
-        /** GlobalUnitStatus totalDamageRed. */
-        public totalDamageRed: number;
+        /** GlobalUnitStatus totalDamageAlly. */
+        public totalDamageAlly: number;
 
-        /** GlobalUnitStatus totalDamageBlue. */
-        public totalDamageBlue: number;
+        /** GlobalUnitStatus totalDamageEnemy. */
+        public totalDamageEnemy: number;
 
         /**
          * Creates a new GlobalUnitStatus instance using the specified properties.
@@ -768,8 +889,8 @@ export namespace rm {
         /** RobotInjuryStat moduleOfflineDamage */
         moduleOfflineDamage?: (number|null);
 
-        /** RobotInjuryStat wifiOfflineDamage */
-        wifiOfflineDamage?: (number|null);
+        /** RobotInjuryStat offlineDamage */
+        offlineDamage?: (number|null);
 
         /** RobotInjuryStat penaltyDamage */
         penaltyDamage?: (number|null);
@@ -808,8 +929,8 @@ export namespace rm {
         /** RobotInjuryStat moduleOfflineDamage. */
         public moduleOfflineDamage: number;
 
-        /** RobotInjuryStat wifiOfflineDamage. */
-        public wifiOfflineDamage: number;
+        /** RobotInjuryStat offlineDamage. */
+        public offlineDamage: number;
 
         /** RobotInjuryStat penaltyDamage. */
         public penaltyDamage: number;
@@ -1401,6 +1522,9 @@ export namespace rm {
 
         /** RobotModuleStatus mainController */
         mainController?: (number|null);
+
+        /** RobotModuleStatus laserDetectionModule */
+        laserDetectionModule?: (number|null);
     }
 
     /** Represents a RobotModuleStatus. */
@@ -1441,6 +1565,9 @@ export namespace rm {
 
         /** RobotModuleStatus mainController. */
         public mainController: number;
+
+        /** RobotModuleStatus laserDetectionModule. */
+        public laserDetectionModule: number;
 
         /**
          * Creates a new RobotModuleStatus instance using the specified properties.
@@ -1534,6 +1661,9 @@ export namespace rm {
 
         /** RobotPosition yaw */
         yaw?: (number|null);
+
+        /** RobotPosition robotId */
+        robotId?: (number|null);
     }
 
     /** Represents a RobotPosition. */
@@ -1556,6 +1686,9 @@ export namespace rm {
 
         /** RobotPosition yaw. */
         public yaw: number;
+
+        /** RobotPosition robotId. */
+        public robotId: number;
 
         /**
          * Creates a new RobotPosition instance using the specified properties.
@@ -1652,9 +1785,6 @@ export namespace rm {
 
         /** Buff buffLeftTime */
         buffLeftTime?: (number|null);
-
-        /** Buff msgParams */
-        msgParams?: (string|null);
     }
 
     /** Represents a Buff. */
@@ -1680,9 +1810,6 @@ export namespace rm {
 
         /** Buff buffLeftTime. */
         public buffLeftTime: number;
-
-        /** Buff msgParams. */
-        public msgParams: string;
 
         /**
          * Creates a new Buff instance using the specified properties.
@@ -2019,12 +2146,6 @@ export namespace rm {
         /** MapClickInfoNotify type */
         type?: (number|null);
 
-        /** MapClickInfoNotify screenX */
-        screenX?: (number|null);
-
-        /** MapClickInfoNotify screenY */
-        screenY?: (number|null);
-
         /** MapClickInfoNotify mapX */
         mapX?: (number|null);
 
@@ -2058,12 +2179,6 @@ export namespace rm {
 
         /** MapClickInfoNotify type. */
         public type: number;
-
-        /** MapClickInfoNotify screenX. */
-        public screenX: number;
-
-        /** MapClickInfoNotify screenY. */
-        public screenY: number;
 
         /** MapClickInfoNotify mapX. */
         public mapX: number;
@@ -2149,121 +2264,206 @@ export namespace rm {
         public static getTypeUrl(typeUrlPrefix?: string): string;
     }
 
-    /** Properties of a RaderInfoToClient. */
-    interface IRaderInfoToClient {
+    /** Properties of a RadarSingleRobotInfo. */
+    interface IRadarSingleRobotInfo {
 
-        /** RaderInfoToClient targetRobotId */
-        targetRobotId?: (number|null);
-
-        /** RaderInfoToClient targetPosX */
+        /** RadarSingleRobotInfo targetPosX */
         targetPosX?: (number|null);
 
-        /** RaderInfoToClient targetPosY */
+        /** RadarSingleRobotInfo targetPosY */
         targetPosY?: (number|null);
 
-        /** RaderInfoToClient torwardAngle */
-        torwardAngle?: (number|null);
-
-        /** RaderInfoToClient isHighLight */
+        /** RadarSingleRobotInfo isHighLight */
         isHighLight?: (number|null);
     }
 
-    /** Represents a RaderInfoToClient. */
-    class RaderInfoToClient implements IRaderInfoToClient {
+    /** Represents a RadarSingleRobotInfo. */
+    class RadarSingleRobotInfo implements IRadarSingleRobotInfo {
 
         /**
-         * Constructs a new RaderInfoToClient.
+         * Constructs a new RadarSingleRobotInfo.
          * @param [properties] Properties to set
          */
-        constructor(properties?: rm.IRaderInfoToClient);
+        constructor(properties?: rm.IRadarSingleRobotInfo);
 
-        /** RaderInfoToClient targetRobotId. */
-        public targetRobotId: number;
-
-        /** RaderInfoToClient targetPosX. */
+        /** RadarSingleRobotInfo targetPosX. */
         public targetPosX: number;
 
-        /** RaderInfoToClient targetPosY. */
+        /** RadarSingleRobotInfo targetPosY. */
         public targetPosY: number;
 
-        /** RaderInfoToClient torwardAngle. */
-        public torwardAngle: number;
-
-        /** RaderInfoToClient isHighLight. */
+        /** RadarSingleRobotInfo isHighLight. */
         public isHighLight: number;
 
         /**
-         * Creates a new RaderInfoToClient instance using the specified properties.
+         * Creates a new RadarSingleRobotInfo instance using the specified properties.
          * @param [properties] Properties to set
-         * @returns RaderInfoToClient instance
+         * @returns RadarSingleRobotInfo instance
          */
-        public static create(properties?: rm.IRaderInfoToClient): rm.RaderInfoToClient;
+        public static create(properties?: rm.IRadarSingleRobotInfo): rm.RadarSingleRobotInfo;
 
         /**
-         * Encodes the specified RaderInfoToClient message. Does not implicitly {@link rm.RaderInfoToClient.verify|verify} messages.
-         * @param message RaderInfoToClient message or plain object to encode
+         * Encodes the specified RadarSingleRobotInfo message. Does not implicitly {@link rm.RadarSingleRobotInfo.verify|verify} messages.
+         * @param message RadarSingleRobotInfo message or plain object to encode
          * @param [writer] Writer to encode to
          * @returns Writer
          */
-        public static encode(message: rm.IRaderInfoToClient, writer?: $protobuf.Writer): $protobuf.Writer;
+        public static encode(message: rm.IRadarSingleRobotInfo, writer?: $protobuf.Writer): $protobuf.Writer;
 
         /**
-         * Encodes the specified RaderInfoToClient message, length delimited. Does not implicitly {@link rm.RaderInfoToClient.verify|verify} messages.
-         * @param message RaderInfoToClient message or plain object to encode
+         * Encodes the specified RadarSingleRobotInfo message, length delimited. Does not implicitly {@link rm.RadarSingleRobotInfo.verify|verify} messages.
+         * @param message RadarSingleRobotInfo message or plain object to encode
          * @param [writer] Writer to encode to
          * @returns Writer
          */
-        public static encodeDelimited(message: rm.IRaderInfoToClient, writer?: $protobuf.Writer): $protobuf.Writer;
+        public static encodeDelimited(message: rm.IRadarSingleRobotInfo, writer?: $protobuf.Writer): $protobuf.Writer;
 
         /**
-         * Decodes a RaderInfoToClient message from the specified reader or buffer.
+         * Decodes a RadarSingleRobotInfo message from the specified reader or buffer.
          * @param reader Reader or buffer to decode from
          * @param [length] Message length if known beforehand
-         * @returns RaderInfoToClient
+         * @returns RadarSingleRobotInfo
          * @throws {Error} If the payload is not a reader or valid buffer
          * @throws {$protobuf.util.ProtocolError} If required fields are missing
          */
-        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): rm.RaderInfoToClient;
+        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): rm.RadarSingleRobotInfo;
 
         /**
-         * Decodes a RaderInfoToClient message from the specified reader or buffer, length delimited.
+         * Decodes a RadarSingleRobotInfo message from the specified reader or buffer, length delimited.
          * @param reader Reader or buffer to decode from
-         * @returns RaderInfoToClient
+         * @returns RadarSingleRobotInfo
          * @throws {Error} If the payload is not a reader or valid buffer
          * @throws {$protobuf.util.ProtocolError} If required fields are missing
          */
-        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): rm.RaderInfoToClient;
+        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): rm.RadarSingleRobotInfo;
 
         /**
-         * Verifies a RaderInfoToClient message.
+         * Verifies a RadarSingleRobotInfo message.
          * @param message Plain object to verify
          * @returns `null` if valid, otherwise the reason why it is not
          */
         public static verify(message: { [k: string]: any }): (string|null);
 
         /**
-         * Creates a RaderInfoToClient message from a plain object. Also converts values to their respective internal types.
+         * Creates a RadarSingleRobotInfo message from a plain object. Also converts values to their respective internal types.
          * @param object Plain object
-         * @returns RaderInfoToClient
+         * @returns RadarSingleRobotInfo
          */
-        public static fromObject(object: { [k: string]: any }): rm.RaderInfoToClient;
+        public static fromObject(object: { [k: string]: any }): rm.RadarSingleRobotInfo;
 
         /**
-         * Creates a plain object from a RaderInfoToClient message. Also converts values to other types if specified.
-         * @param message RaderInfoToClient
+         * Creates a plain object from a RadarSingleRobotInfo message. Also converts values to other types if specified.
+         * @param message RadarSingleRobotInfo
          * @param [options] Conversion options
          * @returns Plain object
          */
-        public static toObject(message: rm.RaderInfoToClient, options?: $protobuf.IConversionOptions): { [k: string]: any };
+        public static toObject(message: rm.RadarSingleRobotInfo, options?: $protobuf.IConversionOptions): { [k: string]: any };
 
         /**
-         * Converts this RaderInfoToClient to JSON.
+         * Converts this RadarSingleRobotInfo to JSON.
          * @returns JSON object
          */
         public toJSON(): { [k: string]: any };
 
         /**
-         * Gets the default type url for RaderInfoToClient
+         * Gets the default type url for RadarSingleRobotInfo
+         * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+         * @returns The default type url
+         */
+        public static getTypeUrl(typeUrlPrefix?: string): string;
+    }
+
+    /** Properties of a RadarInfoToClient. */
+    interface IRadarInfoToClient {
+
+        /** RadarInfoToClient RadarSingleRobotInfo */
+        RadarSingleRobotInfo?: (rm.IRadarSingleRobotInfo[]|null);
+    }
+
+    /** Represents a RadarInfoToClient. */
+    class RadarInfoToClient implements IRadarInfoToClient {
+
+        /**
+         * Constructs a new RadarInfoToClient.
+         * @param [properties] Properties to set
+         */
+        constructor(properties?: rm.IRadarInfoToClient);
+
+        /** RadarInfoToClient RadarSingleRobotInfo. */
+        public RadarSingleRobotInfo: rm.IRadarSingleRobotInfo[];
+
+        /**
+         * Creates a new RadarInfoToClient instance using the specified properties.
+         * @param [properties] Properties to set
+         * @returns RadarInfoToClient instance
+         */
+        public static create(properties?: rm.IRadarInfoToClient): rm.RadarInfoToClient;
+
+        /**
+         * Encodes the specified RadarInfoToClient message. Does not implicitly {@link rm.RadarInfoToClient.verify|verify} messages.
+         * @param message RadarInfoToClient message or plain object to encode
+         * @param [writer] Writer to encode to
+         * @returns Writer
+         */
+        public static encode(message: rm.IRadarInfoToClient, writer?: $protobuf.Writer): $protobuf.Writer;
+
+        /**
+         * Encodes the specified RadarInfoToClient message, length delimited. Does not implicitly {@link rm.RadarInfoToClient.verify|verify} messages.
+         * @param message RadarInfoToClient message or plain object to encode
+         * @param [writer] Writer to encode to
+         * @returns Writer
+         */
+        public static encodeDelimited(message: rm.IRadarInfoToClient, writer?: $protobuf.Writer): $protobuf.Writer;
+
+        /**
+         * Decodes a RadarInfoToClient message from the specified reader or buffer.
+         * @param reader Reader or buffer to decode from
+         * @param [length] Message length if known beforehand
+         * @returns RadarInfoToClient
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): rm.RadarInfoToClient;
+
+        /**
+         * Decodes a RadarInfoToClient message from the specified reader or buffer, length delimited.
+         * @param reader Reader or buffer to decode from
+         * @returns RadarInfoToClient
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): rm.RadarInfoToClient;
+
+        /**
+         * Verifies a RadarInfoToClient message.
+         * @param message Plain object to verify
+         * @returns `null` if valid, otherwise the reason why it is not
+         */
+        public static verify(message: { [k: string]: any }): (string|null);
+
+        /**
+         * Creates a RadarInfoToClient message from a plain object. Also converts values to their respective internal types.
+         * @param object Plain object
+         * @returns RadarInfoToClient
+         */
+        public static fromObject(object: { [k: string]: any }): rm.RadarInfoToClient;
+
+        /**
+         * Creates a plain object from a RadarInfoToClient message. Also converts values to other types if specified.
+         * @param message RadarInfoToClient
+         * @param [options] Conversion options
+         * @returns Plain object
+         */
+        public static toObject(message: rm.RadarInfoToClient, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+        /**
+         * Converts this RadarInfoToClient to JSON.
+         * @returns JSON object
+         */
+        public toJSON(): { [k: string]: any };
+
+        /**
+         * Gets the default type url for RadarInfoToClient
          * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
          * @returns The default type url
          */
@@ -2476,8 +2676,26 @@ export namespace rm {
         /** TechCoreMotionStateSync maximumDifficultyLevel */
         maximumDifficultyLevel?: (number|null);
 
-        /** TechCoreMotionStateSync status */
-        status?: (number|null);
+        /** TechCoreMotionStateSync basicState */
+        basicState?: (number|null);
+
+        /** TechCoreMotionStateSync putinState */
+        putinState?: (number|null);
+
+        /** TechCoreMotionStateSync moveState */
+        moveState?: (number|null);
+
+        /** TechCoreMotionStateSync rotateState */
+        rotateState?: (number|null);
+
+        /** TechCoreMotionStateSync enemyCoreStatus */
+        enemyCoreStatus?: (number|null);
+
+        /** TechCoreMotionStateSync remainTimeAll */
+        remainTimeAll?: (number|null);
+
+        /** TechCoreMotionStateSync remainTimeStep */
+        remainTimeStep?: (number|null);
     }
 
     /** Represents a TechCoreMotionStateSync. */
@@ -2492,8 +2710,26 @@ export namespace rm {
         /** TechCoreMotionStateSync maximumDifficultyLevel. */
         public maximumDifficultyLevel: number;
 
-        /** TechCoreMotionStateSync status. */
-        public status: number;
+        /** TechCoreMotionStateSync basicState. */
+        public basicState: number;
+
+        /** TechCoreMotionStateSync putinState. */
+        public putinState: number;
+
+        /** TechCoreMotionStateSync moveState. */
+        public moveState: number;
+
+        /** TechCoreMotionStateSync rotateState. */
+        public rotateState: number;
+
+        /** TechCoreMotionStateSync enemyCoreStatus. */
+        public enemyCoreStatus: number;
+
+        /** TechCoreMotionStateSync remainTimeAll. */
+        public remainTimeAll: number;
+
+        /** TechCoreMotionStateSync remainTimeStep. */
+        public remainTimeStep: number;
 
         /**
          * Creates a new TechCoreMotionStateSync instance using the specified properties.
@@ -2573,779 +2809,1457 @@ export namespace rm {
         public static getTypeUrl(typeUrlPrefix?: string): string;
     }
 
-    /** Properties of a PerformanceSelection. */
-    interface IPerformanceSelection {
+    /** Properties of a RobotPerformanceSelectionCommand. */
+    interface IRobotPerformanceSelectionCommand {
 
-        /** PerformanceSelection shooter */
+        /** RobotPerformanceSelectionCommand shooter */
         shooter?: (number|null);
 
-        /** PerformanceSelection chassis */
+        /** RobotPerformanceSelectionCommand chassis */
         chassis?: (number|null);
+
+        /** RobotPerformanceSelectionCommand sentryControl */
+        sentryControl?: (number|null);
     }
 
-    /** Represents a PerformanceSelection. */
-    class PerformanceSelection implements IPerformanceSelection {
+    /** Represents a RobotPerformanceSelectionCommand. */
+    class RobotPerformanceSelectionCommand implements IRobotPerformanceSelectionCommand {
 
         /**
-         * Constructs a new PerformanceSelection.
+         * Constructs a new RobotPerformanceSelectionCommand.
          * @param [properties] Properties to set
          */
-        constructor(properties?: rm.IPerformanceSelection);
+        constructor(properties?: rm.IRobotPerformanceSelectionCommand);
 
-        /** PerformanceSelection shooter. */
+        /** RobotPerformanceSelectionCommand shooter. */
         public shooter: number;
 
-        /** PerformanceSelection chassis. */
+        /** RobotPerformanceSelectionCommand chassis. */
         public chassis: number;
 
+        /** RobotPerformanceSelectionCommand sentryControl. */
+        public sentryControl: number;
+
         /**
-         * Creates a new PerformanceSelection instance using the specified properties.
+         * Creates a new RobotPerformanceSelectionCommand instance using the specified properties.
          * @param [properties] Properties to set
-         * @returns PerformanceSelection instance
+         * @returns RobotPerformanceSelectionCommand instance
          */
-        public static create(properties?: rm.IPerformanceSelection): rm.PerformanceSelection;
+        public static create(properties?: rm.IRobotPerformanceSelectionCommand): rm.RobotPerformanceSelectionCommand;
 
         /**
-         * Encodes the specified PerformanceSelection message. Does not implicitly {@link rm.PerformanceSelection.verify|verify} messages.
-         * @param message PerformanceSelection message or plain object to encode
+         * Encodes the specified RobotPerformanceSelectionCommand message. Does not implicitly {@link rm.RobotPerformanceSelectionCommand.verify|verify} messages.
+         * @param message RobotPerformanceSelectionCommand message or plain object to encode
          * @param [writer] Writer to encode to
          * @returns Writer
          */
-        public static encode(message: rm.IPerformanceSelection, writer?: $protobuf.Writer): $protobuf.Writer;
+        public static encode(message: rm.IRobotPerformanceSelectionCommand, writer?: $protobuf.Writer): $protobuf.Writer;
 
         /**
-         * Encodes the specified PerformanceSelection message, length delimited. Does not implicitly {@link rm.PerformanceSelection.verify|verify} messages.
-         * @param message PerformanceSelection message or plain object to encode
+         * Encodes the specified RobotPerformanceSelectionCommand message, length delimited. Does not implicitly {@link rm.RobotPerformanceSelectionCommand.verify|verify} messages.
+         * @param message RobotPerformanceSelectionCommand message or plain object to encode
          * @param [writer] Writer to encode to
          * @returns Writer
          */
-        public static encodeDelimited(message: rm.IPerformanceSelection, writer?: $protobuf.Writer): $protobuf.Writer;
+        public static encodeDelimited(message: rm.IRobotPerformanceSelectionCommand, writer?: $protobuf.Writer): $protobuf.Writer;
 
         /**
-         * Decodes a PerformanceSelection message from the specified reader or buffer.
+         * Decodes a RobotPerformanceSelectionCommand message from the specified reader or buffer.
          * @param reader Reader or buffer to decode from
          * @param [length] Message length if known beforehand
-         * @returns PerformanceSelection
+         * @returns RobotPerformanceSelectionCommand
          * @throws {Error} If the payload is not a reader or valid buffer
          * @throws {$protobuf.util.ProtocolError} If required fields are missing
          */
-        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): rm.PerformanceSelection;
+        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): rm.RobotPerformanceSelectionCommand;
 
         /**
-         * Decodes a PerformanceSelection message from the specified reader or buffer, length delimited.
+         * Decodes a RobotPerformanceSelectionCommand message from the specified reader or buffer, length delimited.
          * @param reader Reader or buffer to decode from
-         * @returns PerformanceSelection
+         * @returns RobotPerformanceSelectionCommand
          * @throws {Error} If the payload is not a reader or valid buffer
          * @throws {$protobuf.util.ProtocolError} If required fields are missing
          */
-        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): rm.PerformanceSelection;
+        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): rm.RobotPerformanceSelectionCommand;
 
         /**
-         * Verifies a PerformanceSelection message.
+         * Verifies a RobotPerformanceSelectionCommand message.
          * @param message Plain object to verify
          * @returns `null` if valid, otherwise the reason why it is not
          */
         public static verify(message: { [k: string]: any }): (string|null);
 
         /**
-         * Creates a PerformanceSelection message from a plain object. Also converts values to their respective internal types.
+         * Creates a RobotPerformanceSelectionCommand message from a plain object. Also converts values to their respective internal types.
          * @param object Plain object
-         * @returns PerformanceSelection
+         * @returns RobotPerformanceSelectionCommand
          */
-        public static fromObject(object: { [k: string]: any }): rm.PerformanceSelection;
+        public static fromObject(object: { [k: string]: any }): rm.RobotPerformanceSelectionCommand;
 
         /**
-         * Creates a plain object from a PerformanceSelection message. Also converts values to other types if specified.
-         * @param message PerformanceSelection
+         * Creates a plain object from a RobotPerformanceSelectionCommand message. Also converts values to other types if specified.
+         * @param message RobotPerformanceSelectionCommand
          * @param [options] Conversion options
          * @returns Plain object
          */
-        public static toObject(message: rm.PerformanceSelection, options?: $protobuf.IConversionOptions): { [k: string]: any };
+        public static toObject(message: rm.RobotPerformanceSelectionCommand, options?: $protobuf.IConversionOptions): { [k: string]: any };
 
         /**
-         * Converts this PerformanceSelection to JSON.
+         * Converts this RobotPerformanceSelectionCommand to JSON.
          * @returns JSON object
          */
         public toJSON(): { [k: string]: any };
 
         /**
-         * Gets the default type url for PerformanceSelection
+         * Gets the default type url for RobotPerformanceSelectionCommand
          * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
          * @returns The default type url
          */
         public static getTypeUrl(typeUrlPrefix?: string): string;
     }
 
-    /** Properties of a HeroDeployMode. */
-    interface IHeroDeployMode {
+    /** Properties of a RobotPerformanceSelectionSync. */
+    interface IRobotPerformanceSelectionSync {
 
-        /** HeroDeployMode modeOrStatus */
-        modeOrStatus?: (number|null);
+        /** RobotPerformanceSelectionSync shooter */
+        shooter?: (number|null);
+
+        /** RobotPerformanceSelectionSync chassis */
+        chassis?: (number|null);
+
+        /** RobotPerformanceSelectionSync sentryControl */
+        sentryControl?: (number|null);
     }
 
-    /** Represents a HeroDeployMode. */
-    class HeroDeployMode implements IHeroDeployMode {
+    /** Represents a RobotPerformanceSelectionSync. */
+    class RobotPerformanceSelectionSync implements IRobotPerformanceSelectionSync {
 
         /**
-         * Constructs a new HeroDeployMode.
+         * Constructs a new RobotPerformanceSelectionSync.
          * @param [properties] Properties to set
          */
-        constructor(properties?: rm.IHeroDeployMode);
+        constructor(properties?: rm.IRobotPerformanceSelectionSync);
 
-        /** HeroDeployMode modeOrStatus. */
-        public modeOrStatus: number;
+        /** RobotPerformanceSelectionSync shooter. */
+        public shooter: number;
+
+        /** RobotPerformanceSelectionSync chassis. */
+        public chassis: number;
+
+        /** RobotPerformanceSelectionSync sentryControl. */
+        public sentryControl: number;
 
         /**
-         * Creates a new HeroDeployMode instance using the specified properties.
+         * Creates a new RobotPerformanceSelectionSync instance using the specified properties.
          * @param [properties] Properties to set
-         * @returns HeroDeployMode instance
+         * @returns RobotPerformanceSelectionSync instance
          */
-        public static create(properties?: rm.IHeroDeployMode): rm.HeroDeployMode;
+        public static create(properties?: rm.IRobotPerformanceSelectionSync): rm.RobotPerformanceSelectionSync;
 
         /**
-         * Encodes the specified HeroDeployMode message. Does not implicitly {@link rm.HeroDeployMode.verify|verify} messages.
-         * @param message HeroDeployMode message or plain object to encode
+         * Encodes the specified RobotPerformanceSelectionSync message. Does not implicitly {@link rm.RobotPerformanceSelectionSync.verify|verify} messages.
+         * @param message RobotPerformanceSelectionSync message or plain object to encode
          * @param [writer] Writer to encode to
          * @returns Writer
          */
-        public static encode(message: rm.IHeroDeployMode, writer?: $protobuf.Writer): $protobuf.Writer;
+        public static encode(message: rm.IRobotPerformanceSelectionSync, writer?: $protobuf.Writer): $protobuf.Writer;
 
         /**
-         * Encodes the specified HeroDeployMode message, length delimited. Does not implicitly {@link rm.HeroDeployMode.verify|verify} messages.
-         * @param message HeroDeployMode message or plain object to encode
+         * Encodes the specified RobotPerformanceSelectionSync message, length delimited. Does not implicitly {@link rm.RobotPerformanceSelectionSync.verify|verify} messages.
+         * @param message RobotPerformanceSelectionSync message or plain object to encode
          * @param [writer] Writer to encode to
          * @returns Writer
          */
-        public static encodeDelimited(message: rm.IHeroDeployMode, writer?: $protobuf.Writer): $protobuf.Writer;
+        public static encodeDelimited(message: rm.IRobotPerformanceSelectionSync, writer?: $protobuf.Writer): $protobuf.Writer;
 
         /**
-         * Decodes a HeroDeployMode message from the specified reader or buffer.
+         * Decodes a RobotPerformanceSelectionSync message from the specified reader or buffer.
          * @param reader Reader or buffer to decode from
          * @param [length] Message length if known beforehand
-         * @returns HeroDeployMode
+         * @returns RobotPerformanceSelectionSync
          * @throws {Error} If the payload is not a reader or valid buffer
          * @throws {$protobuf.util.ProtocolError} If required fields are missing
          */
-        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): rm.HeroDeployMode;
+        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): rm.RobotPerformanceSelectionSync;
 
         /**
-         * Decodes a HeroDeployMode message from the specified reader or buffer, length delimited.
+         * Decodes a RobotPerformanceSelectionSync message from the specified reader or buffer, length delimited.
          * @param reader Reader or buffer to decode from
-         * @returns HeroDeployMode
+         * @returns RobotPerformanceSelectionSync
          * @throws {Error} If the payload is not a reader or valid buffer
          * @throws {$protobuf.util.ProtocolError} If required fields are missing
          */
-        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): rm.HeroDeployMode;
+        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): rm.RobotPerformanceSelectionSync;
 
         /**
-         * Verifies a HeroDeployMode message.
+         * Verifies a RobotPerformanceSelectionSync message.
          * @param message Plain object to verify
          * @returns `null` if valid, otherwise the reason why it is not
          */
         public static verify(message: { [k: string]: any }): (string|null);
 
         /**
-         * Creates a HeroDeployMode message from a plain object. Also converts values to their respective internal types.
+         * Creates a RobotPerformanceSelectionSync message from a plain object. Also converts values to their respective internal types.
          * @param object Plain object
-         * @returns HeroDeployMode
+         * @returns RobotPerformanceSelectionSync
          */
-        public static fromObject(object: { [k: string]: any }): rm.HeroDeployMode;
+        public static fromObject(object: { [k: string]: any }): rm.RobotPerformanceSelectionSync;
 
         /**
-         * Creates a plain object from a HeroDeployMode message. Also converts values to other types if specified.
-         * @param message HeroDeployMode
+         * Creates a plain object from a RobotPerformanceSelectionSync message. Also converts values to other types if specified.
+         * @param message RobotPerformanceSelectionSync
          * @param [options] Conversion options
          * @returns Plain object
          */
-        public static toObject(message: rm.HeroDeployMode, options?: $protobuf.IConversionOptions): { [k: string]: any };
+        public static toObject(message: rm.RobotPerformanceSelectionSync, options?: $protobuf.IConversionOptions): { [k: string]: any };
 
         /**
-         * Converts this HeroDeployMode to JSON.
+         * Converts this RobotPerformanceSelectionSync to JSON.
          * @returns JSON object
          */
         public toJSON(): { [k: string]: any };
 
         /**
-         * Gets the default type url for HeroDeployMode
+         * Gets the default type url for RobotPerformanceSelectionSync
          * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
          * @returns The default type url
          */
         public static getTypeUrl(typeUrlPrefix?: string): string;
     }
 
-    /** Properties of a RuneStatus. */
-    interface IRuneStatus {
+    /** Properties of a CommonCommand. */
+    interface ICommonCommand {
 
-        /** RuneStatus activate */
+        /** CommonCommand cmdType */
+        cmdType?: (number|null);
+
+        /** CommonCommand param */
+        param?: (number|null);
+    }
+
+    /** Represents a CommonCommand. */
+    class CommonCommand implements ICommonCommand {
+
+        /**
+         * Constructs a new CommonCommand.
+         * @param [properties] Properties to set
+         */
+        constructor(properties?: rm.ICommonCommand);
+
+        /** CommonCommand cmdType. */
+        public cmdType: number;
+
+        /** CommonCommand param. */
+        public param: number;
+
+        /**
+         * Creates a new CommonCommand instance using the specified properties.
+         * @param [properties] Properties to set
+         * @returns CommonCommand instance
+         */
+        public static create(properties?: rm.ICommonCommand): rm.CommonCommand;
+
+        /**
+         * Encodes the specified CommonCommand message. Does not implicitly {@link rm.CommonCommand.verify|verify} messages.
+         * @param message CommonCommand message or plain object to encode
+         * @param [writer] Writer to encode to
+         * @returns Writer
+         */
+        public static encode(message: rm.ICommonCommand, writer?: $protobuf.Writer): $protobuf.Writer;
+
+        /**
+         * Encodes the specified CommonCommand message, length delimited. Does not implicitly {@link rm.CommonCommand.verify|verify} messages.
+         * @param message CommonCommand message or plain object to encode
+         * @param [writer] Writer to encode to
+         * @returns Writer
+         */
+        public static encodeDelimited(message: rm.ICommonCommand, writer?: $protobuf.Writer): $protobuf.Writer;
+
+        /**
+         * Decodes a CommonCommand message from the specified reader or buffer.
+         * @param reader Reader or buffer to decode from
+         * @param [length] Message length if known beforehand
+         * @returns CommonCommand
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): rm.CommonCommand;
+
+        /**
+         * Decodes a CommonCommand message from the specified reader or buffer, length delimited.
+         * @param reader Reader or buffer to decode from
+         * @returns CommonCommand
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): rm.CommonCommand;
+
+        /**
+         * Verifies a CommonCommand message.
+         * @param message Plain object to verify
+         * @returns `null` if valid, otherwise the reason why it is not
+         */
+        public static verify(message: { [k: string]: any }): (string|null);
+
+        /**
+         * Creates a CommonCommand message from a plain object. Also converts values to their respective internal types.
+         * @param object Plain object
+         * @returns CommonCommand
+         */
+        public static fromObject(object: { [k: string]: any }): rm.CommonCommand;
+
+        /**
+         * Creates a plain object from a CommonCommand message. Also converts values to other types if specified.
+         * @param message CommonCommand
+         * @param [options] Conversion options
+         * @returns Plain object
+         */
+        public static toObject(message: rm.CommonCommand, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+        /**
+         * Converts this CommonCommand to JSON.
+         * @returns JSON object
+         */
+        public toJSON(): { [k: string]: any };
+
+        /**
+         * Gets the default type url for CommonCommand
+         * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+         * @returns The default type url
+         */
+        public static getTypeUrl(typeUrlPrefix?: string): string;
+    }
+
+    /** Properties of a HeroDeployModeEventCommand. */
+    interface IHeroDeployModeEventCommand {
+
+        /** HeroDeployModeEventCommand mode */
+        mode?: (number|null);
+    }
+
+    /** Represents a HeroDeployModeEventCommand. */
+    class HeroDeployModeEventCommand implements IHeroDeployModeEventCommand {
+
+        /**
+         * Constructs a new HeroDeployModeEventCommand.
+         * @param [properties] Properties to set
+         */
+        constructor(properties?: rm.IHeroDeployModeEventCommand);
+
+        /** HeroDeployModeEventCommand mode. */
+        public mode: number;
+
+        /**
+         * Creates a new HeroDeployModeEventCommand instance using the specified properties.
+         * @param [properties] Properties to set
+         * @returns HeroDeployModeEventCommand instance
+         */
+        public static create(properties?: rm.IHeroDeployModeEventCommand): rm.HeroDeployModeEventCommand;
+
+        /**
+         * Encodes the specified HeroDeployModeEventCommand message. Does not implicitly {@link rm.HeroDeployModeEventCommand.verify|verify} messages.
+         * @param message HeroDeployModeEventCommand message or plain object to encode
+         * @param [writer] Writer to encode to
+         * @returns Writer
+         */
+        public static encode(message: rm.IHeroDeployModeEventCommand, writer?: $protobuf.Writer): $protobuf.Writer;
+
+        /**
+         * Encodes the specified HeroDeployModeEventCommand message, length delimited. Does not implicitly {@link rm.HeroDeployModeEventCommand.verify|verify} messages.
+         * @param message HeroDeployModeEventCommand message or plain object to encode
+         * @param [writer] Writer to encode to
+         * @returns Writer
+         */
+        public static encodeDelimited(message: rm.IHeroDeployModeEventCommand, writer?: $protobuf.Writer): $protobuf.Writer;
+
+        /**
+         * Decodes a HeroDeployModeEventCommand message from the specified reader or buffer.
+         * @param reader Reader or buffer to decode from
+         * @param [length] Message length if known beforehand
+         * @returns HeroDeployModeEventCommand
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): rm.HeroDeployModeEventCommand;
+
+        /**
+         * Decodes a HeroDeployModeEventCommand message from the specified reader or buffer, length delimited.
+         * @param reader Reader or buffer to decode from
+         * @returns HeroDeployModeEventCommand
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): rm.HeroDeployModeEventCommand;
+
+        /**
+         * Verifies a HeroDeployModeEventCommand message.
+         * @param message Plain object to verify
+         * @returns `null` if valid, otherwise the reason why it is not
+         */
+        public static verify(message: { [k: string]: any }): (string|null);
+
+        /**
+         * Creates a HeroDeployModeEventCommand message from a plain object. Also converts values to their respective internal types.
+         * @param object Plain object
+         * @returns HeroDeployModeEventCommand
+         */
+        public static fromObject(object: { [k: string]: any }): rm.HeroDeployModeEventCommand;
+
+        /**
+         * Creates a plain object from a HeroDeployModeEventCommand message. Also converts values to other types if specified.
+         * @param message HeroDeployModeEventCommand
+         * @param [options] Conversion options
+         * @returns Plain object
+         */
+        public static toObject(message: rm.HeroDeployModeEventCommand, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+        /**
+         * Converts this HeroDeployModeEventCommand to JSON.
+         * @returns JSON object
+         */
+        public toJSON(): { [k: string]: any };
+
+        /**
+         * Gets the default type url for HeroDeployModeEventCommand
+         * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+         * @returns The default type url
+         */
+        public static getTypeUrl(typeUrlPrefix?: string): string;
+    }
+
+    /** Properties of a DeployModeStatusSync. */
+    interface IDeployModeStatusSync {
+
+        /** DeployModeStatusSync status */
+        status?: (number|null);
+    }
+
+    /** Represents a DeployModeStatusSync. */
+    class DeployModeStatusSync implements IDeployModeStatusSync {
+
+        /**
+         * Constructs a new DeployModeStatusSync.
+         * @param [properties] Properties to set
+         */
+        constructor(properties?: rm.IDeployModeStatusSync);
+
+        /** DeployModeStatusSync status. */
+        public status: number;
+
+        /**
+         * Creates a new DeployModeStatusSync instance using the specified properties.
+         * @param [properties] Properties to set
+         * @returns DeployModeStatusSync instance
+         */
+        public static create(properties?: rm.IDeployModeStatusSync): rm.DeployModeStatusSync;
+
+        /**
+         * Encodes the specified DeployModeStatusSync message. Does not implicitly {@link rm.DeployModeStatusSync.verify|verify} messages.
+         * @param message DeployModeStatusSync message or plain object to encode
+         * @param [writer] Writer to encode to
+         * @returns Writer
+         */
+        public static encode(message: rm.IDeployModeStatusSync, writer?: $protobuf.Writer): $protobuf.Writer;
+
+        /**
+         * Encodes the specified DeployModeStatusSync message, length delimited. Does not implicitly {@link rm.DeployModeStatusSync.verify|verify} messages.
+         * @param message DeployModeStatusSync message or plain object to encode
+         * @param [writer] Writer to encode to
+         * @returns Writer
+         */
+        public static encodeDelimited(message: rm.IDeployModeStatusSync, writer?: $protobuf.Writer): $protobuf.Writer;
+
+        /**
+         * Decodes a DeployModeStatusSync message from the specified reader or buffer.
+         * @param reader Reader or buffer to decode from
+         * @param [length] Message length if known beforehand
+         * @returns DeployModeStatusSync
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): rm.DeployModeStatusSync;
+
+        /**
+         * Decodes a DeployModeStatusSync message from the specified reader or buffer, length delimited.
+         * @param reader Reader or buffer to decode from
+         * @returns DeployModeStatusSync
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): rm.DeployModeStatusSync;
+
+        /**
+         * Verifies a DeployModeStatusSync message.
+         * @param message Plain object to verify
+         * @returns `null` if valid, otherwise the reason why it is not
+         */
+        public static verify(message: { [k: string]: any }): (string|null);
+
+        /**
+         * Creates a DeployModeStatusSync message from a plain object. Also converts values to their respective internal types.
+         * @param object Plain object
+         * @returns DeployModeStatusSync
+         */
+        public static fromObject(object: { [k: string]: any }): rm.DeployModeStatusSync;
+
+        /**
+         * Creates a plain object from a DeployModeStatusSync message. Also converts values to other types if specified.
+         * @param message DeployModeStatusSync
+         * @param [options] Conversion options
+         * @returns Plain object
+         */
+        public static toObject(message: rm.DeployModeStatusSync, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+        /**
+         * Converts this DeployModeStatusSync to JSON.
+         * @returns JSON object
+         */
+        public toJSON(): { [k: string]: any };
+
+        /**
+         * Gets the default type url for DeployModeStatusSync
+         * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+         * @returns The default type url
+         */
+        public static getTypeUrl(typeUrlPrefix?: string): string;
+    }
+
+    /** Properties of a RuneActivateCommand. */
+    interface IRuneActivateCommand {
+
+        /** RuneActivateCommand activate */
         activate?: (number|null);
+    }
 
-        /** RuneStatus runeStatus */
+    /** Represents a RuneActivateCommand. */
+    class RuneActivateCommand implements IRuneActivateCommand {
+
+        /**
+         * Constructs a new RuneActivateCommand.
+         * @param [properties] Properties to set
+         */
+        constructor(properties?: rm.IRuneActivateCommand);
+
+        /** RuneActivateCommand activate. */
+        public activate: number;
+
+        /**
+         * Creates a new RuneActivateCommand instance using the specified properties.
+         * @param [properties] Properties to set
+         * @returns RuneActivateCommand instance
+         */
+        public static create(properties?: rm.IRuneActivateCommand): rm.RuneActivateCommand;
+
+        /**
+         * Encodes the specified RuneActivateCommand message. Does not implicitly {@link rm.RuneActivateCommand.verify|verify} messages.
+         * @param message RuneActivateCommand message or plain object to encode
+         * @param [writer] Writer to encode to
+         * @returns Writer
+         */
+        public static encode(message: rm.IRuneActivateCommand, writer?: $protobuf.Writer): $protobuf.Writer;
+
+        /**
+         * Encodes the specified RuneActivateCommand message, length delimited. Does not implicitly {@link rm.RuneActivateCommand.verify|verify} messages.
+         * @param message RuneActivateCommand message or plain object to encode
+         * @param [writer] Writer to encode to
+         * @returns Writer
+         */
+        public static encodeDelimited(message: rm.IRuneActivateCommand, writer?: $protobuf.Writer): $protobuf.Writer;
+
+        /**
+         * Decodes a RuneActivateCommand message from the specified reader or buffer.
+         * @param reader Reader or buffer to decode from
+         * @param [length] Message length if known beforehand
+         * @returns RuneActivateCommand
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): rm.RuneActivateCommand;
+
+        /**
+         * Decodes a RuneActivateCommand message from the specified reader or buffer, length delimited.
+         * @param reader Reader or buffer to decode from
+         * @returns RuneActivateCommand
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): rm.RuneActivateCommand;
+
+        /**
+         * Verifies a RuneActivateCommand message.
+         * @param message Plain object to verify
+         * @returns `null` if valid, otherwise the reason why it is not
+         */
+        public static verify(message: { [k: string]: any }): (string|null);
+
+        /**
+         * Creates a RuneActivateCommand message from a plain object. Also converts values to their respective internal types.
+         * @param object Plain object
+         * @returns RuneActivateCommand
+         */
+        public static fromObject(object: { [k: string]: any }): rm.RuneActivateCommand;
+
+        /**
+         * Creates a plain object from a RuneActivateCommand message. Also converts values to other types if specified.
+         * @param message RuneActivateCommand
+         * @param [options] Conversion options
+         * @returns Plain object
+         */
+        public static toObject(message: rm.RuneActivateCommand, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+        /**
+         * Converts this RuneActivateCommand to JSON.
+         * @returns JSON object
+         */
+        public toJSON(): { [k: string]: any };
+
+        /**
+         * Gets the default type url for RuneActivateCommand
+         * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+         * @returns The default type url
+         */
+        public static getTypeUrl(typeUrlPrefix?: string): string;
+    }
+
+    /** Properties of a RuneStatusSync. */
+    interface IRuneStatusSync {
+
+        /** RuneStatusSync runeStatus */
         runeStatus?: (number|null);
 
-        /** RuneStatus activatedArms */
+        /** RuneStatusSync activatedArms */
         activatedArms?: (number|null);
 
-        /** RuneStatus averageRings */
+        /** RuneStatusSync averageRings */
         averageRings?: (number|null);
     }
 
-    /** Represents a RuneStatus. */
-    class RuneStatus implements IRuneStatus {
+    /** Represents a RuneStatusSync. */
+    class RuneStatusSync implements IRuneStatusSync {
 
         /**
-         * Constructs a new RuneStatus.
+         * Constructs a new RuneStatusSync.
          * @param [properties] Properties to set
          */
-        constructor(properties?: rm.IRuneStatus);
+        constructor(properties?: rm.IRuneStatusSync);
 
-        /** RuneStatus activate. */
-        public activate: number;
-
-        /** RuneStatus runeStatus. */
+        /** RuneStatusSync runeStatus. */
         public runeStatus: number;
 
-        /** RuneStatus activatedArms. */
+        /** RuneStatusSync activatedArms. */
         public activatedArms: number;
 
-        /** RuneStatus averageRings. */
+        /** RuneStatusSync averageRings. */
         public averageRings: number;
 
         /**
-         * Creates a new RuneStatus instance using the specified properties.
+         * Creates a new RuneStatusSync instance using the specified properties.
          * @param [properties] Properties to set
-         * @returns RuneStatus instance
+         * @returns RuneStatusSync instance
          */
-        public static create(properties?: rm.IRuneStatus): rm.RuneStatus;
+        public static create(properties?: rm.IRuneStatusSync): rm.RuneStatusSync;
 
         /**
-         * Encodes the specified RuneStatus message. Does not implicitly {@link rm.RuneStatus.verify|verify} messages.
-         * @param message RuneStatus message or plain object to encode
+         * Encodes the specified RuneStatusSync message. Does not implicitly {@link rm.RuneStatusSync.verify|verify} messages.
+         * @param message RuneStatusSync message or plain object to encode
          * @param [writer] Writer to encode to
          * @returns Writer
          */
-        public static encode(message: rm.IRuneStatus, writer?: $protobuf.Writer): $protobuf.Writer;
+        public static encode(message: rm.IRuneStatusSync, writer?: $protobuf.Writer): $protobuf.Writer;
 
         /**
-         * Encodes the specified RuneStatus message, length delimited. Does not implicitly {@link rm.RuneStatus.verify|verify} messages.
-         * @param message RuneStatus message or plain object to encode
+         * Encodes the specified RuneStatusSync message, length delimited. Does not implicitly {@link rm.RuneStatusSync.verify|verify} messages.
+         * @param message RuneStatusSync message or plain object to encode
          * @param [writer] Writer to encode to
          * @returns Writer
          */
-        public static encodeDelimited(message: rm.IRuneStatus, writer?: $protobuf.Writer): $protobuf.Writer;
+        public static encodeDelimited(message: rm.IRuneStatusSync, writer?: $protobuf.Writer): $protobuf.Writer;
 
         /**
-         * Decodes a RuneStatus message from the specified reader or buffer.
+         * Decodes a RuneStatusSync message from the specified reader or buffer.
          * @param reader Reader or buffer to decode from
          * @param [length] Message length if known beforehand
-         * @returns RuneStatus
+         * @returns RuneStatusSync
          * @throws {Error} If the payload is not a reader or valid buffer
          * @throws {$protobuf.util.ProtocolError} If required fields are missing
          */
-        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): rm.RuneStatus;
+        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): rm.RuneStatusSync;
 
         /**
-         * Decodes a RuneStatus message from the specified reader or buffer, length delimited.
+         * Decodes a RuneStatusSync message from the specified reader or buffer, length delimited.
          * @param reader Reader or buffer to decode from
-         * @returns RuneStatus
+         * @returns RuneStatusSync
          * @throws {Error} If the payload is not a reader or valid buffer
          * @throws {$protobuf.util.ProtocolError} If required fields are missing
          */
-        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): rm.RuneStatus;
+        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): rm.RuneStatusSync;
 
         /**
-         * Verifies a RuneStatus message.
+         * Verifies a RuneStatusSync message.
          * @param message Plain object to verify
          * @returns `null` if valid, otherwise the reason why it is not
          */
         public static verify(message: { [k: string]: any }): (string|null);
 
         /**
-         * Creates a RuneStatus message from a plain object. Also converts values to their respective internal types.
+         * Creates a RuneStatusSync message from a plain object. Also converts values to their respective internal types.
          * @param object Plain object
-         * @returns RuneStatus
+         * @returns RuneStatusSync
          */
-        public static fromObject(object: { [k: string]: any }): rm.RuneStatus;
+        public static fromObject(object: { [k: string]: any }): rm.RuneStatusSync;
 
         /**
-         * Creates a plain object from a RuneStatus message. Also converts values to other types if specified.
-         * @param message RuneStatus
+         * Creates a plain object from a RuneStatusSync message. Also converts values to other types if specified.
+         * @param message RuneStatusSync
          * @param [options] Conversion options
          * @returns Plain object
          */
-        public static toObject(message: rm.RuneStatus, options?: $protobuf.IConversionOptions): { [k: string]: any };
+        public static toObject(message: rm.RuneStatusSync, options?: $protobuf.IConversionOptions): { [k: string]: any };
 
         /**
-         * Converts this RuneStatus to JSON.
+         * Converts this RuneStatusSync to JSON.
          * @returns JSON object
          */
         public toJSON(): { [k: string]: any };
 
         /**
-         * Gets the default type url for RuneStatus
+         * Gets the default type url for RuneStatusSync
          * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
          * @returns The default type url
          */
         public static getTypeUrl(typeUrlPrefix?: string): string;
     }
 
-    /** Properties of a SentinelStatusSync. */
-    interface ISentinelStatusSync {
+    /** Properties of a SentryStatusSync. */
+    interface ISentryStatusSync {
 
-        /** SentinelStatusSync postureId */
+        /** SentryStatusSync postureId */
         postureId?: (number|null);
 
-        /** SentinelStatusSync isWeakened */
+        /** SentryStatusSync isWeakened */
         isWeakened?: (boolean|null);
     }
 
-    /** Represents a SentinelStatusSync. */
-    class SentinelStatusSync implements ISentinelStatusSync {
+    /** Represents a SentryStatusSync. */
+    class SentryStatusSync implements ISentryStatusSync {
 
         /**
-         * Constructs a new SentinelStatusSync.
+         * Constructs a new SentryStatusSync.
          * @param [properties] Properties to set
          */
-        constructor(properties?: rm.ISentinelStatusSync);
+        constructor(properties?: rm.ISentryStatusSync);
 
-        /** SentinelStatusSync postureId. */
+        /** SentryStatusSync postureId. */
         public postureId: number;
 
-        /** SentinelStatusSync isWeakened. */
+        /** SentryStatusSync isWeakened. */
         public isWeakened: boolean;
 
         /**
-         * Creates a new SentinelStatusSync instance using the specified properties.
+         * Creates a new SentryStatusSync instance using the specified properties.
          * @param [properties] Properties to set
-         * @returns SentinelStatusSync instance
+         * @returns SentryStatusSync instance
          */
-        public static create(properties?: rm.ISentinelStatusSync): rm.SentinelStatusSync;
+        public static create(properties?: rm.ISentryStatusSync): rm.SentryStatusSync;
 
         /**
-         * Encodes the specified SentinelStatusSync message. Does not implicitly {@link rm.SentinelStatusSync.verify|verify} messages.
-         * @param message SentinelStatusSync message or plain object to encode
+         * Encodes the specified SentryStatusSync message. Does not implicitly {@link rm.SentryStatusSync.verify|verify} messages.
+         * @param message SentryStatusSync message or plain object to encode
          * @param [writer] Writer to encode to
          * @returns Writer
          */
-        public static encode(message: rm.ISentinelStatusSync, writer?: $protobuf.Writer): $protobuf.Writer;
+        public static encode(message: rm.ISentryStatusSync, writer?: $protobuf.Writer): $protobuf.Writer;
 
         /**
-         * Encodes the specified SentinelStatusSync message, length delimited. Does not implicitly {@link rm.SentinelStatusSync.verify|verify} messages.
-         * @param message SentinelStatusSync message or plain object to encode
+         * Encodes the specified SentryStatusSync message, length delimited. Does not implicitly {@link rm.SentryStatusSync.verify|verify} messages.
+         * @param message SentryStatusSync message or plain object to encode
          * @param [writer] Writer to encode to
          * @returns Writer
          */
-        public static encodeDelimited(message: rm.ISentinelStatusSync, writer?: $protobuf.Writer): $protobuf.Writer;
+        public static encodeDelimited(message: rm.ISentryStatusSync, writer?: $protobuf.Writer): $protobuf.Writer;
 
         /**
-         * Decodes a SentinelStatusSync message from the specified reader or buffer.
+         * Decodes a SentryStatusSync message from the specified reader or buffer.
          * @param reader Reader or buffer to decode from
          * @param [length] Message length if known beforehand
-         * @returns SentinelStatusSync
+         * @returns SentryStatusSync
          * @throws {Error} If the payload is not a reader or valid buffer
          * @throws {$protobuf.util.ProtocolError} If required fields are missing
          */
-        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): rm.SentinelStatusSync;
+        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): rm.SentryStatusSync;
 
         /**
-         * Decodes a SentinelStatusSync message from the specified reader or buffer, length delimited.
+         * Decodes a SentryStatusSync message from the specified reader or buffer, length delimited.
          * @param reader Reader or buffer to decode from
-         * @returns SentinelStatusSync
+         * @returns SentryStatusSync
          * @throws {Error} If the payload is not a reader or valid buffer
          * @throws {$protobuf.util.ProtocolError} If required fields are missing
          */
-        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): rm.SentinelStatusSync;
+        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): rm.SentryStatusSync;
 
         /**
-         * Verifies a SentinelStatusSync message.
+         * Verifies a SentryStatusSync message.
          * @param message Plain object to verify
          * @returns `null` if valid, otherwise the reason why it is not
          */
         public static verify(message: { [k: string]: any }): (string|null);
 
         /**
-         * Creates a SentinelStatusSync message from a plain object. Also converts values to their respective internal types.
+         * Creates a SentryStatusSync message from a plain object. Also converts values to their respective internal types.
          * @param object Plain object
-         * @returns SentinelStatusSync
+         * @returns SentryStatusSync
          */
-        public static fromObject(object: { [k: string]: any }): rm.SentinelStatusSync;
+        public static fromObject(object: { [k: string]: any }): rm.SentryStatusSync;
 
         /**
-         * Creates a plain object from a SentinelStatusSync message. Also converts values to other types if specified.
-         * @param message SentinelStatusSync
+         * Creates a plain object from a SentryStatusSync message. Also converts values to other types if specified.
+         * @param message SentryStatusSync
          * @param [options] Conversion options
          * @returns Plain object
          */
-        public static toObject(message: rm.SentinelStatusSync, options?: $protobuf.IConversionOptions): { [k: string]: any };
+        public static toObject(message: rm.SentryStatusSync, options?: $protobuf.IConversionOptions): { [k: string]: any };
 
         /**
-         * Converts this SentinelStatusSync to JSON.
+         * Converts this SentryStatusSync to JSON.
          * @returns JSON object
          */
         public toJSON(): { [k: string]: any };
 
         /**
-         * Gets the default type url for SentinelStatusSync
+         * Gets the default type url for SentryStatusSync
          * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
          * @returns The default type url
          */
         public static getTypeUrl(typeUrlPrefix?: string): string;
     }
 
-    /** Properties of a DartInfo. */
-    interface IDartInfo {
+    /** Properties of a DartCommand. */
+    interface IDartCommand {
 
-        /** DartInfo targetId */
+        /** DartCommand targetId */
         targetId?: (number|null);
 
-        /** DartInfo open */
+        /** DartCommand open */
         open?: (boolean|null);
+
+        /** DartCommand launchConfirm */
+        launchConfirm?: (boolean|null);
     }
 
-    /** Represents a DartInfo. */
-    class DartInfo implements IDartInfo {
+    /** Represents a DartCommand. */
+    class DartCommand implements IDartCommand {
 
         /**
-         * Constructs a new DartInfo.
+         * Constructs a new DartCommand.
          * @param [properties] Properties to set
          */
-        constructor(properties?: rm.IDartInfo);
+        constructor(properties?: rm.IDartCommand);
 
-        /** DartInfo targetId. */
+        /** DartCommand targetId. */
         public targetId: number;
 
-        /** DartInfo open. */
+        /** DartCommand open. */
         public open: boolean;
 
+        /** DartCommand launchConfirm. */
+        public launchConfirm: boolean;
+
         /**
-         * Creates a new DartInfo instance using the specified properties.
+         * Creates a new DartCommand instance using the specified properties.
          * @param [properties] Properties to set
-         * @returns DartInfo instance
+         * @returns DartCommand instance
          */
-        public static create(properties?: rm.IDartInfo): rm.DartInfo;
+        public static create(properties?: rm.IDartCommand): rm.DartCommand;
 
         /**
-         * Encodes the specified DartInfo message. Does not implicitly {@link rm.DartInfo.verify|verify} messages.
-         * @param message DartInfo message or plain object to encode
+         * Encodes the specified DartCommand message. Does not implicitly {@link rm.DartCommand.verify|verify} messages.
+         * @param message DartCommand message or plain object to encode
          * @param [writer] Writer to encode to
          * @returns Writer
          */
-        public static encode(message: rm.IDartInfo, writer?: $protobuf.Writer): $protobuf.Writer;
+        public static encode(message: rm.IDartCommand, writer?: $protobuf.Writer): $protobuf.Writer;
 
         /**
-         * Encodes the specified DartInfo message, length delimited. Does not implicitly {@link rm.DartInfo.verify|verify} messages.
-         * @param message DartInfo message or plain object to encode
+         * Encodes the specified DartCommand message, length delimited. Does not implicitly {@link rm.DartCommand.verify|verify} messages.
+         * @param message DartCommand message or plain object to encode
          * @param [writer] Writer to encode to
          * @returns Writer
          */
-        public static encodeDelimited(message: rm.IDartInfo, writer?: $protobuf.Writer): $protobuf.Writer;
+        public static encodeDelimited(message: rm.IDartCommand, writer?: $protobuf.Writer): $protobuf.Writer;
 
         /**
-         * Decodes a DartInfo message from the specified reader or buffer.
+         * Decodes a DartCommand message from the specified reader or buffer.
          * @param reader Reader or buffer to decode from
          * @param [length] Message length if known beforehand
-         * @returns DartInfo
+         * @returns DartCommand
          * @throws {Error} If the payload is not a reader or valid buffer
          * @throws {$protobuf.util.ProtocolError} If required fields are missing
          */
-        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): rm.DartInfo;
+        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): rm.DartCommand;
 
         /**
-         * Decodes a DartInfo message from the specified reader or buffer, length delimited.
+         * Decodes a DartCommand message from the specified reader or buffer, length delimited.
          * @param reader Reader or buffer to decode from
-         * @returns DartInfo
+         * @returns DartCommand
          * @throws {Error} If the payload is not a reader or valid buffer
          * @throws {$protobuf.util.ProtocolError} If required fields are missing
          */
-        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): rm.DartInfo;
+        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): rm.DartCommand;
 
         /**
-         * Verifies a DartInfo message.
+         * Verifies a DartCommand message.
          * @param message Plain object to verify
          * @returns `null` if valid, otherwise the reason why it is not
          */
         public static verify(message: { [k: string]: any }): (string|null);
 
         /**
-         * Creates a DartInfo message from a plain object. Also converts values to their respective internal types.
+         * Creates a DartCommand message from a plain object. Also converts values to their respective internal types.
          * @param object Plain object
-         * @returns DartInfo
+         * @returns DartCommand
          */
-        public static fromObject(object: { [k: string]: any }): rm.DartInfo;
+        public static fromObject(object: { [k: string]: any }): rm.DartCommand;
 
         /**
-         * Creates a plain object from a DartInfo message. Also converts values to other types if specified.
-         * @param message DartInfo
+         * Creates a plain object from a DartCommand message. Also converts values to other types if specified.
+         * @param message DartCommand
          * @param [options] Conversion options
          * @returns Plain object
          */
-        public static toObject(message: rm.DartInfo, options?: $protobuf.IConversionOptions): { [k: string]: any };
+        public static toObject(message: rm.DartCommand, options?: $protobuf.IConversionOptions): { [k: string]: any };
 
         /**
-         * Converts this DartInfo to JSON.
+         * Converts this DartCommand to JSON.
          * @returns JSON object
          */
         public toJSON(): { [k: string]: any };
 
         /**
-         * Gets the default type url for DartInfo
+         * Gets the default type url for DartCommand
          * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
          * @returns The default type url
          */
         public static getTypeUrl(typeUrlPrefix?: string): string;
     }
 
-    /** Properties of a GuardCtrl. */
-    interface IGuardCtrl {
+    /** Properties of a DartSelectTargetStatusSync. */
+    interface IDartSelectTargetStatusSync {
 
-        /** GuardCtrl commandId */
+        /** DartSelectTargetStatusSync targetId */
+        targetId?: (number|null);
+
+        /** DartSelectTargetStatusSync open */
+        open?: (number|null);
+    }
+
+    /** Represents a DartSelectTargetStatusSync. */
+    class DartSelectTargetStatusSync implements IDartSelectTargetStatusSync {
+
+        /**
+         * Constructs a new DartSelectTargetStatusSync.
+         * @param [properties] Properties to set
+         */
+        constructor(properties?: rm.IDartSelectTargetStatusSync);
+
+        /** DartSelectTargetStatusSync targetId. */
+        public targetId: number;
+
+        /** DartSelectTargetStatusSync open. */
+        public open: number;
+
+        /**
+         * Creates a new DartSelectTargetStatusSync instance using the specified properties.
+         * @param [properties] Properties to set
+         * @returns DartSelectTargetStatusSync instance
+         */
+        public static create(properties?: rm.IDartSelectTargetStatusSync): rm.DartSelectTargetStatusSync;
+
+        /**
+         * Encodes the specified DartSelectTargetStatusSync message. Does not implicitly {@link rm.DartSelectTargetStatusSync.verify|verify} messages.
+         * @param message DartSelectTargetStatusSync message or plain object to encode
+         * @param [writer] Writer to encode to
+         * @returns Writer
+         */
+        public static encode(message: rm.IDartSelectTargetStatusSync, writer?: $protobuf.Writer): $protobuf.Writer;
+
+        /**
+         * Encodes the specified DartSelectTargetStatusSync message, length delimited. Does not implicitly {@link rm.DartSelectTargetStatusSync.verify|verify} messages.
+         * @param message DartSelectTargetStatusSync message or plain object to encode
+         * @param [writer] Writer to encode to
+         * @returns Writer
+         */
+        public static encodeDelimited(message: rm.IDartSelectTargetStatusSync, writer?: $protobuf.Writer): $protobuf.Writer;
+
+        /**
+         * Decodes a DartSelectTargetStatusSync message from the specified reader or buffer.
+         * @param reader Reader or buffer to decode from
+         * @param [length] Message length if known beforehand
+         * @returns DartSelectTargetStatusSync
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): rm.DartSelectTargetStatusSync;
+
+        /**
+         * Decodes a DartSelectTargetStatusSync message from the specified reader or buffer, length delimited.
+         * @param reader Reader or buffer to decode from
+         * @returns DartSelectTargetStatusSync
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): rm.DartSelectTargetStatusSync;
+
+        /**
+         * Verifies a DartSelectTargetStatusSync message.
+         * @param message Plain object to verify
+         * @returns `null` if valid, otherwise the reason why it is not
+         */
+        public static verify(message: { [k: string]: any }): (string|null);
+
+        /**
+         * Creates a DartSelectTargetStatusSync message from a plain object. Also converts values to their respective internal types.
+         * @param object Plain object
+         * @returns DartSelectTargetStatusSync
+         */
+        public static fromObject(object: { [k: string]: any }): rm.DartSelectTargetStatusSync;
+
+        /**
+         * Creates a plain object from a DartSelectTargetStatusSync message. Also converts values to other types if specified.
+         * @param message DartSelectTargetStatusSync
+         * @param [options] Conversion options
+         * @returns Plain object
+         */
+        public static toObject(message: rm.DartSelectTargetStatusSync, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+        /**
+         * Converts this DartSelectTargetStatusSync to JSON.
+         * @returns JSON object
+         */
+        public toJSON(): { [k: string]: any };
+
+        /**
+         * Gets the default type url for DartSelectTargetStatusSync
+         * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+         * @returns The default type url
+         */
+        public static getTypeUrl(typeUrlPrefix?: string): string;
+    }
+
+    /** Properties of a SentryCtrlCommand. */
+    interface ISentryCtrlCommand {
+
+        /** SentryCtrlCommand commandId */
+        commandId?: (number|null);
+    }
+
+    /** Represents a SentryCtrlCommand. */
+    class SentryCtrlCommand implements ISentryCtrlCommand {
+
+        /**
+         * Constructs a new SentryCtrlCommand.
+         * @param [properties] Properties to set
+         */
+        constructor(properties?: rm.ISentryCtrlCommand);
+
+        /** SentryCtrlCommand commandId. */
+        public commandId: number;
+
+        /**
+         * Creates a new SentryCtrlCommand instance using the specified properties.
+         * @param [properties] Properties to set
+         * @returns SentryCtrlCommand instance
+         */
+        public static create(properties?: rm.ISentryCtrlCommand): rm.SentryCtrlCommand;
+
+        /**
+         * Encodes the specified SentryCtrlCommand message. Does not implicitly {@link rm.SentryCtrlCommand.verify|verify} messages.
+         * @param message SentryCtrlCommand message or plain object to encode
+         * @param [writer] Writer to encode to
+         * @returns Writer
+         */
+        public static encode(message: rm.ISentryCtrlCommand, writer?: $protobuf.Writer): $protobuf.Writer;
+
+        /**
+         * Encodes the specified SentryCtrlCommand message, length delimited. Does not implicitly {@link rm.SentryCtrlCommand.verify|verify} messages.
+         * @param message SentryCtrlCommand message or plain object to encode
+         * @param [writer] Writer to encode to
+         * @returns Writer
+         */
+        public static encodeDelimited(message: rm.ISentryCtrlCommand, writer?: $protobuf.Writer): $protobuf.Writer;
+
+        /**
+         * Decodes a SentryCtrlCommand message from the specified reader or buffer.
+         * @param reader Reader or buffer to decode from
+         * @param [length] Message length if known beforehand
+         * @returns SentryCtrlCommand
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): rm.SentryCtrlCommand;
+
+        /**
+         * Decodes a SentryCtrlCommand message from the specified reader or buffer, length delimited.
+         * @param reader Reader or buffer to decode from
+         * @returns SentryCtrlCommand
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): rm.SentryCtrlCommand;
+
+        /**
+         * Verifies a SentryCtrlCommand message.
+         * @param message Plain object to verify
+         * @returns `null` if valid, otherwise the reason why it is not
+         */
+        public static verify(message: { [k: string]: any }): (string|null);
+
+        /**
+         * Creates a SentryCtrlCommand message from a plain object. Also converts values to their respective internal types.
+         * @param object Plain object
+         * @returns SentryCtrlCommand
+         */
+        public static fromObject(object: { [k: string]: any }): rm.SentryCtrlCommand;
+
+        /**
+         * Creates a plain object from a SentryCtrlCommand message. Also converts values to other types if specified.
+         * @param message SentryCtrlCommand
+         * @param [options] Conversion options
+         * @returns Plain object
+         */
+        public static toObject(message: rm.SentryCtrlCommand, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+        /**
+         * Converts this SentryCtrlCommand to JSON.
+         * @returns JSON object
+         */
+        public toJSON(): { [k: string]: any };
+
+        /**
+         * Gets the default type url for SentryCtrlCommand
+         * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+         * @returns The default type url
+         */
+        public static getTypeUrl(typeUrlPrefix?: string): string;
+    }
+
+    /** Properties of a SentryCtrlResult. */
+    interface ISentryCtrlResult {
+
+        /** SentryCtrlResult commandId */
         commandId?: (number|null);
 
-        /** GuardCtrl resultCode */
+        /** SentryCtrlResult resultCode */
         resultCode?: (number|null);
     }
 
-    /** Represents a GuardCtrl. */
-    class GuardCtrl implements IGuardCtrl {
+    /** Represents a SentryCtrlResult. */
+    class SentryCtrlResult implements ISentryCtrlResult {
 
         /**
-         * Constructs a new GuardCtrl.
+         * Constructs a new SentryCtrlResult.
          * @param [properties] Properties to set
          */
-        constructor(properties?: rm.IGuardCtrl);
+        constructor(properties?: rm.ISentryCtrlResult);
 
-        /** GuardCtrl commandId. */
+        /** SentryCtrlResult commandId. */
         public commandId: number;
 
-        /** GuardCtrl resultCode. */
+        /** SentryCtrlResult resultCode. */
         public resultCode: number;
 
         /**
-         * Creates a new GuardCtrl instance using the specified properties.
+         * Creates a new SentryCtrlResult instance using the specified properties.
          * @param [properties] Properties to set
-         * @returns GuardCtrl instance
+         * @returns SentryCtrlResult instance
          */
-        public static create(properties?: rm.IGuardCtrl): rm.GuardCtrl;
+        public static create(properties?: rm.ISentryCtrlResult): rm.SentryCtrlResult;
 
         /**
-         * Encodes the specified GuardCtrl message. Does not implicitly {@link rm.GuardCtrl.verify|verify} messages.
-         * @param message GuardCtrl message or plain object to encode
+         * Encodes the specified SentryCtrlResult message. Does not implicitly {@link rm.SentryCtrlResult.verify|verify} messages.
+         * @param message SentryCtrlResult message or plain object to encode
          * @param [writer] Writer to encode to
          * @returns Writer
          */
-        public static encode(message: rm.IGuardCtrl, writer?: $protobuf.Writer): $protobuf.Writer;
+        public static encode(message: rm.ISentryCtrlResult, writer?: $protobuf.Writer): $protobuf.Writer;
 
         /**
-         * Encodes the specified GuardCtrl message, length delimited. Does not implicitly {@link rm.GuardCtrl.verify|verify} messages.
-         * @param message GuardCtrl message or plain object to encode
+         * Encodes the specified SentryCtrlResult message, length delimited. Does not implicitly {@link rm.SentryCtrlResult.verify|verify} messages.
+         * @param message SentryCtrlResult message or plain object to encode
          * @param [writer] Writer to encode to
          * @returns Writer
          */
-        public static encodeDelimited(message: rm.IGuardCtrl, writer?: $protobuf.Writer): $protobuf.Writer;
+        public static encodeDelimited(message: rm.ISentryCtrlResult, writer?: $protobuf.Writer): $protobuf.Writer;
 
         /**
-         * Decodes a GuardCtrl message from the specified reader or buffer.
+         * Decodes a SentryCtrlResult message from the specified reader or buffer.
          * @param reader Reader or buffer to decode from
          * @param [length] Message length if known beforehand
-         * @returns GuardCtrl
+         * @returns SentryCtrlResult
          * @throws {Error} If the payload is not a reader or valid buffer
          * @throws {$protobuf.util.ProtocolError} If required fields are missing
          */
-        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): rm.GuardCtrl;
+        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): rm.SentryCtrlResult;
 
         /**
-         * Decodes a GuardCtrl message from the specified reader or buffer, length delimited.
+         * Decodes a SentryCtrlResult message from the specified reader or buffer, length delimited.
          * @param reader Reader or buffer to decode from
-         * @returns GuardCtrl
+         * @returns SentryCtrlResult
          * @throws {Error} If the payload is not a reader or valid buffer
          * @throws {$protobuf.util.ProtocolError} If required fields are missing
          */
-        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): rm.GuardCtrl;
+        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): rm.SentryCtrlResult;
 
         /**
-         * Verifies a GuardCtrl message.
+         * Verifies a SentryCtrlResult message.
          * @param message Plain object to verify
          * @returns `null` if valid, otherwise the reason why it is not
          */
         public static verify(message: { [k: string]: any }): (string|null);
 
         /**
-         * Creates a GuardCtrl message from a plain object. Also converts values to their respective internal types.
+         * Creates a SentryCtrlResult message from a plain object. Also converts values to their respective internal types.
          * @param object Plain object
-         * @returns GuardCtrl
+         * @returns SentryCtrlResult
          */
-        public static fromObject(object: { [k: string]: any }): rm.GuardCtrl;
+        public static fromObject(object: { [k: string]: any }): rm.SentryCtrlResult;
 
         /**
-         * Creates a plain object from a GuardCtrl message. Also converts values to other types if specified.
-         * @param message GuardCtrl
+         * Creates a plain object from a SentryCtrlResult message. Also converts values to other types if specified.
+         * @param message SentryCtrlResult
          * @param [options] Conversion options
          * @returns Plain object
          */
-        public static toObject(message: rm.GuardCtrl, options?: $protobuf.IConversionOptions): { [k: string]: any };
+        public static toObject(message: rm.SentryCtrlResult, options?: $protobuf.IConversionOptions): { [k: string]: any };
 
         /**
-         * Converts this GuardCtrl to JSON.
+         * Converts this SentryCtrlResult to JSON.
          * @returns JSON object
          */
         public toJSON(): { [k: string]: any };
 
         /**
-         * Gets the default type url for GuardCtrl
+         * Gets the default type url for SentryCtrlResult
          * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
          * @returns The default type url
          */
         public static getTypeUrl(typeUrlPrefix?: string): string;
     }
 
-    /** Properties of an AirSupport. */
-    interface IAirSupport {
+    /** Properties of an AirSupportCommand. */
+    interface IAirSupportCommand {
 
-        /** AirSupport commandId */
+        /** AirSupportCommand commandId */
         commandId?: (number|null);
-
-        /** AirSupport airsupportStatus */
-        airsupportStatus?: (number|null);
-
-        /** AirSupport leftTime */
-        leftTime?: (number|null);
-
-        /** AirSupport costCoins */
-        costCoins?: (number|null);
     }
 
-    /** Represents an AirSupport. */
-    class AirSupport implements IAirSupport {
+    /** Represents an AirSupportCommand. */
+    class AirSupportCommand implements IAirSupportCommand {
 
         /**
-         * Constructs a new AirSupport.
+         * Constructs a new AirSupportCommand.
          * @param [properties] Properties to set
          */
-        constructor(properties?: rm.IAirSupport);
+        constructor(properties?: rm.IAirSupportCommand);
 
-        /** AirSupport commandId. */
+        /** AirSupportCommand commandId. */
         public commandId: number;
 
-        /** AirSupport airsupportStatus. */
-        public airsupportStatus: number;
-
-        /** AirSupport leftTime. */
-        public leftTime: number;
-
-        /** AirSupport costCoins. */
-        public costCoins: number;
-
         /**
-         * Creates a new AirSupport instance using the specified properties.
+         * Creates a new AirSupportCommand instance using the specified properties.
          * @param [properties] Properties to set
-         * @returns AirSupport instance
+         * @returns AirSupportCommand instance
          */
-        public static create(properties?: rm.IAirSupport): rm.AirSupport;
+        public static create(properties?: rm.IAirSupportCommand): rm.AirSupportCommand;
 
         /**
-         * Encodes the specified AirSupport message. Does not implicitly {@link rm.AirSupport.verify|verify} messages.
-         * @param message AirSupport message or plain object to encode
+         * Encodes the specified AirSupportCommand message. Does not implicitly {@link rm.AirSupportCommand.verify|verify} messages.
+         * @param message AirSupportCommand message or plain object to encode
          * @param [writer] Writer to encode to
          * @returns Writer
          */
-        public static encode(message: rm.IAirSupport, writer?: $protobuf.Writer): $protobuf.Writer;
+        public static encode(message: rm.IAirSupportCommand, writer?: $protobuf.Writer): $protobuf.Writer;
 
         /**
-         * Encodes the specified AirSupport message, length delimited. Does not implicitly {@link rm.AirSupport.verify|verify} messages.
-         * @param message AirSupport message or plain object to encode
+         * Encodes the specified AirSupportCommand message, length delimited. Does not implicitly {@link rm.AirSupportCommand.verify|verify} messages.
+         * @param message AirSupportCommand message or plain object to encode
          * @param [writer] Writer to encode to
          * @returns Writer
          */
-        public static encodeDelimited(message: rm.IAirSupport, writer?: $protobuf.Writer): $protobuf.Writer;
+        public static encodeDelimited(message: rm.IAirSupportCommand, writer?: $protobuf.Writer): $protobuf.Writer;
 
         /**
-         * Decodes an AirSupport message from the specified reader or buffer.
+         * Decodes an AirSupportCommand message from the specified reader or buffer.
          * @param reader Reader or buffer to decode from
          * @param [length] Message length if known beforehand
-         * @returns AirSupport
+         * @returns AirSupportCommand
          * @throws {Error} If the payload is not a reader or valid buffer
          * @throws {$protobuf.util.ProtocolError} If required fields are missing
          */
-        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): rm.AirSupport;
+        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): rm.AirSupportCommand;
 
         /**
-         * Decodes an AirSupport message from the specified reader or buffer, length delimited.
+         * Decodes an AirSupportCommand message from the specified reader or buffer, length delimited.
          * @param reader Reader or buffer to decode from
-         * @returns AirSupport
+         * @returns AirSupportCommand
          * @throws {Error} If the payload is not a reader or valid buffer
          * @throws {$protobuf.util.ProtocolError} If required fields are missing
          */
-        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): rm.AirSupport;
+        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): rm.AirSupportCommand;
 
         /**
-         * Verifies an AirSupport message.
+         * Verifies an AirSupportCommand message.
          * @param message Plain object to verify
          * @returns `null` if valid, otherwise the reason why it is not
          */
         public static verify(message: { [k: string]: any }): (string|null);
 
         /**
-         * Creates an AirSupport message from a plain object. Also converts values to their respective internal types.
+         * Creates an AirSupportCommand message from a plain object. Also converts values to their respective internal types.
          * @param object Plain object
-         * @returns AirSupport
+         * @returns AirSupportCommand
          */
-        public static fromObject(object: { [k: string]: any }): rm.AirSupport;
+        public static fromObject(object: { [k: string]: any }): rm.AirSupportCommand;
 
         /**
-         * Creates a plain object from an AirSupport message. Also converts values to other types if specified.
-         * @param message AirSupport
+         * Creates a plain object from an AirSupportCommand message. Also converts values to other types if specified.
+         * @param message AirSupportCommand
          * @param [options] Conversion options
          * @returns Plain object
          */
-        public static toObject(message: rm.AirSupport, options?: $protobuf.IConversionOptions): { [k: string]: any };
+        public static toObject(message: rm.AirSupportCommand, options?: $protobuf.IConversionOptions): { [k: string]: any };
 
         /**
-         * Converts this AirSupport to JSON.
+         * Converts this AirSupportCommand to JSON.
          * @returns JSON object
          */
         public toJSON(): { [k: string]: any };
 
         /**
-         * Gets the default type url for AirSupport
+         * Gets the default type url for AirSupportCommand
          * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
          * @returns The default type url
          */
         public static getTypeUrl(typeUrlPrefix?: string): string;
     }
 
-    /** Aliases for protocol names in documentation */
-    const RobotPerformanceSelectionCommand: typeof PerformanceSelection;
-    type RobotPerformanceSelectionCommand = PerformanceSelection;
+    /** Properties of an AirSupportStatusSync. */
+    interface IAirSupportStatusSync {
 
-    const RobotPerformanceSelectionSync: typeof PerformanceSelection;
-    type RobotPerformanceSelectionSync = PerformanceSelection;
+        /** AirSupportStatusSync airsupportStatus */
+        airsupportStatus?: (number|null);
 
-    const HeroDeployModeEventCommand: typeof HeroDeployMode;
-    type HeroDeployModeEventCommand = HeroDeployMode;
+        /** AirSupportStatusSync leftTime */
+        leftTime?: (number|null);
 
-    const DeployModeStatusSync: typeof HeroDeployMode;
-    type DeployModeStatusSync = HeroDeployMode;
+        /** AirSupportStatusSync costCoins */
+        costCoins?: (number|null);
 
-    const RuneActivateCommand: typeof RuneStatus;
-    type RuneActivateCommand = RuneStatus;
+        /** AirSupportStatusSync isBeingTargeted */
+        isBeingTargeted?: (number|null);
 
-    const RuneStatusSync: typeof RuneStatus;
-    type RuneStatusSync = RuneStatus;
+        /** AirSupportStatusSync shooterStatus */
+        shooterStatus?: (number|null);
+    }
 
-    const DartCommand: typeof DartInfo;
-    type DartCommand = DartInfo;
+    /** Represents an AirSupportStatusSync. */
+    class AirSupportStatusSync implements IAirSupportStatusSync {
 
-    const DartSelectTargetStatusSync: typeof DartInfo;
-    type DartSelectTargetStatusSync = DartInfo;
+        /**
+         * Constructs a new AirSupportStatusSync.
+         * @param [properties] Properties to set
+         */
+        constructor(properties?: rm.IAirSupportStatusSync);
 
-    const GuardCtrlCommand: typeof GuardCtrl;
-    type GuardCtrlCommand = GuardCtrl;
+        /** AirSupportStatusSync airsupportStatus. */
+        public airsupportStatus: number;
 
-    const GuardCtrlResult: typeof GuardCtrl;
-    type GuardCtrlResult = GuardCtrl;
+        /** AirSupportStatusSync leftTime. */
+        public leftTime: number;
 
-    const AirSupportCommand: typeof AirSupport;
-    type AirSupportCommand = AirSupport;
+        /** AirSupportStatusSync costCoins. */
+        public costCoins: number;
 
-    const AirSupportStatusSync: typeof AirSupport;
-    type AirSupportStatusSync = AirSupport;
+        /** AirSupportStatusSync isBeingTargeted. */
+        public isBeingTargeted: number;
+
+        /** AirSupportStatusSync shooterStatus. */
+        public shooterStatus: number;
+
+        /**
+         * Creates a new AirSupportStatusSync instance using the specified properties.
+         * @param [properties] Properties to set
+         * @returns AirSupportStatusSync instance
+         */
+        public static create(properties?: rm.IAirSupportStatusSync): rm.AirSupportStatusSync;
+
+        /**
+         * Encodes the specified AirSupportStatusSync message. Does not implicitly {@link rm.AirSupportStatusSync.verify|verify} messages.
+         * @param message AirSupportStatusSync message or plain object to encode
+         * @param [writer] Writer to encode to
+         * @returns Writer
+         */
+        public static encode(message: rm.IAirSupportStatusSync, writer?: $protobuf.Writer): $protobuf.Writer;
+
+        /**
+         * Encodes the specified AirSupportStatusSync message, length delimited. Does not implicitly {@link rm.AirSupportStatusSync.verify|verify} messages.
+         * @param message AirSupportStatusSync message or plain object to encode
+         * @param [writer] Writer to encode to
+         * @returns Writer
+         */
+        public static encodeDelimited(message: rm.IAirSupportStatusSync, writer?: $protobuf.Writer): $protobuf.Writer;
+
+        /**
+         * Decodes an AirSupportStatusSync message from the specified reader or buffer.
+         * @param reader Reader or buffer to decode from
+         * @param [length] Message length if known beforehand
+         * @returns AirSupportStatusSync
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): rm.AirSupportStatusSync;
+
+        /**
+         * Decodes an AirSupportStatusSync message from the specified reader or buffer, length delimited.
+         * @param reader Reader or buffer to decode from
+         * @returns AirSupportStatusSync
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): rm.AirSupportStatusSync;
+
+        /**
+         * Verifies an AirSupportStatusSync message.
+         * @param message Plain object to verify
+         * @returns `null` if valid, otherwise the reason why it is not
+         */
+        public static verify(message: { [k: string]: any }): (string|null);
+
+        /**
+         * Creates an AirSupportStatusSync message from a plain object. Also converts values to their respective internal types.
+         * @param object Plain object
+         * @returns AirSupportStatusSync
+         */
+        public static fromObject(object: { [k: string]: any }): rm.AirSupportStatusSync;
+
+        /**
+         * Creates a plain object from an AirSupportStatusSync message. Also converts values to other types if specified.
+         * @param message AirSupportStatusSync
+         * @param [options] Conversion options
+         * @returns Plain object
+         */
+        public static toObject(message: rm.AirSupportStatusSync, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+        /**
+         * Converts this AirSupportStatusSync to JSON.
+         * @returns JSON object
+         */
+        public toJSON(): { [k: string]: any };
+
+        /**
+         * Gets the default type url for AirSupportStatusSync
+         * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+         * @returns The default type url
+         */
+        public static getTypeUrl(typeUrlPrefix?: string): string;
+    }
 }

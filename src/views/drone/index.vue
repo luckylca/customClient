@@ -1,3 +1,6 @@
+// src/views/drone/index.vue
+// 无人机视角界面，显示图传和HUD
+
 <template>
     <v-app>
         <v-main class="fill-height">

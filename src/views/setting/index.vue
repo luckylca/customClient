@@ -1,3 +1,6 @@
+// src/views/setting/index.vue
+// 设置界面，包含设置列表和HUD编辑器
+
 <template>
     <v-app>
         <v-main class="settings-main">
@@ -139,9 +142,11 @@
 
 <script setup lang="ts">
 import { ref, watch, onMounted, onUnmounted } from 'vue';
+import { storeToRefs } from 'pinia';
 import { useRoute, useRouter } from 'vue-router';
 import HUDContainer from '@/components/hud/HUDContainer.vue';
 import { exportHudConfig, importHudConfig, loadHudSettings, saveHudSettings } from '@/components/hud/hudStorage';
+import { useSettingStore } from '@/stores/setting';
 
 const hudKey = ref(0);
 const importFile = ref<File | File[] | null>(null);
@@ -151,22 +156,14 @@ const mode = ref<'list' | 'hud'>('list');
 const showExitDialog = ref(false);
 const hudSnapshot = ref<string>('');
 const hudDrawer = ref(false);
+const settingStore = useSettingStore();
+const { appSettings } = storeToRefs(settingStore);
 const settings = ref({
     autosave: true,
     showDemo: true,
     compactMode: false,
     performanceMode: false,
     fontScale: 1,
-});
-
-const appSettings = ref({
-    hideCursor: true,
-    showCrosshair: true,
-    showFps: false,
-    showNotifications: true,
-    autoReconnectVideo: true,
-    lowLatencyMode: true,
-    masterVolume: 70,
 });
 
 const handleExportFile = () => {
@@ -223,25 +220,6 @@ const saveExtraSettings = () => {
 };
 
 watch(settings, saveExtraSettings, { deep: true });
-
-const APP_SETTINGS_KEY = 'rm-app-settings';
-const loadAppSettings = () => {
-    try {
-        const raw = localStorage.getItem(APP_SETTINGS_KEY);
-        if (!raw) return;
-        const parsed = JSON.parse(raw);
-        appSettings.value = { ...appSettings.value, ...parsed };
-    } catch (error) {
-        console.warn('App settings load failed:', error);
-    }
-};
-
-const saveAppSettings = () => {
-    localStorage.setItem(APP_SETTINGS_KEY, JSON.stringify(appSettings.value));
-};
-
-loadAppSettings();
-watch(appSettings, saveAppSettings, { deep: true });
 
 const goBack = () => {
     const from = typeof route.query.from === 'string' ? route.query.from : '';
@@ -359,12 +337,16 @@ $shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.12)
     color: $text-primary
     font-family: 'Roboto', 'Noto Sans SC', sans-serif
     min-height: 100vh
+    height: 100vh
+    overflow-y: auto
+    overflow-x: hidden
 
 .settings-layout
     display: grid
     grid-template-columns: minmax(0, 1fr)
     gap: 32px
-    height: 100vh
+    min-height: 100vh
+    height: auto
     padding: 40px 48px
     box-sizing: border-box
     animation: fadeInUp 0.5s ease-out

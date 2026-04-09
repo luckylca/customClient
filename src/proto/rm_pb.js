@@ -1,5 +1,6 @@
 /*eslint-disable block-scoped-var, id-length, no-control-regex, no-magic-numbers, no-prototype-builtins, no-redeclare, no-shadow, no-var, sort-vars*/
-import $protobuf from "protobufjs/minimal.js";
+import $protobufModule from "protobufjs/minimal";
+const $protobuf = $protobufModule && $protobufModule.default ? $protobufModule.default : $protobufModule;
 
 // Common aliases
 const $Reader = $protobuf.Reader, $Writer = $protobuf.Writer, $util = $protobuf.util;
@@ -16,31 +17,30 @@ export const rm = $root.rm = (() => {
      */
     const rm = {};
 
-    rm.RemoteControl = (function () {
+    rm.KeyboardMouseControl = (function() {
 
         /**
-         * Properties of a RemoteControl.
+         * Properties of a KeyboardMouseControl.
          * @memberof rm
-         * @interface IRemoteControl
-         * @property {number|null} [mouseX] RemoteControl mouseX
-         * @property {number|null} [mouseY] RemoteControl mouseY
-         * @property {number|null} [mouseZ] RemoteControl mouseZ
-         * @property {boolean|null} [leftButtonDown] RemoteControl leftButtonDown
-         * @property {boolean|null} [rightButtonDown] RemoteControl rightButtonDown
-         * @property {number|null} [keyboardValue] RemoteControl keyboardValue
-         * @property {boolean|null} [midButtonDown] RemoteControl midButtonDown
-         * @property {Uint8Array|null} [data] RemoteControl data
+         * @interface IKeyboardMouseControl
+         * @property {number|null} [mouseX] KeyboardMouseControl mouseX
+         * @property {number|null} [mouseY] KeyboardMouseControl mouseY
+         * @property {number|null} [mouseZ] KeyboardMouseControl mouseZ
+         * @property {boolean|null} [leftButtonDown] KeyboardMouseControl leftButtonDown
+         * @property {boolean|null} [rightButtonDown] KeyboardMouseControl rightButtonDown
+         * @property {number|null} [keyboardValue] KeyboardMouseControl keyboardValue
+         * @property {boolean|null} [midButtonDown] KeyboardMouseControl midButtonDown
          */
 
         /**
-         * Constructs a new RemoteControl.
+         * Constructs a new KeyboardMouseControl.
          * @memberof rm
-         * @classdesc Represents a RemoteControl.
-         * @implements IRemoteControl
+         * @classdesc Represents a KeyboardMouseControl.
+         * @implements IKeyboardMouseControl
          * @constructor
-         * @param {rm.IRemoteControl=} [properties] Properties to set
+         * @param {rm.IKeyboardMouseControl=} [properties] Properties to set
          */
-        function RemoteControl(properties) {
+        function KeyboardMouseControl(properties) {
             if (properties)
                 for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
                     if (properties[keys[i]] != null)
@@ -48,91 +48,83 @@ export const rm = $root.rm = (() => {
         }
 
         /**
-         * RemoteControl mouseX.
+         * KeyboardMouseControl mouseX.
          * @member {number} mouseX
-         * @memberof rm.RemoteControl
+         * @memberof rm.KeyboardMouseControl
          * @instance
          */
-        RemoteControl.prototype.mouseX = 0;
+        KeyboardMouseControl.prototype.mouseX = 0;
 
         /**
-         * RemoteControl mouseY.
+         * KeyboardMouseControl mouseY.
          * @member {number} mouseY
-         * @memberof rm.RemoteControl
+         * @memberof rm.KeyboardMouseControl
          * @instance
          */
-        RemoteControl.prototype.mouseY = 0;
+        KeyboardMouseControl.prototype.mouseY = 0;
 
         /**
-         * RemoteControl mouseZ.
+         * KeyboardMouseControl mouseZ.
          * @member {number} mouseZ
-         * @memberof rm.RemoteControl
+         * @memberof rm.KeyboardMouseControl
          * @instance
          */
-        RemoteControl.prototype.mouseZ = 0;
+        KeyboardMouseControl.prototype.mouseZ = 0;
 
         /**
-         * RemoteControl leftButtonDown.
+         * KeyboardMouseControl leftButtonDown.
          * @member {boolean} leftButtonDown
-         * @memberof rm.RemoteControl
+         * @memberof rm.KeyboardMouseControl
          * @instance
          */
-        RemoteControl.prototype.leftButtonDown = false;
+        KeyboardMouseControl.prototype.leftButtonDown = false;
 
         /**
-         * RemoteControl rightButtonDown.
+         * KeyboardMouseControl rightButtonDown.
          * @member {boolean} rightButtonDown
-         * @memberof rm.RemoteControl
+         * @memberof rm.KeyboardMouseControl
          * @instance
          */
-        RemoteControl.prototype.rightButtonDown = false;
+        KeyboardMouseControl.prototype.rightButtonDown = false;
 
         /**
-         * RemoteControl keyboardValue.
+         * KeyboardMouseControl keyboardValue.
          * @member {number} keyboardValue
-         * @memberof rm.RemoteControl
+         * @memberof rm.KeyboardMouseControl
          * @instance
          */
-        RemoteControl.prototype.keyboardValue = 0;
+        KeyboardMouseControl.prototype.keyboardValue = 0;
 
         /**
-         * RemoteControl midButtonDown.
+         * KeyboardMouseControl midButtonDown.
          * @member {boolean} midButtonDown
-         * @memberof rm.RemoteControl
+         * @memberof rm.KeyboardMouseControl
          * @instance
          */
-        RemoteControl.prototype.midButtonDown = false;
+        KeyboardMouseControl.prototype.midButtonDown = false;
 
         /**
-         * RemoteControl data.
-         * @member {Uint8Array} data
-         * @memberof rm.RemoteControl
-         * @instance
-         */
-        RemoteControl.prototype.data = $util.newBuffer([]);
-
-        /**
-         * Creates a new RemoteControl instance using the specified properties.
+         * Creates a new KeyboardMouseControl instance using the specified properties.
          * @function create
-         * @memberof rm.RemoteControl
+         * @memberof rm.KeyboardMouseControl
          * @static
-         * @param {rm.IRemoteControl=} [properties] Properties to set
-         * @returns {rm.RemoteControl} RemoteControl instance
+         * @param {rm.IKeyboardMouseControl=} [properties] Properties to set
+         * @returns {rm.KeyboardMouseControl} KeyboardMouseControl instance
          */
-        RemoteControl.create = function create(properties) {
-            return new RemoteControl(properties);
+        KeyboardMouseControl.create = function create(properties) {
+            return new KeyboardMouseControl(properties);
         };
 
         /**
-         * Encodes the specified RemoteControl message. Does not implicitly {@link rm.RemoteControl.verify|verify} messages.
+         * Encodes the specified KeyboardMouseControl message. Does not implicitly {@link rm.KeyboardMouseControl.verify|verify} messages.
          * @function encode
-         * @memberof rm.RemoteControl
+         * @memberof rm.KeyboardMouseControl
          * @static
-         * @param {rm.IRemoteControl} message RemoteControl message or plain object to encode
+         * @param {rm.IKeyboardMouseControl} message KeyboardMouseControl message or plain object to encode
          * @param {$protobuf.Writer} [writer] Writer to encode to
          * @returns {$protobuf.Writer} Writer
          */
-        RemoteControl.encode = function encode(message, writer) {
+        KeyboardMouseControl.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
             if (message.mouseX != null && Object.hasOwnProperty.call(message, "mouseX"))
@@ -149,107 +141,101 @@ export const rm = $root.rm = (() => {
                 writer.uint32(/* id 6, wireType 0 =*/48).uint32(message.keyboardValue);
             if (message.midButtonDown != null && Object.hasOwnProperty.call(message, "midButtonDown"))
                 writer.uint32(/* id 7, wireType 0 =*/56).bool(message.midButtonDown);
-            if (message.data != null && Object.hasOwnProperty.call(message, "data"))
-                writer.uint32(/* id 8, wireType 2 =*/66).bytes(message.data);
             return writer;
         };
 
         /**
-         * Encodes the specified RemoteControl message, length delimited. Does not implicitly {@link rm.RemoteControl.verify|verify} messages.
+         * Encodes the specified KeyboardMouseControl message, length delimited. Does not implicitly {@link rm.KeyboardMouseControl.verify|verify} messages.
          * @function encodeDelimited
-         * @memberof rm.RemoteControl
+         * @memberof rm.KeyboardMouseControl
          * @static
-         * @param {rm.IRemoteControl} message RemoteControl message or plain object to encode
+         * @param {rm.IKeyboardMouseControl} message KeyboardMouseControl message or plain object to encode
          * @param {$protobuf.Writer} [writer] Writer to encode to
          * @returns {$protobuf.Writer} Writer
          */
-        RemoteControl.encodeDelimited = function encodeDelimited(message, writer) {
+        KeyboardMouseControl.encodeDelimited = function encodeDelimited(message, writer) {
             return this.encode(message, writer).ldelim();
         };
 
         /**
-         * Decodes a RemoteControl message from the specified reader or buffer.
+         * Decodes a KeyboardMouseControl message from the specified reader or buffer.
          * @function decode
-         * @memberof rm.RemoteControl
+         * @memberof rm.KeyboardMouseControl
          * @static
          * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
          * @param {number} [length] Message length if known beforehand
-         * @returns {rm.RemoteControl} RemoteControl
+         * @returns {rm.KeyboardMouseControl} KeyboardMouseControl
          * @throws {Error} If the payload is not a reader or valid buffer
          * @throws {$protobuf.util.ProtocolError} If required fields are missing
          */
-        RemoteControl.decode = function decode(reader, length) {
+        KeyboardMouseControl.decode = function decode(reader, length) {
             if (!(reader instanceof $Reader))
                 reader = $Reader.create(reader);
-            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.rm.RemoteControl();
+            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.rm.KeyboardMouseControl();
             while (reader.pos < end) {
                 let tag = reader.uint32();
                 switch (tag >>> 3) {
-                    case 1: {
+                case 1: {
                         message.mouseX = reader.int32();
                         break;
                     }
-                    case 2: {
+                case 2: {
                         message.mouseY = reader.int32();
                         break;
                     }
-                    case 3: {
+                case 3: {
                         message.mouseZ = reader.int32();
                         break;
                     }
-                    case 4: {
+                case 4: {
                         message.leftButtonDown = reader.bool();
                         break;
                     }
-                    case 5: {
+                case 5: {
                         message.rightButtonDown = reader.bool();
                         break;
                     }
-                    case 6: {
+                case 6: {
                         message.keyboardValue = reader.uint32();
                         break;
                     }
-                    case 7: {
+                case 7: {
                         message.midButtonDown = reader.bool();
                         break;
                     }
-                    case 8: {
-                        message.data = reader.bytes();
-                        break;
-                    }
-                    default:
-                        reader.skipType(tag & 7);
-                        break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
                 }
             }
             return message;
         };
 
         /**
-         * Decodes a RemoteControl message from the specified reader or buffer, length delimited.
+         * Decodes a KeyboardMouseControl message from the specified reader or buffer, length delimited.
          * @function decodeDelimited
-         * @memberof rm.RemoteControl
+         * @memberof rm.KeyboardMouseControl
          * @static
          * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-         * @returns {rm.RemoteControl} RemoteControl
+         * @returns {rm.KeyboardMouseControl} KeyboardMouseControl
          * @throws {Error} If the payload is not a reader or valid buffer
          * @throws {$protobuf.util.ProtocolError} If required fields are missing
          */
-        RemoteControl.decodeDelimited = function decodeDelimited(reader) {
+        KeyboardMouseControl.decodeDelimited = function decodeDelimited(reader) {
             if (!(reader instanceof $Reader))
                 reader = new $Reader(reader);
             return this.decode(reader, reader.uint32());
         };
 
         /**
-         * Verifies a RemoteControl message.
+         * Verifies a KeyboardMouseControl message.
          * @function verify
-         * @memberof rm.RemoteControl
+         * @memberof rm.KeyboardMouseControl
          * @static
          * @param {Object.<string,*>} message Plain object to verify
          * @returns {string|null} `null` if valid, otherwise the reason why it is not
          */
-        RemoteControl.verify = function verify(message) {
+        KeyboardMouseControl.verify = function verify(message) {
             if (typeof message !== "object" || message === null)
                 return "object expected";
             if (message.mouseX != null && message.hasOwnProperty("mouseX"))
@@ -273,24 +259,21 @@ export const rm = $root.rm = (() => {
             if (message.midButtonDown != null && message.hasOwnProperty("midButtonDown"))
                 if (typeof message.midButtonDown !== "boolean")
                     return "midButtonDown: boolean expected";
-            if (message.data != null && message.hasOwnProperty("data"))
-                if (!(message.data && typeof message.data.length === "number" || $util.isString(message.data)))
-                    return "data: buffer expected";
             return null;
         };
 
         /**
-         * Creates a RemoteControl message from a plain object. Also converts values to their respective internal types.
+         * Creates a KeyboardMouseControl message from a plain object. Also converts values to their respective internal types.
          * @function fromObject
-         * @memberof rm.RemoteControl
+         * @memberof rm.KeyboardMouseControl
          * @static
          * @param {Object.<string,*>} object Plain object
-         * @returns {rm.RemoteControl} RemoteControl
+         * @returns {rm.KeyboardMouseControl} KeyboardMouseControl
          */
-        RemoteControl.fromObject = function fromObject(object) {
-            if (object instanceof $root.rm.RemoteControl)
+        KeyboardMouseControl.fromObject = function fromObject(object) {
+            if (object instanceof $root.rm.KeyboardMouseControl)
                 return object;
-            let message = new $root.rm.RemoteControl();
+            let message = new $root.rm.KeyboardMouseControl();
             if (object.mouseX != null)
                 message.mouseX = object.mouseX | 0;
             if (object.mouseY != null)
@@ -305,24 +288,19 @@ export const rm = $root.rm = (() => {
                 message.keyboardValue = object.keyboardValue >>> 0;
             if (object.midButtonDown != null)
                 message.midButtonDown = Boolean(object.midButtonDown);
-            if (object.data != null)
-                if (typeof object.data === "string")
-                    $util.base64.decode(object.data, message.data = $util.newBuffer($util.base64.length(object.data)), 0);
-                else if (object.data.length >= 0)
-                    message.data = object.data;
             return message;
         };
 
         /**
-         * Creates a plain object from a RemoteControl message. Also converts values to other types if specified.
+         * Creates a plain object from a KeyboardMouseControl message. Also converts values to other types if specified.
          * @function toObject
-         * @memberof rm.RemoteControl
+         * @memberof rm.KeyboardMouseControl
          * @static
-         * @param {rm.RemoteControl} message RemoteControl
+         * @param {rm.KeyboardMouseControl} message KeyboardMouseControl
          * @param {$protobuf.IConversionOptions} [options] Conversion options
          * @returns {Object.<string,*>} Plain object
          */
-        RemoteControl.toObject = function toObject(message, options) {
+        KeyboardMouseControl.toObject = function toObject(message, options) {
             if (!options)
                 options = {};
             let object = {};
@@ -334,13 +312,6 @@ export const rm = $root.rm = (() => {
                 object.rightButtonDown = false;
                 object.keyboardValue = 0;
                 object.midButtonDown = false;
-                if (options.bytes === String)
-                    object.data = "";
-                else {
-                    object.data = [];
-                    if (options.bytes !== Array)
-                        object.data = $util.newBuffer(object.data);
-                }
             }
             if (message.mouseX != null && message.hasOwnProperty("mouseX"))
                 object.mouseX = message.mouseX;
@@ -356,41 +327,251 @@ export const rm = $root.rm = (() => {
                 object.keyboardValue = message.keyboardValue;
             if (message.midButtonDown != null && message.hasOwnProperty("midButtonDown"))
                 object.midButtonDown = message.midButtonDown;
+            return object;
+        };
+
+        /**
+         * Converts this KeyboardMouseControl to JSON.
+         * @function toJSON
+         * @memberof rm.KeyboardMouseControl
+         * @instance
+         * @returns {Object.<string,*>} JSON object
+         */
+        KeyboardMouseControl.prototype.toJSON = function toJSON() {
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+
+        /**
+         * Gets the default type url for KeyboardMouseControl
+         * @function getTypeUrl
+         * @memberof rm.KeyboardMouseControl
+         * @static
+         * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+         * @returns {string} The default type url
+         */
+        KeyboardMouseControl.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+            if (typeUrlPrefix === undefined) {
+                typeUrlPrefix = "type.googleapis.com";
+            }
+            return typeUrlPrefix + "/rm.KeyboardMouseControl";
+        };
+
+        return KeyboardMouseControl;
+    })();
+
+    rm.CustomControl = (function() {
+
+        /**
+         * Properties of a CustomControl.
+         * @memberof rm
+         * @interface ICustomControl
+         * @property {Uint8Array|null} [data] CustomControl data
+         */
+
+        /**
+         * Constructs a new CustomControl.
+         * @memberof rm
+         * @classdesc Represents a CustomControl.
+         * @implements ICustomControl
+         * @constructor
+         * @param {rm.ICustomControl=} [properties] Properties to set
+         */
+        function CustomControl(properties) {
+            if (properties)
+                for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+
+        /**
+         * CustomControl data.
+         * @member {Uint8Array} data
+         * @memberof rm.CustomControl
+         * @instance
+         */
+        CustomControl.prototype.data = $util.newBuffer([]);
+
+        /**
+         * Creates a new CustomControl instance using the specified properties.
+         * @function create
+         * @memberof rm.CustomControl
+         * @static
+         * @param {rm.ICustomControl=} [properties] Properties to set
+         * @returns {rm.CustomControl} CustomControl instance
+         */
+        CustomControl.create = function create(properties) {
+            return new CustomControl(properties);
+        };
+
+        /**
+         * Encodes the specified CustomControl message. Does not implicitly {@link rm.CustomControl.verify|verify} messages.
+         * @function encode
+         * @memberof rm.CustomControl
+         * @static
+         * @param {rm.ICustomControl} message CustomControl message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        CustomControl.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            if (message.data != null && Object.hasOwnProperty.call(message, "data"))
+                writer.uint32(/* id 1, wireType 2 =*/10).bytes(message.data);
+            return writer;
+        };
+
+        /**
+         * Encodes the specified CustomControl message, length delimited. Does not implicitly {@link rm.CustomControl.verify|verify} messages.
+         * @function encodeDelimited
+         * @memberof rm.CustomControl
+         * @static
+         * @param {rm.ICustomControl} message CustomControl message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        CustomControl.encodeDelimited = function encodeDelimited(message, writer) {
+            return this.encode(message, writer).ldelim();
+        };
+
+        /**
+         * Decodes a CustomControl message from the specified reader or buffer.
+         * @function decode
+         * @memberof rm.CustomControl
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @param {number} [length] Message length if known beforehand
+         * @returns {rm.CustomControl} CustomControl
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        CustomControl.decode = function decode(reader, length) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.rm.CustomControl();
+            while (reader.pos < end) {
+                let tag = reader.uint32();
+                switch (tag >>> 3) {
+                case 1: {
+                        message.data = reader.bytes();
+                        break;
+                    }
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            return message;
+        };
+
+        /**
+         * Decodes a CustomControl message from the specified reader or buffer, length delimited.
+         * @function decodeDelimited
+         * @memberof rm.CustomControl
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @returns {rm.CustomControl} CustomControl
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        CustomControl.decodeDelimited = function decodeDelimited(reader) {
+            if (!(reader instanceof $Reader))
+                reader = new $Reader(reader);
+            return this.decode(reader, reader.uint32());
+        };
+
+        /**
+         * Verifies a CustomControl message.
+         * @function verify
+         * @memberof rm.CustomControl
+         * @static
+         * @param {Object.<string,*>} message Plain object to verify
+         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+         */
+        CustomControl.verify = function verify(message) {
+            if (typeof message !== "object" || message === null)
+                return "object expected";
+            if (message.data != null && message.hasOwnProperty("data"))
+                if (!(message.data && typeof message.data.length === "number" || $util.isString(message.data)))
+                    return "data: buffer expected";
+            return null;
+        };
+
+        /**
+         * Creates a CustomControl message from a plain object. Also converts values to their respective internal types.
+         * @function fromObject
+         * @memberof rm.CustomControl
+         * @static
+         * @param {Object.<string,*>} object Plain object
+         * @returns {rm.CustomControl} CustomControl
+         */
+        CustomControl.fromObject = function fromObject(object) {
+            if (object instanceof $root.rm.CustomControl)
+                return object;
+            let message = new $root.rm.CustomControl();
+            if (object.data != null)
+                if (typeof object.data === "string")
+                    $util.base64.decode(object.data, message.data = $util.newBuffer($util.base64.length(object.data)), 0);
+                else if (object.data.length >= 0)
+                    message.data = object.data;
+            return message;
+        };
+
+        /**
+         * Creates a plain object from a CustomControl message. Also converts values to other types if specified.
+         * @function toObject
+         * @memberof rm.CustomControl
+         * @static
+         * @param {rm.CustomControl} message CustomControl
+         * @param {$protobuf.IConversionOptions} [options] Conversion options
+         * @returns {Object.<string,*>} Plain object
+         */
+        CustomControl.toObject = function toObject(message, options) {
+            if (!options)
+                options = {};
+            let object = {};
+            if (options.defaults)
+                if (options.bytes === String)
+                    object.data = "";
+                else {
+                    object.data = [];
+                    if (options.bytes !== Array)
+                        object.data = $util.newBuffer(object.data);
+                }
             if (message.data != null && message.hasOwnProperty("data"))
                 object.data = options.bytes === String ? $util.base64.encode(message.data, 0, message.data.length) : options.bytes === Array ? Array.prototype.slice.call(message.data) : message.data;
             return object;
         };
 
         /**
-         * Converts this RemoteControl to JSON.
+         * Converts this CustomControl to JSON.
          * @function toJSON
-         * @memberof rm.RemoteControl
+         * @memberof rm.CustomControl
          * @instance
          * @returns {Object.<string,*>} JSON object
          */
-        RemoteControl.prototype.toJSON = function toJSON() {
+        CustomControl.prototype.toJSON = function toJSON() {
             return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
         };
 
         /**
-         * Gets the default type url for RemoteControl
+         * Gets the default type url for CustomControl
          * @function getTypeUrl
-         * @memberof rm.RemoteControl
+         * @memberof rm.CustomControl
          * @static
          * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
          * @returns {string} The default type url
          */
-        RemoteControl.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+        CustomControl.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
             if (typeUrlPrefix === undefined) {
                 typeUrlPrefix = "type.googleapis.com";
             }
-            return typeUrlPrefix + "/rm.RemoteControl";
+            return typeUrlPrefix + "/rm.CustomControl";
         };
 
-        return RemoteControl;
+        return CustomControl;
     })();
 
-    rm.GameStatus = (function () {
+    rm.GameStatus = (function() {
 
         /**
          * Properties of a GameStatus.
@@ -510,15 +691,15 @@ export const rm = $root.rm = (() => {
             if (!writer)
                 writer = $Writer.create();
             if (message.currentRound != null && Object.hasOwnProperty.call(message, "currentRound"))
-                writer.uint32(/* id 1, wireType 0 =*/8).int32(message.currentRound);
+                writer.uint32(/* id 1, wireType 0 =*/8).uint32(message.currentRound);
             if (message.totalRounds != null && Object.hasOwnProperty.call(message, "totalRounds"))
-                writer.uint32(/* id 2, wireType 0 =*/16).int32(message.totalRounds);
+                writer.uint32(/* id 2, wireType 0 =*/16).uint32(message.totalRounds);
             if (message.redScore != null && Object.hasOwnProperty.call(message, "redScore"))
-                writer.uint32(/* id 3, wireType 0 =*/24).int32(message.redScore);
+                writer.uint32(/* id 3, wireType 0 =*/24).uint32(message.redScore);
             if (message.blueScore != null && Object.hasOwnProperty.call(message, "blueScore"))
-                writer.uint32(/* id 4, wireType 0 =*/32).int32(message.blueScore);
+                writer.uint32(/* id 4, wireType 0 =*/32).uint32(message.blueScore);
             if (message.currentStage != null && Object.hasOwnProperty.call(message, "currentStage"))
-                writer.uint32(/* id 5, wireType 0 =*/40).int32(message.currentStage);
+                writer.uint32(/* id 5, wireType 0 =*/40).uint32(message.currentStage);
             if (message.stageCountdownSec != null && Object.hasOwnProperty.call(message, "stageCountdownSec"))
                 writer.uint32(/* id 6, wireType 0 =*/48).int32(message.stageCountdownSec);
             if (message.stageElapsedSec != null && Object.hasOwnProperty.call(message, "stageElapsedSec"))
@@ -559,41 +740,41 @@ export const rm = $root.rm = (() => {
             while (reader.pos < end) {
                 let tag = reader.uint32();
                 switch (tag >>> 3) {
-                    case 1: {
-                        message.currentRound = reader.int32();
+                case 1: {
+                        message.currentRound = reader.uint32();
                         break;
                     }
-                    case 2: {
-                        message.totalRounds = reader.int32();
+                case 2: {
+                        message.totalRounds = reader.uint32();
                         break;
                     }
-                    case 3: {
-                        message.redScore = reader.int32();
+                case 3: {
+                        message.redScore = reader.uint32();
                         break;
                     }
-                    case 4: {
-                        message.blueScore = reader.int32();
+                case 4: {
+                        message.blueScore = reader.uint32();
                         break;
                     }
-                    case 5: {
-                        message.currentStage = reader.int32();
+                case 5: {
+                        message.currentStage = reader.uint32();
                         break;
                     }
-                    case 6: {
+                case 6: {
                         message.stageCountdownSec = reader.int32();
                         break;
                     }
-                    case 7: {
+                case 7: {
                         message.stageElapsedSec = reader.int32();
                         break;
                     }
-                    case 8: {
+                case 8: {
                         message.isPaused = reader.bool();
                         break;
                     }
-                    default:
-                        reader.skipType(tag & 7);
-                        break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
                 }
             }
             return message;
@@ -666,15 +847,15 @@ export const rm = $root.rm = (() => {
                 return object;
             let message = new $root.rm.GameStatus();
             if (object.currentRound != null)
-                message.currentRound = object.currentRound | 0;
+                message.currentRound = object.currentRound >>> 0;
             if (object.totalRounds != null)
-                message.totalRounds = object.totalRounds | 0;
+                message.totalRounds = object.totalRounds >>> 0;
             if (object.redScore != null)
-                message.redScore = object.redScore | 0;
+                message.redScore = object.redScore >>> 0;
             if (object.blueScore != null)
-                message.blueScore = object.blueScore | 0;
+                message.blueScore = object.blueScore >>> 0;
             if (object.currentStage != null)
-                message.currentStage = object.currentStage | 0;
+                message.currentStage = object.currentStage >>> 0;
             if (object.stageCountdownSec != null)
                 message.stageCountdownSec = object.stageCountdownSec | 0;
             if (object.stageElapsedSec != null)
@@ -755,7 +936,7 @@ export const rm = $root.rm = (() => {
         return GameStatus;
     })();
 
-    rm.GlobalUnitStatus = (function () {
+    rm.GlobalUnitStatus = (function() {
 
         /**
          * Properties of a GlobalUnitStatus.
@@ -766,10 +947,15 @@ export const rm = $root.rm = (() => {
          * @property {number|null} [baseShield] GlobalUnitStatus baseShield
          * @property {number|null} [outpostHealth] GlobalUnitStatus outpostHealth
          * @property {number|null} [outpostStatus] GlobalUnitStatus outpostStatus
+         * @property {number|null} [enemyBaseHealth] GlobalUnitStatus enemyBaseHealth
+         * @property {number|null} [enemyBaseStatus] GlobalUnitStatus enemyBaseStatus
+         * @property {number|null} [enemyBaseShield] GlobalUnitStatus enemyBaseShield
+         * @property {number|null} [enemyOutpostHealth] GlobalUnitStatus enemyOutpostHealth
+         * @property {number|null} [enemyOutpostStatus] GlobalUnitStatus enemyOutpostStatus
          * @property {Array.<number>|null} [robotHealth] GlobalUnitStatus robotHealth
          * @property {Array.<number>|null} [robotBullets] GlobalUnitStatus robotBullets
-         * @property {number|null} [totalDamageRed] GlobalUnitStatus totalDamageRed
-         * @property {number|null} [totalDamageBlue] GlobalUnitStatus totalDamageBlue
+         * @property {number|null} [totalDamageAlly] GlobalUnitStatus totalDamageAlly
+         * @property {number|null} [totalDamageEnemy] GlobalUnitStatus totalDamageEnemy
          */
 
         /**
@@ -830,6 +1016,46 @@ export const rm = $root.rm = (() => {
         GlobalUnitStatus.prototype.outpostStatus = 0;
 
         /**
+         * GlobalUnitStatus enemyBaseHealth.
+         * @member {number} enemyBaseHealth
+         * @memberof rm.GlobalUnitStatus
+         * @instance
+         */
+        GlobalUnitStatus.prototype.enemyBaseHealth = 0;
+
+        /**
+         * GlobalUnitStatus enemyBaseStatus.
+         * @member {number} enemyBaseStatus
+         * @memberof rm.GlobalUnitStatus
+         * @instance
+         */
+        GlobalUnitStatus.prototype.enemyBaseStatus = 0;
+
+        /**
+         * GlobalUnitStatus enemyBaseShield.
+         * @member {number} enemyBaseShield
+         * @memberof rm.GlobalUnitStatus
+         * @instance
+         */
+        GlobalUnitStatus.prototype.enemyBaseShield = 0;
+
+        /**
+         * GlobalUnitStatus enemyOutpostHealth.
+         * @member {number} enemyOutpostHealth
+         * @memberof rm.GlobalUnitStatus
+         * @instance
+         */
+        GlobalUnitStatus.prototype.enemyOutpostHealth = 0;
+
+        /**
+         * GlobalUnitStatus enemyOutpostStatus.
+         * @member {number} enemyOutpostStatus
+         * @memberof rm.GlobalUnitStatus
+         * @instance
+         */
+        GlobalUnitStatus.prototype.enemyOutpostStatus = 0;
+
+        /**
          * GlobalUnitStatus robotHealth.
          * @member {Array.<number>} robotHealth
          * @memberof rm.GlobalUnitStatus
@@ -846,20 +1072,20 @@ export const rm = $root.rm = (() => {
         GlobalUnitStatus.prototype.robotBullets = $util.emptyArray;
 
         /**
-         * GlobalUnitStatus totalDamageRed.
-         * @member {number} totalDamageRed
+         * GlobalUnitStatus totalDamageAlly.
+         * @member {number} totalDamageAlly
          * @memberof rm.GlobalUnitStatus
          * @instance
          */
-        GlobalUnitStatus.prototype.totalDamageRed = 0;
+        GlobalUnitStatus.prototype.totalDamageAlly = 0;
 
         /**
-         * GlobalUnitStatus totalDamageBlue.
-         * @member {number} totalDamageBlue
+         * GlobalUnitStatus totalDamageEnemy.
+         * @member {number} totalDamageEnemy
          * @memberof rm.GlobalUnitStatus
          * @instance
          */
-        GlobalUnitStatus.prototype.totalDamageBlue = 0;
+        GlobalUnitStatus.prototype.totalDamageEnemy = 0;
 
         /**
          * Creates a new GlobalUnitStatus instance using the specified properties.
@@ -886,31 +1112,41 @@ export const rm = $root.rm = (() => {
             if (!writer)
                 writer = $Writer.create();
             if (message.baseHealth != null && Object.hasOwnProperty.call(message, "baseHealth"))
-                writer.uint32(/* id 1, wireType 0 =*/8).int32(message.baseHealth);
+                writer.uint32(/* id 1, wireType 0 =*/8).uint32(message.baseHealth);
             if (message.baseStatus != null && Object.hasOwnProperty.call(message, "baseStatus"))
-                writer.uint32(/* id 2, wireType 0 =*/16).int32(message.baseStatus);
+                writer.uint32(/* id 2, wireType 0 =*/16).uint32(message.baseStatus);
             if (message.baseShield != null && Object.hasOwnProperty.call(message, "baseShield"))
-                writer.uint32(/* id 3, wireType 0 =*/24).int32(message.baseShield);
+                writer.uint32(/* id 3, wireType 0 =*/24).uint32(message.baseShield);
             if (message.outpostHealth != null && Object.hasOwnProperty.call(message, "outpostHealth"))
-                writer.uint32(/* id 4, wireType 0 =*/32).int32(message.outpostHealth);
+                writer.uint32(/* id 4, wireType 0 =*/32).uint32(message.outpostHealth);
             if (message.outpostStatus != null && Object.hasOwnProperty.call(message, "outpostStatus"))
-                writer.uint32(/* id 5, wireType 0 =*/40).int32(message.outpostStatus);
+                writer.uint32(/* id 5, wireType 0 =*/40).uint32(message.outpostStatus);
+            if (message.enemyBaseHealth != null && Object.hasOwnProperty.call(message, "enemyBaseHealth"))
+                writer.uint32(/* id 6, wireType 0 =*/48).uint32(message.enemyBaseHealth);
+            if (message.enemyBaseStatus != null && Object.hasOwnProperty.call(message, "enemyBaseStatus"))
+                writer.uint32(/* id 7, wireType 0 =*/56).uint32(message.enemyBaseStatus);
+            if (message.enemyBaseShield != null && Object.hasOwnProperty.call(message, "enemyBaseShield"))
+                writer.uint32(/* id 8, wireType 0 =*/64).uint32(message.enemyBaseShield);
+            if (message.enemyOutpostHealth != null && Object.hasOwnProperty.call(message, "enemyOutpostHealth"))
+                writer.uint32(/* id 9, wireType 0 =*/72).uint32(message.enemyOutpostHealth);
+            if (message.enemyOutpostStatus != null && Object.hasOwnProperty.call(message, "enemyOutpostStatus"))
+                writer.uint32(/* id 10, wireType 0 =*/80).uint32(message.enemyOutpostStatus);
             if (message.robotHealth != null && message.robotHealth.length) {
-                writer.uint32(/* id 6, wireType 2 =*/50).fork();
+                writer.uint32(/* id 11, wireType 2 =*/90).fork();
                 for (let i = 0; i < message.robotHealth.length; ++i)
-                    writer.int32(message.robotHealth[i]);
+                    writer.uint32(message.robotHealth[i]);
                 writer.ldelim();
             }
             if (message.robotBullets != null && message.robotBullets.length) {
-                writer.uint32(/* id 7, wireType 2 =*/58).fork();
+                writer.uint32(/* id 12, wireType 2 =*/98).fork();
                 for (let i = 0; i < message.robotBullets.length; ++i)
                     writer.int32(message.robotBullets[i]);
                 writer.ldelim();
             }
-            if (message.totalDamageRed != null && Object.hasOwnProperty.call(message, "totalDamageRed"))
-                writer.uint32(/* id 8, wireType 0 =*/64).int32(message.totalDamageRed);
-            if (message.totalDamageBlue != null && Object.hasOwnProperty.call(message, "totalDamageBlue"))
-                writer.uint32(/* id 9, wireType 0 =*/72).int32(message.totalDamageBlue);
+            if (message.totalDamageAlly != null && Object.hasOwnProperty.call(message, "totalDamageAlly"))
+                writer.uint32(/* id 13, wireType 0 =*/104).uint32(message.totalDamageAlly);
+            if (message.totalDamageEnemy != null && Object.hasOwnProperty.call(message, "totalDamageEnemy"))
+                writer.uint32(/* id 14, wireType 0 =*/112).uint32(message.totalDamageEnemy);
             return writer;
         };
 
@@ -945,38 +1181,58 @@ export const rm = $root.rm = (() => {
             while (reader.pos < end) {
                 let tag = reader.uint32();
                 switch (tag >>> 3) {
-                    case 1: {
-                        message.baseHealth = reader.int32();
+                case 1: {
+                        message.baseHealth = reader.uint32();
                         break;
                     }
-                    case 2: {
-                        message.baseStatus = reader.int32();
+                case 2: {
+                        message.baseStatus = reader.uint32();
                         break;
                     }
-                    case 3: {
-                        message.baseShield = reader.int32();
+                case 3: {
+                        message.baseShield = reader.uint32();
                         break;
                     }
-                    case 4: {
-                        message.outpostHealth = reader.int32();
+                case 4: {
+                        message.outpostHealth = reader.uint32();
                         break;
                     }
-                    case 5: {
-                        message.outpostStatus = reader.int32();
+                case 5: {
+                        message.outpostStatus = reader.uint32();
                         break;
                     }
-                    case 6: {
+                case 6: {
+                        message.enemyBaseHealth = reader.uint32();
+                        break;
+                    }
+                case 7: {
+                        message.enemyBaseStatus = reader.uint32();
+                        break;
+                    }
+                case 8: {
+                        message.enemyBaseShield = reader.uint32();
+                        break;
+                    }
+                case 9: {
+                        message.enemyOutpostHealth = reader.uint32();
+                        break;
+                    }
+                case 10: {
+                        message.enemyOutpostStatus = reader.uint32();
+                        break;
+                    }
+                case 11: {
                         if (!(message.robotHealth && message.robotHealth.length))
                             message.robotHealth = [];
                         if ((tag & 7) === 2) {
                             let end2 = reader.uint32() + reader.pos;
                             while (reader.pos < end2)
-                                message.robotHealth.push(reader.int32());
+                                message.robotHealth.push(reader.uint32());
                         } else
-                            message.robotHealth.push(reader.int32());
+                            message.robotHealth.push(reader.uint32());
                         break;
                     }
-                    case 7: {
+                case 12: {
                         if (!(message.robotBullets && message.robotBullets.length))
                             message.robotBullets = [];
                         if ((tag & 7) === 2) {
@@ -987,17 +1243,17 @@ export const rm = $root.rm = (() => {
                             message.robotBullets.push(reader.int32());
                         break;
                     }
-                    case 8: {
-                        message.totalDamageRed = reader.int32();
+                case 13: {
+                        message.totalDamageAlly = reader.uint32();
                         break;
                     }
-                    case 9: {
-                        message.totalDamageBlue = reader.int32();
+                case 14: {
+                        message.totalDamageEnemy = reader.uint32();
                         break;
                     }
-                    default:
-                        reader.skipType(tag & 7);
-                        break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
                 }
             }
             return message;
@@ -1045,6 +1301,21 @@ export const rm = $root.rm = (() => {
             if (message.outpostStatus != null && message.hasOwnProperty("outpostStatus"))
                 if (!$util.isInteger(message.outpostStatus))
                     return "outpostStatus: integer expected";
+            if (message.enemyBaseHealth != null && message.hasOwnProperty("enemyBaseHealth"))
+                if (!$util.isInteger(message.enemyBaseHealth))
+                    return "enemyBaseHealth: integer expected";
+            if (message.enemyBaseStatus != null && message.hasOwnProperty("enemyBaseStatus"))
+                if (!$util.isInteger(message.enemyBaseStatus))
+                    return "enemyBaseStatus: integer expected";
+            if (message.enemyBaseShield != null && message.hasOwnProperty("enemyBaseShield"))
+                if (!$util.isInteger(message.enemyBaseShield))
+                    return "enemyBaseShield: integer expected";
+            if (message.enemyOutpostHealth != null && message.hasOwnProperty("enemyOutpostHealth"))
+                if (!$util.isInteger(message.enemyOutpostHealth))
+                    return "enemyOutpostHealth: integer expected";
+            if (message.enemyOutpostStatus != null && message.hasOwnProperty("enemyOutpostStatus"))
+                if (!$util.isInteger(message.enemyOutpostStatus))
+                    return "enemyOutpostStatus: integer expected";
             if (message.robotHealth != null && message.hasOwnProperty("robotHealth")) {
                 if (!Array.isArray(message.robotHealth))
                     return "robotHealth: array expected";
@@ -1059,12 +1330,12 @@ export const rm = $root.rm = (() => {
                     if (!$util.isInteger(message.robotBullets[i]))
                         return "robotBullets: integer[] expected";
             }
-            if (message.totalDamageRed != null && message.hasOwnProperty("totalDamageRed"))
-                if (!$util.isInteger(message.totalDamageRed))
-                    return "totalDamageRed: integer expected";
-            if (message.totalDamageBlue != null && message.hasOwnProperty("totalDamageBlue"))
-                if (!$util.isInteger(message.totalDamageBlue))
-                    return "totalDamageBlue: integer expected";
+            if (message.totalDamageAlly != null && message.hasOwnProperty("totalDamageAlly"))
+                if (!$util.isInteger(message.totalDamageAlly))
+                    return "totalDamageAlly: integer expected";
+            if (message.totalDamageEnemy != null && message.hasOwnProperty("totalDamageEnemy"))
+                if (!$util.isInteger(message.totalDamageEnemy))
+                    return "totalDamageEnemy: integer expected";
             return null;
         };
 
@@ -1081,21 +1352,31 @@ export const rm = $root.rm = (() => {
                 return object;
             let message = new $root.rm.GlobalUnitStatus();
             if (object.baseHealth != null)
-                message.baseHealth = object.baseHealth | 0;
+                message.baseHealth = object.baseHealth >>> 0;
             if (object.baseStatus != null)
-                message.baseStatus = object.baseStatus | 0;
+                message.baseStatus = object.baseStatus >>> 0;
             if (object.baseShield != null)
-                message.baseShield = object.baseShield | 0;
+                message.baseShield = object.baseShield >>> 0;
             if (object.outpostHealth != null)
-                message.outpostHealth = object.outpostHealth | 0;
+                message.outpostHealth = object.outpostHealth >>> 0;
             if (object.outpostStatus != null)
-                message.outpostStatus = object.outpostStatus | 0;
+                message.outpostStatus = object.outpostStatus >>> 0;
+            if (object.enemyBaseHealth != null)
+                message.enemyBaseHealth = object.enemyBaseHealth >>> 0;
+            if (object.enemyBaseStatus != null)
+                message.enemyBaseStatus = object.enemyBaseStatus >>> 0;
+            if (object.enemyBaseShield != null)
+                message.enemyBaseShield = object.enemyBaseShield >>> 0;
+            if (object.enemyOutpostHealth != null)
+                message.enemyOutpostHealth = object.enemyOutpostHealth >>> 0;
+            if (object.enemyOutpostStatus != null)
+                message.enemyOutpostStatus = object.enemyOutpostStatus >>> 0;
             if (object.robotHealth) {
                 if (!Array.isArray(object.robotHealth))
                     throw TypeError(".rm.GlobalUnitStatus.robotHealth: array expected");
                 message.robotHealth = [];
                 for (let i = 0; i < object.robotHealth.length; ++i)
-                    message.robotHealth[i] = object.robotHealth[i] | 0;
+                    message.robotHealth[i] = object.robotHealth[i] >>> 0;
             }
             if (object.robotBullets) {
                 if (!Array.isArray(object.robotBullets))
@@ -1104,10 +1385,10 @@ export const rm = $root.rm = (() => {
                 for (let i = 0; i < object.robotBullets.length; ++i)
                     message.robotBullets[i] = object.robotBullets[i] | 0;
             }
-            if (object.totalDamageRed != null)
-                message.totalDamageRed = object.totalDamageRed | 0;
-            if (object.totalDamageBlue != null)
-                message.totalDamageBlue = object.totalDamageBlue | 0;
+            if (object.totalDamageAlly != null)
+                message.totalDamageAlly = object.totalDamageAlly >>> 0;
+            if (object.totalDamageEnemy != null)
+                message.totalDamageEnemy = object.totalDamageEnemy >>> 0;
             return message;
         };
 
@@ -1134,8 +1415,13 @@ export const rm = $root.rm = (() => {
                 object.baseShield = 0;
                 object.outpostHealth = 0;
                 object.outpostStatus = 0;
-                object.totalDamageRed = 0;
-                object.totalDamageBlue = 0;
+                object.enemyBaseHealth = 0;
+                object.enemyBaseStatus = 0;
+                object.enemyBaseShield = 0;
+                object.enemyOutpostHealth = 0;
+                object.enemyOutpostStatus = 0;
+                object.totalDamageAlly = 0;
+                object.totalDamageEnemy = 0;
             }
             if (message.baseHealth != null && message.hasOwnProperty("baseHealth"))
                 object.baseHealth = message.baseHealth;
@@ -1147,6 +1433,16 @@ export const rm = $root.rm = (() => {
                 object.outpostHealth = message.outpostHealth;
             if (message.outpostStatus != null && message.hasOwnProperty("outpostStatus"))
                 object.outpostStatus = message.outpostStatus;
+            if (message.enemyBaseHealth != null && message.hasOwnProperty("enemyBaseHealth"))
+                object.enemyBaseHealth = message.enemyBaseHealth;
+            if (message.enemyBaseStatus != null && message.hasOwnProperty("enemyBaseStatus"))
+                object.enemyBaseStatus = message.enemyBaseStatus;
+            if (message.enemyBaseShield != null && message.hasOwnProperty("enemyBaseShield"))
+                object.enemyBaseShield = message.enemyBaseShield;
+            if (message.enemyOutpostHealth != null && message.hasOwnProperty("enemyOutpostHealth"))
+                object.enemyOutpostHealth = message.enemyOutpostHealth;
+            if (message.enemyOutpostStatus != null && message.hasOwnProperty("enemyOutpostStatus"))
+                object.enemyOutpostStatus = message.enemyOutpostStatus;
             if (message.robotHealth && message.robotHealth.length) {
                 object.robotHealth = [];
                 for (let j = 0; j < message.robotHealth.length; ++j)
@@ -1157,10 +1453,10 @@ export const rm = $root.rm = (() => {
                 for (let j = 0; j < message.robotBullets.length; ++j)
                     object.robotBullets[j] = message.robotBullets[j];
             }
-            if (message.totalDamageRed != null && message.hasOwnProperty("totalDamageRed"))
-                object.totalDamageRed = message.totalDamageRed;
-            if (message.totalDamageBlue != null && message.hasOwnProperty("totalDamageBlue"))
-                object.totalDamageBlue = message.totalDamageBlue;
+            if (message.totalDamageAlly != null && message.hasOwnProperty("totalDamageAlly"))
+                object.totalDamageAlly = message.totalDamageAlly;
+            if (message.totalDamageEnemy != null && message.hasOwnProperty("totalDamageEnemy"))
+                object.totalDamageEnemy = message.totalDamageEnemy;
             return object;
         };
 
@@ -1193,7 +1489,7 @@ export const rm = $root.rm = (() => {
         return GlobalUnitStatus;
     })();
 
-    rm.GlobalLogisticsStatus = (function () {
+    rm.GlobalLogisticsStatus = (function() {
 
         /**
          * Properties of a GlobalLogisticsStatus.
@@ -1234,7 +1530,7 @@ export const rm = $root.rm = (() => {
          * @memberof rm.GlobalLogisticsStatus
          * @instance
          */
-        GlobalLogisticsStatus.prototype.totalEconomyObtained = $util.Long ? $util.Long.fromBits(0, 0, false) : 0;
+        GlobalLogisticsStatus.prototype.totalEconomyObtained = $util.Long ? $util.Long.fromBits(0,0,true) : 0;
 
         /**
          * GlobalLogisticsStatus techLevel.
@@ -1277,13 +1573,13 @@ export const rm = $root.rm = (() => {
             if (!writer)
                 writer = $Writer.create();
             if (message.remainingEconomy != null && Object.hasOwnProperty.call(message, "remainingEconomy"))
-                writer.uint32(/* id 1, wireType 0 =*/8).int32(message.remainingEconomy);
+                writer.uint32(/* id 1, wireType 0 =*/8).uint32(message.remainingEconomy);
             if (message.totalEconomyObtained != null && Object.hasOwnProperty.call(message, "totalEconomyObtained"))
-                writer.uint32(/* id 2, wireType 0 =*/16).int64(message.totalEconomyObtained);
+                writer.uint32(/* id 2, wireType 0 =*/16).uint64(message.totalEconomyObtained);
             if (message.techLevel != null && Object.hasOwnProperty.call(message, "techLevel"))
-                writer.uint32(/* id 3, wireType 0 =*/24).int32(message.techLevel);
+                writer.uint32(/* id 3, wireType 0 =*/24).uint32(message.techLevel);
             if (message.encryptionLevel != null && Object.hasOwnProperty.call(message, "encryptionLevel"))
-                writer.uint32(/* id 4, wireType 0 =*/32).int32(message.encryptionLevel);
+                writer.uint32(/* id 4, wireType 0 =*/32).uint32(message.encryptionLevel);
             return writer;
         };
 
@@ -1318,25 +1614,25 @@ export const rm = $root.rm = (() => {
             while (reader.pos < end) {
                 let tag = reader.uint32();
                 switch (tag >>> 3) {
-                    case 1: {
-                        message.remainingEconomy = reader.int32();
+                case 1: {
+                        message.remainingEconomy = reader.uint32();
                         break;
                     }
-                    case 2: {
-                        message.totalEconomyObtained = reader.int64();
+                case 2: {
+                        message.totalEconomyObtained = reader.uint64();
                         break;
                     }
-                    case 3: {
-                        message.techLevel = reader.int32();
+                case 3: {
+                        message.techLevel = reader.uint32();
                         break;
                     }
-                    case 4: {
-                        message.encryptionLevel = reader.int32();
+                case 4: {
+                        message.encryptionLevel = reader.uint32();
                         break;
                     }
-                    default:
-                        reader.skipType(tag & 7);
-                        break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
                 }
             }
             return message;
@@ -1397,20 +1693,20 @@ export const rm = $root.rm = (() => {
                 return object;
             let message = new $root.rm.GlobalLogisticsStatus();
             if (object.remainingEconomy != null)
-                message.remainingEconomy = object.remainingEconomy | 0;
+                message.remainingEconomy = object.remainingEconomy >>> 0;
             if (object.totalEconomyObtained != null)
                 if ($util.Long)
-                    (message.totalEconomyObtained = $util.Long.fromValue(object.totalEconomyObtained)).unsigned = false;
+                    (message.totalEconomyObtained = $util.Long.fromValue(object.totalEconomyObtained)).unsigned = true;
                 else if (typeof object.totalEconomyObtained === "string")
                     message.totalEconomyObtained = parseInt(object.totalEconomyObtained, 10);
                 else if (typeof object.totalEconomyObtained === "number")
                     message.totalEconomyObtained = object.totalEconomyObtained;
                 else if (typeof object.totalEconomyObtained === "object")
-                    message.totalEconomyObtained = new $util.LongBits(object.totalEconomyObtained.low >>> 0, object.totalEconomyObtained.high >>> 0).toNumber();
+                    message.totalEconomyObtained = new $util.LongBits(object.totalEconomyObtained.low >>> 0, object.totalEconomyObtained.high >>> 0).toNumber(true);
             if (object.techLevel != null)
-                message.techLevel = object.techLevel | 0;
+                message.techLevel = object.techLevel >>> 0;
             if (object.encryptionLevel != null)
-                message.encryptionLevel = object.encryptionLevel | 0;
+                message.encryptionLevel = object.encryptionLevel >>> 0;
             return message;
         };
 
@@ -1430,7 +1726,7 @@ export const rm = $root.rm = (() => {
             if (options.defaults) {
                 object.remainingEconomy = 0;
                 if ($util.Long) {
-                    let long = new $util.Long(0, 0, false);
+                    let long = new $util.Long(0, 0, true);
                     object.totalEconomyObtained = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
                 } else
                     object.totalEconomyObtained = options.longs === String ? "0" : 0;
@@ -1443,7 +1739,7 @@ export const rm = $root.rm = (() => {
                 if (typeof message.totalEconomyObtained === "number")
                     object.totalEconomyObtained = options.longs === String ? String(message.totalEconomyObtained) : message.totalEconomyObtained;
                 else
-                    object.totalEconomyObtained = options.longs === String ? $util.Long.prototype.toString.call(message.totalEconomyObtained) : options.longs === Number ? new $util.LongBits(message.totalEconomyObtained.low >>> 0, message.totalEconomyObtained.high >>> 0).toNumber() : message.totalEconomyObtained;
+                    object.totalEconomyObtained = options.longs === String ? $util.Long.prototype.toString.call(message.totalEconomyObtained) : options.longs === Number ? new $util.LongBits(message.totalEconomyObtained.low >>> 0, message.totalEconomyObtained.high >>> 0).toNumber(true) : message.totalEconomyObtained;
             if (message.techLevel != null && message.hasOwnProperty("techLevel"))
                 object.techLevel = message.techLevel;
             if (message.encryptionLevel != null && message.hasOwnProperty("encryptionLevel"))
@@ -1480,7 +1776,7 @@ export const rm = $root.rm = (() => {
         return GlobalLogisticsStatus;
     })();
 
-    rm.GlobalSpecialMechanism = (function () {
+    rm.GlobalSpecialMechanism = (function() {
 
         /**
          * Properties of a GlobalSpecialMechanism.
@@ -1550,7 +1846,7 @@ export const rm = $root.rm = (() => {
             if (message.mechanismId != null && message.mechanismId.length) {
                 writer.uint32(/* id 1, wireType 2 =*/10).fork();
                 for (let i = 0; i < message.mechanismId.length; ++i)
-                    writer.int32(message.mechanismId[i]);
+                    writer.uint32(message.mechanismId[i]);
                 writer.ldelim();
             }
             if (message.mechanismTimeSec != null && message.mechanismTimeSec.length) {
@@ -1593,18 +1889,18 @@ export const rm = $root.rm = (() => {
             while (reader.pos < end) {
                 let tag = reader.uint32();
                 switch (tag >>> 3) {
-                    case 1: {
+                case 1: {
                         if (!(message.mechanismId && message.mechanismId.length))
                             message.mechanismId = [];
                         if ((tag & 7) === 2) {
                             let end2 = reader.uint32() + reader.pos;
                             while (reader.pos < end2)
-                                message.mechanismId.push(reader.int32());
+                                message.mechanismId.push(reader.uint32());
                         } else
-                            message.mechanismId.push(reader.int32());
+                            message.mechanismId.push(reader.uint32());
                         break;
                     }
-                    case 2: {
+                case 2: {
                         if (!(message.mechanismTimeSec && message.mechanismTimeSec.length))
                             message.mechanismTimeSec = [];
                         if ((tag & 7) === 2) {
@@ -1615,9 +1911,9 @@ export const rm = $root.rm = (() => {
                             message.mechanismTimeSec.push(reader.int32());
                         break;
                     }
-                    default:
-                        reader.skipType(tag & 7);
-                        break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
                 }
             }
             return message;
@@ -1684,7 +1980,7 @@ export const rm = $root.rm = (() => {
                     throw TypeError(".rm.GlobalSpecialMechanism.mechanismId: array expected");
                 message.mechanismId = [];
                 for (let i = 0; i < object.mechanismId.length; ++i)
-                    message.mechanismId[i] = object.mechanismId[i] | 0;
+                    message.mechanismId[i] = object.mechanismId[i] >>> 0;
             }
             if (object.mechanismTimeSec) {
                 if (!Array.isArray(object.mechanismTimeSec))
@@ -1755,7 +2051,7 @@ export const rm = $root.rm = (() => {
         return GlobalSpecialMechanism;
     })();
 
-    rm.Event = (function () {
+    rm.Event = (function() {
 
         /**
          * Properties of an Event.
@@ -1858,17 +2154,17 @@ export const rm = $root.rm = (() => {
             while (reader.pos < end) {
                 let tag = reader.uint32();
                 switch (tag >>> 3) {
-                    case 1: {
+                case 1: {
                         message.eventId = reader.int32();
                         break;
                     }
-                    case 2: {
+                case 2: {
                         message.param = reader.string();
                         break;
                     }
-                    default:
-                        reader.skipType(tag & 7);
-                        break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
                 }
             }
             return message;
@@ -1982,7 +2278,7 @@ export const rm = $root.rm = (() => {
         return Event;
     })();
 
-    rm.RobotInjuryStat = (function () {
+    rm.RobotInjuryStat = (function() {
 
         /**
          * Properties of a RobotInjuryStat.
@@ -1994,7 +2290,7 @@ export const rm = $root.rm = (() => {
          * @property {number|null} [largeProjectileDamage] RobotInjuryStat largeProjectileDamage
          * @property {number|null} [dartSplashDamage] RobotInjuryStat dartSplashDamage
          * @property {number|null} [moduleOfflineDamage] RobotInjuryStat moduleOfflineDamage
-         * @property {number|null} [wifiOfflineDamage] RobotInjuryStat wifiOfflineDamage
+         * @property {number|null} [offlineDamage] RobotInjuryStat offlineDamage
          * @property {number|null} [penaltyDamage] RobotInjuryStat penaltyDamage
          * @property {number|null} [serverKillDamage] RobotInjuryStat serverKillDamage
          * @property {number|null} [killerId] RobotInjuryStat killerId
@@ -2064,12 +2360,12 @@ export const rm = $root.rm = (() => {
         RobotInjuryStat.prototype.moduleOfflineDamage = 0;
 
         /**
-         * RobotInjuryStat wifiOfflineDamage.
-         * @member {number} wifiOfflineDamage
+         * RobotInjuryStat offlineDamage.
+         * @member {number} offlineDamage
          * @memberof rm.RobotInjuryStat
          * @instance
          */
-        RobotInjuryStat.prototype.wifiOfflineDamage = 0;
+        RobotInjuryStat.prototype.offlineDamage = 0;
 
         /**
          * RobotInjuryStat penaltyDamage.
@@ -2120,25 +2416,25 @@ export const rm = $root.rm = (() => {
             if (!writer)
                 writer = $Writer.create();
             if (message.totalDamage != null && Object.hasOwnProperty.call(message, "totalDamage"))
-                writer.uint32(/* id 1, wireType 0 =*/8).int32(message.totalDamage);
+                writer.uint32(/* id 1, wireType 0 =*/8).uint32(message.totalDamage);
             if (message.collisionDamage != null && Object.hasOwnProperty.call(message, "collisionDamage"))
-                writer.uint32(/* id 2, wireType 0 =*/16).int32(message.collisionDamage);
+                writer.uint32(/* id 2, wireType 0 =*/16).uint32(message.collisionDamage);
             if (message.smallProjectileDamage != null && Object.hasOwnProperty.call(message, "smallProjectileDamage"))
-                writer.uint32(/* id 3, wireType 0 =*/24).int32(message.smallProjectileDamage);
+                writer.uint32(/* id 3, wireType 0 =*/24).uint32(message.smallProjectileDamage);
             if (message.largeProjectileDamage != null && Object.hasOwnProperty.call(message, "largeProjectileDamage"))
-                writer.uint32(/* id 4, wireType 0 =*/32).int32(message.largeProjectileDamage);
+                writer.uint32(/* id 4, wireType 0 =*/32).uint32(message.largeProjectileDamage);
             if (message.dartSplashDamage != null && Object.hasOwnProperty.call(message, "dartSplashDamage"))
-                writer.uint32(/* id 5, wireType 0 =*/40).int32(message.dartSplashDamage);
+                writer.uint32(/* id 5, wireType 0 =*/40).uint32(message.dartSplashDamage);
             if (message.moduleOfflineDamage != null && Object.hasOwnProperty.call(message, "moduleOfflineDamage"))
-                writer.uint32(/* id 6, wireType 0 =*/48).int32(message.moduleOfflineDamage);
-            if (message.wifiOfflineDamage != null && Object.hasOwnProperty.call(message, "wifiOfflineDamage"))
-                writer.uint32(/* id 7, wireType 0 =*/56).int32(message.wifiOfflineDamage);
+                writer.uint32(/* id 6, wireType 0 =*/48).uint32(message.moduleOfflineDamage);
+            if (message.offlineDamage != null && Object.hasOwnProperty.call(message, "offlineDamage"))
+                writer.uint32(/* id 7, wireType 0 =*/56).uint32(message.offlineDamage);
             if (message.penaltyDamage != null && Object.hasOwnProperty.call(message, "penaltyDamage"))
-                writer.uint32(/* id 8, wireType 0 =*/64).int32(message.penaltyDamage);
+                writer.uint32(/* id 8, wireType 0 =*/64).uint32(message.penaltyDamage);
             if (message.serverKillDamage != null && Object.hasOwnProperty.call(message, "serverKillDamage"))
-                writer.uint32(/* id 9, wireType 0 =*/72).int32(message.serverKillDamage);
+                writer.uint32(/* id 9, wireType 0 =*/72).uint32(message.serverKillDamage);
             if (message.killerId != null && Object.hasOwnProperty.call(message, "killerId"))
-                writer.uint32(/* id 10, wireType 0 =*/80).int32(message.killerId);
+                writer.uint32(/* id 10, wireType 0 =*/80).uint32(message.killerId);
             return writer;
         };
 
@@ -2173,49 +2469,49 @@ export const rm = $root.rm = (() => {
             while (reader.pos < end) {
                 let tag = reader.uint32();
                 switch (tag >>> 3) {
-                    case 1: {
-                        message.totalDamage = reader.int32();
+                case 1: {
+                        message.totalDamage = reader.uint32();
                         break;
                     }
-                    case 2: {
-                        message.collisionDamage = reader.int32();
+                case 2: {
+                        message.collisionDamage = reader.uint32();
                         break;
                     }
-                    case 3: {
-                        message.smallProjectileDamage = reader.int32();
+                case 3: {
+                        message.smallProjectileDamage = reader.uint32();
                         break;
                     }
-                    case 4: {
-                        message.largeProjectileDamage = reader.int32();
+                case 4: {
+                        message.largeProjectileDamage = reader.uint32();
                         break;
                     }
-                    case 5: {
-                        message.dartSplashDamage = reader.int32();
+                case 5: {
+                        message.dartSplashDamage = reader.uint32();
                         break;
                     }
-                    case 6: {
-                        message.moduleOfflineDamage = reader.int32();
+                case 6: {
+                        message.moduleOfflineDamage = reader.uint32();
                         break;
                     }
-                    case 7: {
-                        message.wifiOfflineDamage = reader.int32();
+                case 7: {
+                        message.offlineDamage = reader.uint32();
                         break;
                     }
-                    case 8: {
-                        message.penaltyDamage = reader.int32();
+                case 8: {
+                        message.penaltyDamage = reader.uint32();
                         break;
                     }
-                    case 9: {
-                        message.serverKillDamage = reader.int32();
+                case 9: {
+                        message.serverKillDamage = reader.uint32();
                         break;
                     }
-                    case 10: {
-                        message.killerId = reader.int32();
+                case 10: {
+                        message.killerId = reader.uint32();
                         break;
                     }
-                    default:
-                        reader.skipType(tag & 7);
-                        break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
                 }
             }
             return message;
@@ -2266,9 +2562,9 @@ export const rm = $root.rm = (() => {
             if (message.moduleOfflineDamage != null && message.hasOwnProperty("moduleOfflineDamage"))
                 if (!$util.isInteger(message.moduleOfflineDamage))
                     return "moduleOfflineDamage: integer expected";
-            if (message.wifiOfflineDamage != null && message.hasOwnProperty("wifiOfflineDamage"))
-                if (!$util.isInteger(message.wifiOfflineDamage))
-                    return "wifiOfflineDamage: integer expected";
+            if (message.offlineDamage != null && message.hasOwnProperty("offlineDamage"))
+                if (!$util.isInteger(message.offlineDamage))
+                    return "offlineDamage: integer expected";
             if (message.penaltyDamage != null && message.hasOwnProperty("penaltyDamage"))
                 if (!$util.isInteger(message.penaltyDamage))
                     return "penaltyDamage: integer expected";
@@ -2294,25 +2590,25 @@ export const rm = $root.rm = (() => {
                 return object;
             let message = new $root.rm.RobotInjuryStat();
             if (object.totalDamage != null)
-                message.totalDamage = object.totalDamage | 0;
+                message.totalDamage = object.totalDamage >>> 0;
             if (object.collisionDamage != null)
-                message.collisionDamage = object.collisionDamage | 0;
+                message.collisionDamage = object.collisionDamage >>> 0;
             if (object.smallProjectileDamage != null)
-                message.smallProjectileDamage = object.smallProjectileDamage | 0;
+                message.smallProjectileDamage = object.smallProjectileDamage >>> 0;
             if (object.largeProjectileDamage != null)
-                message.largeProjectileDamage = object.largeProjectileDamage | 0;
+                message.largeProjectileDamage = object.largeProjectileDamage >>> 0;
             if (object.dartSplashDamage != null)
-                message.dartSplashDamage = object.dartSplashDamage | 0;
+                message.dartSplashDamage = object.dartSplashDamage >>> 0;
             if (object.moduleOfflineDamage != null)
-                message.moduleOfflineDamage = object.moduleOfflineDamage | 0;
-            if (object.wifiOfflineDamage != null)
-                message.wifiOfflineDamage = object.wifiOfflineDamage | 0;
+                message.moduleOfflineDamage = object.moduleOfflineDamage >>> 0;
+            if (object.offlineDamage != null)
+                message.offlineDamage = object.offlineDamage >>> 0;
             if (object.penaltyDamage != null)
-                message.penaltyDamage = object.penaltyDamage | 0;
+                message.penaltyDamage = object.penaltyDamage >>> 0;
             if (object.serverKillDamage != null)
-                message.serverKillDamage = object.serverKillDamage | 0;
+                message.serverKillDamage = object.serverKillDamage >>> 0;
             if (object.killerId != null)
-                message.killerId = object.killerId | 0;
+                message.killerId = object.killerId >>> 0;
             return message;
         };
 
@@ -2336,7 +2632,7 @@ export const rm = $root.rm = (() => {
                 object.largeProjectileDamage = 0;
                 object.dartSplashDamage = 0;
                 object.moduleOfflineDamage = 0;
-                object.wifiOfflineDamage = 0;
+                object.offlineDamage = 0;
                 object.penaltyDamage = 0;
                 object.serverKillDamage = 0;
                 object.killerId = 0;
@@ -2353,8 +2649,8 @@ export const rm = $root.rm = (() => {
                 object.dartSplashDamage = message.dartSplashDamage;
             if (message.moduleOfflineDamage != null && message.hasOwnProperty("moduleOfflineDamage"))
                 object.moduleOfflineDamage = message.moduleOfflineDamage;
-            if (message.wifiOfflineDamage != null && message.hasOwnProperty("wifiOfflineDamage"))
-                object.wifiOfflineDamage = message.wifiOfflineDamage;
+            if (message.offlineDamage != null && message.hasOwnProperty("offlineDamage"))
+                object.offlineDamage = message.offlineDamage;
             if (message.penaltyDamage != null && message.hasOwnProperty("penaltyDamage"))
                 object.penaltyDamage = message.penaltyDamage;
             if (message.serverKillDamage != null && message.hasOwnProperty("serverKillDamage"))
@@ -2393,7 +2689,7 @@ export const rm = $root.rm = (() => {
         return RobotInjuryStat;
     })();
 
-    rm.RobotRespawnStatus = (function () {
+    rm.RobotRespawnStatus = (function() {
 
         /**
          * Properties of a RobotRespawnStatus.
@@ -2497,13 +2793,13 @@ export const rm = $root.rm = (() => {
             if (message.isPendingRespawn != null && Object.hasOwnProperty.call(message, "isPendingRespawn"))
                 writer.uint32(/* id 1, wireType 0 =*/8).bool(message.isPendingRespawn);
             if (message.totalRespawnProgress != null && Object.hasOwnProperty.call(message, "totalRespawnProgress"))
-                writer.uint32(/* id 2, wireType 0 =*/16).int32(message.totalRespawnProgress);
+                writer.uint32(/* id 2, wireType 0 =*/16).uint32(message.totalRespawnProgress);
             if (message.currentRespawnProgress != null && Object.hasOwnProperty.call(message, "currentRespawnProgress"))
-                writer.uint32(/* id 3, wireType 0 =*/24).int32(message.currentRespawnProgress);
+                writer.uint32(/* id 3, wireType 0 =*/24).uint32(message.currentRespawnProgress);
             if (message.canFreeRespawn != null && Object.hasOwnProperty.call(message, "canFreeRespawn"))
                 writer.uint32(/* id 4, wireType 0 =*/32).bool(message.canFreeRespawn);
             if (message.goldCostForRespawn != null && Object.hasOwnProperty.call(message, "goldCostForRespawn"))
-                writer.uint32(/* id 5, wireType 0 =*/40).int32(message.goldCostForRespawn);
+                writer.uint32(/* id 5, wireType 0 =*/40).uint32(message.goldCostForRespawn);
             if (message.canPayForRespawn != null && Object.hasOwnProperty.call(message, "canPayForRespawn"))
                 writer.uint32(/* id 6, wireType 0 =*/48).bool(message.canPayForRespawn);
             return writer;
@@ -2540,33 +2836,33 @@ export const rm = $root.rm = (() => {
             while (reader.pos < end) {
                 let tag = reader.uint32();
                 switch (tag >>> 3) {
-                    case 1: {
+                case 1: {
                         message.isPendingRespawn = reader.bool();
                         break;
                     }
-                    case 2: {
-                        message.totalRespawnProgress = reader.int32();
+                case 2: {
+                        message.totalRespawnProgress = reader.uint32();
                         break;
                     }
-                    case 3: {
-                        message.currentRespawnProgress = reader.int32();
+                case 3: {
+                        message.currentRespawnProgress = reader.uint32();
                         break;
                     }
-                    case 4: {
+                case 4: {
                         message.canFreeRespawn = reader.bool();
                         break;
                     }
-                    case 5: {
-                        message.goldCostForRespawn = reader.int32();
+                case 5: {
+                        message.goldCostForRespawn = reader.uint32();
                         break;
                     }
-                    case 6: {
+                case 6: {
                         message.canPayForRespawn = reader.bool();
                         break;
                     }
-                    default:
-                        reader.skipType(tag & 7);
-                        break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
                 }
             }
             return message;
@@ -2635,13 +2931,13 @@ export const rm = $root.rm = (() => {
             if (object.isPendingRespawn != null)
                 message.isPendingRespawn = Boolean(object.isPendingRespawn);
             if (object.totalRespawnProgress != null)
-                message.totalRespawnProgress = object.totalRespawnProgress | 0;
+                message.totalRespawnProgress = object.totalRespawnProgress >>> 0;
             if (object.currentRespawnProgress != null)
-                message.currentRespawnProgress = object.currentRespawnProgress | 0;
+                message.currentRespawnProgress = object.currentRespawnProgress >>> 0;
             if (object.canFreeRespawn != null)
                 message.canFreeRespawn = Boolean(object.canFreeRespawn);
             if (object.goldCostForRespawn != null)
-                message.goldCostForRespawn = object.goldCostForRespawn | 0;
+                message.goldCostForRespawn = object.goldCostForRespawn >>> 0;
             if (object.canPayForRespawn != null)
                 message.canPayForRespawn = Boolean(object.canPayForRespawn);
             return message;
@@ -2712,7 +3008,7 @@ export const rm = $root.rm = (() => {
         return RobotRespawnStatus;
     })();
 
-    rm.RobotStaticStatus = (function () {
+    rm.RobotStaticStatus = (function() {
 
         /**
          * Properties of a RobotStaticStatus.
@@ -2886,33 +3182,33 @@ export const rm = $root.rm = (() => {
             if (!writer)
                 writer = $Writer.create();
             if (message.connectionState != null && Object.hasOwnProperty.call(message, "connectionState"))
-                writer.uint32(/* id 1, wireType 0 =*/8).int32(message.connectionState);
+                writer.uint32(/* id 1, wireType 0 =*/8).uint32(message.connectionState);
             if (message.fieldState != null && Object.hasOwnProperty.call(message, "fieldState"))
-                writer.uint32(/* id 2, wireType 0 =*/16).int32(message.fieldState);
+                writer.uint32(/* id 2, wireType 0 =*/16).uint32(message.fieldState);
             if (message.aliveState != null && Object.hasOwnProperty.call(message, "aliveState"))
-                writer.uint32(/* id 3, wireType 0 =*/24).int32(message.aliveState);
+                writer.uint32(/* id 3, wireType 0 =*/24).uint32(message.aliveState);
             if (message.robotId != null && Object.hasOwnProperty.call(message, "robotId"))
-                writer.uint32(/* id 4, wireType 0 =*/32).int32(message.robotId);
+                writer.uint32(/* id 4, wireType 0 =*/32).uint32(message.robotId);
             if (message.robotType != null && Object.hasOwnProperty.call(message, "robotType"))
-                writer.uint32(/* id 5, wireType 0 =*/40).int32(message.robotType);
+                writer.uint32(/* id 5, wireType 0 =*/40).uint32(message.robotType);
             if (message.performanceSystemShooter != null && Object.hasOwnProperty.call(message, "performanceSystemShooter"))
-                writer.uint32(/* id 6, wireType 0 =*/48).int32(message.performanceSystemShooter);
+                writer.uint32(/* id 6, wireType 0 =*/48).uint32(message.performanceSystemShooter);
             if (message.performanceSystemChassis != null && Object.hasOwnProperty.call(message, "performanceSystemChassis"))
-                writer.uint32(/* id 7, wireType 0 =*/56).int32(message.performanceSystemChassis);
+                writer.uint32(/* id 7, wireType 0 =*/56).uint32(message.performanceSystemChassis);
             if (message.level != null && Object.hasOwnProperty.call(message, "level"))
-                writer.uint32(/* id 8, wireType 0 =*/64).int32(message.level);
+                writer.uint32(/* id 8, wireType 0 =*/64).uint32(message.level);
             if (message.maxHealth != null && Object.hasOwnProperty.call(message, "maxHealth"))
-                writer.uint32(/* id 9, wireType 0 =*/72).int32(message.maxHealth);
+                writer.uint32(/* id 9, wireType 0 =*/72).uint32(message.maxHealth);
             if (message.maxHeat != null && Object.hasOwnProperty.call(message, "maxHeat"))
-                writer.uint32(/* id 10, wireType 0 =*/80).int32(message.maxHeat);
+                writer.uint32(/* id 10, wireType 0 =*/80).uint32(message.maxHeat);
             if (message.heatCooldownRate != null && Object.hasOwnProperty.call(message, "heatCooldownRate"))
-                writer.uint32(/* id 11, wireType 0 =*/88).int32(message.heatCooldownRate);
+                writer.uint32(/* id 11, wireType 5 =*/93).float(message.heatCooldownRate);
             if (message.maxPower != null && Object.hasOwnProperty.call(message, "maxPower"))
-                writer.uint32(/* id 12, wireType 0 =*/96).int32(message.maxPower);
+                writer.uint32(/* id 12, wireType 0 =*/96).uint32(message.maxPower);
             if (message.maxBufferEnergy != null && Object.hasOwnProperty.call(message, "maxBufferEnergy"))
-                writer.uint32(/* id 13, wireType 0 =*/104).int32(message.maxBufferEnergy);
+                writer.uint32(/* id 13, wireType 0 =*/104).uint32(message.maxBufferEnergy);
             if (message.maxChassisEnergy != null && Object.hasOwnProperty.call(message, "maxChassisEnergy"))
-                writer.uint32(/* id 14, wireType 0 =*/112).int32(message.maxChassisEnergy);
+                writer.uint32(/* id 14, wireType 0 =*/112).uint32(message.maxChassisEnergy);
             return writer;
         };
 
@@ -2947,65 +3243,65 @@ export const rm = $root.rm = (() => {
             while (reader.pos < end) {
                 let tag = reader.uint32();
                 switch (tag >>> 3) {
-                    case 1: {
-                        message.connectionState = reader.int32();
+                case 1: {
+                        message.connectionState = reader.uint32();
                         break;
                     }
-                    case 2: {
-                        message.fieldState = reader.int32();
+                case 2: {
+                        message.fieldState = reader.uint32();
                         break;
                     }
-                    case 3: {
-                        message.aliveState = reader.int32();
+                case 3: {
+                        message.aliveState = reader.uint32();
                         break;
                     }
-                    case 4: {
-                        message.robotId = reader.int32();
+                case 4: {
+                        message.robotId = reader.uint32();
                         break;
                     }
-                    case 5: {
-                        message.robotType = reader.int32();
+                case 5: {
+                        message.robotType = reader.uint32();
                         break;
                     }
-                    case 6: {
-                        message.performanceSystemShooter = reader.int32();
+                case 6: {
+                        message.performanceSystemShooter = reader.uint32();
                         break;
                     }
-                    case 7: {
-                        message.performanceSystemChassis = reader.int32();
+                case 7: {
+                        message.performanceSystemChassis = reader.uint32();
                         break;
                     }
-                    case 8: {
-                        message.level = reader.int32();
+                case 8: {
+                        message.level = reader.uint32();
                         break;
                     }
-                    case 9: {
-                        message.maxHealth = reader.int32();
+                case 9: {
+                        message.maxHealth = reader.uint32();
                         break;
                     }
-                    case 10: {
-                        message.maxHeat = reader.int32();
+                case 10: {
+                        message.maxHeat = reader.uint32();
                         break;
                     }
-                    case 11: {
-                        message.heatCooldownRate = reader.int32();
+                case 11: {
+                        message.heatCooldownRate = reader.float();
                         break;
                     }
-                    case 12: {
-                        message.maxPower = reader.int32();
+                case 12: {
+                        message.maxPower = reader.uint32();
                         break;
                     }
-                    case 13: {
-                        message.maxBufferEnergy = reader.int32();
+                case 13: {
+                        message.maxBufferEnergy = reader.uint32();
                         break;
                     }
-                    case 14: {
-                        message.maxChassisEnergy = reader.int32();
+                case 14: {
+                        message.maxChassisEnergy = reader.uint32();
                         break;
                     }
-                    default:
-                        reader.skipType(tag & 7);
-                        break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
                 }
             }
             return message;
@@ -3069,8 +3365,8 @@ export const rm = $root.rm = (() => {
                 if (!$util.isInteger(message.maxHeat))
                     return "maxHeat: integer expected";
             if (message.heatCooldownRate != null && message.hasOwnProperty("heatCooldownRate"))
-                if (!$util.isInteger(message.heatCooldownRate))
-                    return "heatCooldownRate: integer expected";
+                if (typeof message.heatCooldownRate !== "number")
+                    return "heatCooldownRate: number expected";
             if (message.maxPower != null && message.hasOwnProperty("maxPower"))
                 if (!$util.isInteger(message.maxPower))
                     return "maxPower: integer expected";
@@ -3096,33 +3392,33 @@ export const rm = $root.rm = (() => {
                 return object;
             let message = new $root.rm.RobotStaticStatus();
             if (object.connectionState != null)
-                message.connectionState = object.connectionState | 0;
+                message.connectionState = object.connectionState >>> 0;
             if (object.fieldState != null)
-                message.fieldState = object.fieldState | 0;
+                message.fieldState = object.fieldState >>> 0;
             if (object.aliveState != null)
-                message.aliveState = object.aliveState | 0;
+                message.aliveState = object.aliveState >>> 0;
             if (object.robotId != null)
-                message.robotId = object.robotId | 0;
+                message.robotId = object.robotId >>> 0;
             if (object.robotType != null)
-                message.robotType = object.robotType | 0;
+                message.robotType = object.robotType >>> 0;
             if (object.performanceSystemShooter != null)
-                message.performanceSystemShooter = object.performanceSystemShooter | 0;
+                message.performanceSystemShooter = object.performanceSystemShooter >>> 0;
             if (object.performanceSystemChassis != null)
-                message.performanceSystemChassis = object.performanceSystemChassis | 0;
+                message.performanceSystemChassis = object.performanceSystemChassis >>> 0;
             if (object.level != null)
-                message.level = object.level | 0;
+                message.level = object.level >>> 0;
             if (object.maxHealth != null)
-                message.maxHealth = object.maxHealth | 0;
+                message.maxHealth = object.maxHealth >>> 0;
             if (object.maxHeat != null)
-                message.maxHeat = object.maxHeat | 0;
+                message.maxHeat = object.maxHeat >>> 0;
             if (object.heatCooldownRate != null)
-                message.heatCooldownRate = object.heatCooldownRate | 0;
+                message.heatCooldownRate = Number(object.heatCooldownRate);
             if (object.maxPower != null)
-                message.maxPower = object.maxPower | 0;
+                message.maxPower = object.maxPower >>> 0;
             if (object.maxBufferEnergy != null)
-                message.maxBufferEnergy = object.maxBufferEnergy | 0;
+                message.maxBufferEnergy = object.maxBufferEnergy >>> 0;
             if (object.maxChassisEnergy != null)
-                message.maxChassisEnergy = object.maxChassisEnergy | 0;
+                message.maxChassisEnergy = object.maxChassisEnergy >>> 0;
             return message;
         };
 
@@ -3176,7 +3472,7 @@ export const rm = $root.rm = (() => {
             if (message.maxHeat != null && message.hasOwnProperty("maxHeat"))
                 object.maxHeat = message.maxHeat;
             if (message.heatCooldownRate != null && message.hasOwnProperty("heatCooldownRate"))
-                object.heatCooldownRate = message.heatCooldownRate;
+                object.heatCooldownRate = options.json && !isFinite(message.heatCooldownRate) ? String(message.heatCooldownRate) : message.heatCooldownRate;
             if (message.maxPower != null && message.hasOwnProperty("maxPower"))
                 object.maxPower = message.maxPower;
             if (message.maxBufferEnergy != null && message.hasOwnProperty("maxBufferEnergy"))
@@ -3215,7 +3511,7 @@ export const rm = $root.rm = (() => {
         return RobotStaticStatus;
     })();
 
-    rm.RobotDynamicStatus = (function () {
+    rm.RobotDynamicStatus = (function() {
 
         /**
          * Properties of a RobotDynamicStatus.
@@ -3380,27 +3676,27 @@ export const rm = $root.rm = (() => {
             if (!writer)
                 writer = $Writer.create();
             if (message.currentHealth != null && Object.hasOwnProperty.call(message, "currentHealth"))
-                writer.uint32(/* id 1, wireType 0 =*/8).int32(message.currentHealth);
+                writer.uint32(/* id 1, wireType 0 =*/8).uint32(message.currentHealth);
             if (message.currentHeat != null && Object.hasOwnProperty.call(message, "currentHeat"))
-                writer.uint32(/* id 2, wireType 0 =*/16).int32(message.currentHeat);
+                writer.uint32(/* id 2, wireType 5 =*/21).float(message.currentHeat);
             if (message.lastProjectileFireRate != null && Object.hasOwnProperty.call(message, "lastProjectileFireRate"))
-                writer.uint32(/* id 3, wireType 0 =*/24).int32(message.lastProjectileFireRate);
+                writer.uint32(/* id 3, wireType 5 =*/29).float(message.lastProjectileFireRate);
             if (message.currentChassisEnergy != null && Object.hasOwnProperty.call(message, "currentChassisEnergy"))
-                writer.uint32(/* id 4, wireType 0 =*/32).int32(message.currentChassisEnergy);
+                writer.uint32(/* id 4, wireType 0 =*/32).uint32(message.currentChassisEnergy);
             if (message.currentBufferEnergy != null && Object.hasOwnProperty.call(message, "currentBufferEnergy"))
-                writer.uint32(/* id 5, wireType 0 =*/40).int32(message.currentBufferEnergy);
+                writer.uint32(/* id 5, wireType 0 =*/40).uint32(message.currentBufferEnergy);
             if (message.currentExperience != null && Object.hasOwnProperty.call(message, "currentExperience"))
-                writer.uint32(/* id 6, wireType 0 =*/48).int32(message.currentExperience);
+                writer.uint32(/* id 6, wireType 0 =*/48).uint32(message.currentExperience);
             if (message.experienceForUpgrade != null && Object.hasOwnProperty.call(message, "experienceForUpgrade"))
-                writer.uint32(/* id 7, wireType 0 =*/56).int32(message.experienceForUpgrade);
+                writer.uint32(/* id 7, wireType 0 =*/56).uint32(message.experienceForUpgrade);
             if (message.totalProjectilesFired != null && Object.hasOwnProperty.call(message, "totalProjectilesFired"))
-                writer.uint32(/* id 8, wireType 0 =*/64).int32(message.totalProjectilesFired);
+                writer.uint32(/* id 8, wireType 0 =*/64).uint32(message.totalProjectilesFired);
             if (message.remainingAmmo != null && Object.hasOwnProperty.call(message, "remainingAmmo"))
-                writer.uint32(/* id 9, wireType 0 =*/72).int32(message.remainingAmmo);
+                writer.uint32(/* id 9, wireType 0 =*/72).uint32(message.remainingAmmo);
             if (message.isOutOfCombat != null && Object.hasOwnProperty.call(message, "isOutOfCombat"))
                 writer.uint32(/* id 10, wireType 0 =*/80).bool(message.isOutOfCombat);
             if (message.outOfCombatCountdown != null && Object.hasOwnProperty.call(message, "outOfCombatCountdown"))
-                writer.uint32(/* id 11, wireType 0 =*/88).int32(message.outOfCombatCountdown);
+                writer.uint32(/* id 11, wireType 0 =*/88).uint32(message.outOfCombatCountdown);
             if (message.canRemoteHeal != null && Object.hasOwnProperty.call(message, "canRemoteHeal"))
                 writer.uint32(/* id 12, wireType 0 =*/96).bool(message.canRemoteHeal);
             if (message.canRemoteAmmo != null && Object.hasOwnProperty.call(message, "canRemoteAmmo"))
@@ -3439,61 +3735,61 @@ export const rm = $root.rm = (() => {
             while (reader.pos < end) {
                 let tag = reader.uint32();
                 switch (tag >>> 3) {
-                    case 1: {
-                        message.currentHealth = reader.int32();
+                case 1: {
+                        message.currentHealth = reader.uint32();
                         break;
                     }
-                    case 2: {
-                        message.currentHeat = reader.int32();
+                case 2: {
+                        message.currentHeat = reader.float();
                         break;
                     }
-                    case 3: {
-                        message.lastProjectileFireRate = reader.int32();
+                case 3: {
+                        message.lastProjectileFireRate = reader.float();
                         break;
                     }
-                    case 4: {
-                        message.currentChassisEnergy = reader.int32();
+                case 4: {
+                        message.currentChassisEnergy = reader.uint32();
                         break;
                     }
-                    case 5: {
-                        message.currentBufferEnergy = reader.int32();
+                case 5: {
+                        message.currentBufferEnergy = reader.uint32();
                         break;
                     }
-                    case 6: {
-                        message.currentExperience = reader.int32();
+                case 6: {
+                        message.currentExperience = reader.uint32();
                         break;
                     }
-                    case 7: {
-                        message.experienceForUpgrade = reader.int32();
+                case 7: {
+                        message.experienceForUpgrade = reader.uint32();
                         break;
                     }
-                    case 8: {
-                        message.totalProjectilesFired = reader.int32();
+                case 8: {
+                        message.totalProjectilesFired = reader.uint32();
                         break;
                     }
-                    case 9: {
-                        message.remainingAmmo = reader.int32();
+                case 9: {
+                        message.remainingAmmo = reader.uint32();
                         break;
                     }
-                    case 10: {
+                case 10: {
                         message.isOutOfCombat = reader.bool();
                         break;
                     }
-                    case 11: {
-                        message.outOfCombatCountdown = reader.int32();
+                case 11: {
+                        message.outOfCombatCountdown = reader.uint32();
                         break;
                     }
-                    case 12: {
+                case 12: {
                         message.canRemoteHeal = reader.bool();
                         break;
                     }
-                    case 13: {
+                case 13: {
                         message.canRemoteAmmo = reader.bool();
                         break;
                     }
-                    default:
-                        reader.skipType(tag & 7);
-                        break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
                 }
             }
             return message;
@@ -3530,11 +3826,11 @@ export const rm = $root.rm = (() => {
                 if (!$util.isInteger(message.currentHealth))
                     return "currentHealth: integer expected";
             if (message.currentHeat != null && message.hasOwnProperty("currentHeat"))
-                if (!$util.isInteger(message.currentHeat))
-                    return "currentHeat: integer expected";
+                if (typeof message.currentHeat !== "number")
+                    return "currentHeat: number expected";
             if (message.lastProjectileFireRate != null && message.hasOwnProperty("lastProjectileFireRate"))
-                if (!$util.isInteger(message.lastProjectileFireRate))
-                    return "lastProjectileFireRate: integer expected";
+                if (typeof message.lastProjectileFireRate !== "number")
+                    return "lastProjectileFireRate: number expected";
             if (message.currentChassisEnergy != null && message.hasOwnProperty("currentChassisEnergy"))
                 if (!$util.isInteger(message.currentChassisEnergy))
                     return "currentChassisEnergy: integer expected";
@@ -3581,27 +3877,27 @@ export const rm = $root.rm = (() => {
                 return object;
             let message = new $root.rm.RobotDynamicStatus();
             if (object.currentHealth != null)
-                message.currentHealth = object.currentHealth | 0;
+                message.currentHealth = object.currentHealth >>> 0;
             if (object.currentHeat != null)
-                message.currentHeat = object.currentHeat | 0;
+                message.currentHeat = Number(object.currentHeat);
             if (object.lastProjectileFireRate != null)
-                message.lastProjectileFireRate = object.lastProjectileFireRate | 0;
+                message.lastProjectileFireRate = Number(object.lastProjectileFireRate);
             if (object.currentChassisEnergy != null)
-                message.currentChassisEnergy = object.currentChassisEnergy | 0;
+                message.currentChassisEnergy = object.currentChassisEnergy >>> 0;
             if (object.currentBufferEnergy != null)
-                message.currentBufferEnergy = object.currentBufferEnergy | 0;
+                message.currentBufferEnergy = object.currentBufferEnergy >>> 0;
             if (object.currentExperience != null)
-                message.currentExperience = object.currentExperience | 0;
+                message.currentExperience = object.currentExperience >>> 0;
             if (object.experienceForUpgrade != null)
-                message.experienceForUpgrade = object.experienceForUpgrade | 0;
+                message.experienceForUpgrade = object.experienceForUpgrade >>> 0;
             if (object.totalProjectilesFired != null)
-                message.totalProjectilesFired = object.totalProjectilesFired | 0;
+                message.totalProjectilesFired = object.totalProjectilesFired >>> 0;
             if (object.remainingAmmo != null)
-                message.remainingAmmo = object.remainingAmmo | 0;
+                message.remainingAmmo = object.remainingAmmo >>> 0;
             if (object.isOutOfCombat != null)
                 message.isOutOfCombat = Boolean(object.isOutOfCombat);
             if (object.outOfCombatCountdown != null)
-                message.outOfCombatCountdown = object.outOfCombatCountdown | 0;
+                message.outOfCombatCountdown = object.outOfCombatCountdown >>> 0;
             if (object.canRemoteHeal != null)
                 message.canRemoteHeal = Boolean(object.canRemoteHeal);
             if (object.canRemoteAmmo != null)
@@ -3640,9 +3936,9 @@ export const rm = $root.rm = (() => {
             if (message.currentHealth != null && message.hasOwnProperty("currentHealth"))
                 object.currentHealth = message.currentHealth;
             if (message.currentHeat != null && message.hasOwnProperty("currentHeat"))
-                object.currentHeat = message.currentHeat;
+                object.currentHeat = options.json && !isFinite(message.currentHeat) ? String(message.currentHeat) : message.currentHeat;
             if (message.lastProjectileFireRate != null && message.hasOwnProperty("lastProjectileFireRate"))
-                object.lastProjectileFireRate = message.lastProjectileFireRate;
+                object.lastProjectileFireRate = options.json && !isFinite(message.lastProjectileFireRate) ? String(message.lastProjectileFireRate) : message.lastProjectileFireRate;
             if (message.currentChassisEnergy != null && message.hasOwnProperty("currentChassisEnergy"))
                 object.currentChassisEnergy = message.currentChassisEnergy;
             if (message.currentBufferEnergy != null && message.hasOwnProperty("currentBufferEnergy"))
@@ -3695,7 +3991,7 @@ export const rm = $root.rm = (() => {
         return RobotDynamicStatus;
     })();
 
-    rm.RobotModuleStatus = (function () {
+    rm.RobotModuleStatus = (function() {
 
         /**
          * Properties of a RobotModuleStatus.
@@ -3711,6 +4007,7 @@ export const rm = $root.rm = (() => {
          * @property {number|null} [videoTransmission] RobotModuleStatus videoTransmission
          * @property {number|null} [capacitor] RobotModuleStatus capacitor
          * @property {number|null} [mainController] RobotModuleStatus mainController
+         * @property {number|null} [laserDetectionModule] RobotModuleStatus laserDetectionModule
          */
 
         /**
@@ -3809,6 +4106,14 @@ export const rm = $root.rm = (() => {
         RobotModuleStatus.prototype.mainController = 0;
 
         /**
+         * RobotModuleStatus laserDetectionModule.
+         * @member {number} laserDetectionModule
+         * @memberof rm.RobotModuleStatus
+         * @instance
+         */
+        RobotModuleStatus.prototype.laserDetectionModule = 0;
+
+        /**
          * Creates a new RobotModuleStatus instance using the specified properties.
          * @function create
          * @memberof rm.RobotModuleStatus
@@ -3833,25 +4138,27 @@ export const rm = $root.rm = (() => {
             if (!writer)
                 writer = $Writer.create();
             if (message.powerManager != null && Object.hasOwnProperty.call(message, "powerManager"))
-                writer.uint32(/* id 1, wireType 0 =*/8).int32(message.powerManager);
+                writer.uint32(/* id 1, wireType 0 =*/8).uint32(message.powerManager);
             if (message.rfid != null && Object.hasOwnProperty.call(message, "rfid"))
-                writer.uint32(/* id 2, wireType 0 =*/16).int32(message.rfid);
+                writer.uint32(/* id 2, wireType 0 =*/16).uint32(message.rfid);
             if (message.lightStrip != null && Object.hasOwnProperty.call(message, "lightStrip"))
-                writer.uint32(/* id 3, wireType 0 =*/24).int32(message.lightStrip);
+                writer.uint32(/* id 3, wireType 0 =*/24).uint32(message.lightStrip);
             if (message.smallShooter != null && Object.hasOwnProperty.call(message, "smallShooter"))
-                writer.uint32(/* id 4, wireType 0 =*/32).int32(message.smallShooter);
+                writer.uint32(/* id 4, wireType 0 =*/32).uint32(message.smallShooter);
             if (message.bigShooter != null && Object.hasOwnProperty.call(message, "bigShooter"))
-                writer.uint32(/* id 5, wireType 0 =*/40).int32(message.bigShooter);
+                writer.uint32(/* id 5, wireType 0 =*/40).uint32(message.bigShooter);
             if (message.uwb != null && Object.hasOwnProperty.call(message, "uwb"))
-                writer.uint32(/* id 6, wireType 0 =*/48).int32(message.uwb);
+                writer.uint32(/* id 6, wireType 0 =*/48).uint32(message.uwb);
             if (message.armor != null && Object.hasOwnProperty.call(message, "armor"))
-                writer.uint32(/* id 7, wireType 0 =*/56).int32(message.armor);
+                writer.uint32(/* id 7, wireType 0 =*/56).uint32(message.armor);
             if (message.videoTransmission != null && Object.hasOwnProperty.call(message, "videoTransmission"))
-                writer.uint32(/* id 8, wireType 0 =*/64).int32(message.videoTransmission);
+                writer.uint32(/* id 8, wireType 0 =*/64).uint32(message.videoTransmission);
             if (message.capacitor != null && Object.hasOwnProperty.call(message, "capacitor"))
-                writer.uint32(/* id 9, wireType 0 =*/72).int32(message.capacitor);
+                writer.uint32(/* id 9, wireType 0 =*/72).uint32(message.capacitor);
             if (message.mainController != null && Object.hasOwnProperty.call(message, "mainController"))
-                writer.uint32(/* id 10, wireType 0 =*/80).int32(message.mainController);
+                writer.uint32(/* id 10, wireType 0 =*/80).uint32(message.mainController);
+            if (message.laserDetectionModule != null && Object.hasOwnProperty.call(message, "laserDetectionModule"))
+                writer.uint32(/* id 11, wireType 0 =*/88).uint32(message.laserDetectionModule);
             return writer;
         };
 
@@ -3886,49 +4193,53 @@ export const rm = $root.rm = (() => {
             while (reader.pos < end) {
                 let tag = reader.uint32();
                 switch (tag >>> 3) {
-                    case 1: {
-                        message.powerManager = reader.int32();
+                case 1: {
+                        message.powerManager = reader.uint32();
                         break;
                     }
-                    case 2: {
-                        message.rfid = reader.int32();
+                case 2: {
+                        message.rfid = reader.uint32();
                         break;
                     }
-                    case 3: {
-                        message.lightStrip = reader.int32();
+                case 3: {
+                        message.lightStrip = reader.uint32();
                         break;
                     }
-                    case 4: {
-                        message.smallShooter = reader.int32();
+                case 4: {
+                        message.smallShooter = reader.uint32();
                         break;
                     }
-                    case 5: {
-                        message.bigShooter = reader.int32();
+                case 5: {
+                        message.bigShooter = reader.uint32();
                         break;
                     }
-                    case 6: {
-                        message.uwb = reader.int32();
+                case 6: {
+                        message.uwb = reader.uint32();
                         break;
                     }
-                    case 7: {
-                        message.armor = reader.int32();
+                case 7: {
+                        message.armor = reader.uint32();
                         break;
                     }
-                    case 8: {
-                        message.videoTransmission = reader.int32();
+                case 8: {
+                        message.videoTransmission = reader.uint32();
                         break;
                     }
-                    case 9: {
-                        message.capacitor = reader.int32();
+                case 9: {
+                        message.capacitor = reader.uint32();
                         break;
                     }
-                    case 10: {
-                        message.mainController = reader.int32();
+                case 10: {
+                        message.mainController = reader.uint32();
                         break;
                     }
-                    default:
-                        reader.skipType(tag & 7);
+                case 11: {
+                        message.laserDetectionModule = reader.uint32();
                         break;
+                    }
+                default:
+                    reader.skipType(tag & 7);
+                    break;
                 }
             }
             return message;
@@ -3991,6 +4302,9 @@ export const rm = $root.rm = (() => {
             if (message.mainController != null && message.hasOwnProperty("mainController"))
                 if (!$util.isInteger(message.mainController))
                     return "mainController: integer expected";
+            if (message.laserDetectionModule != null && message.hasOwnProperty("laserDetectionModule"))
+                if (!$util.isInteger(message.laserDetectionModule))
+                    return "laserDetectionModule: integer expected";
             return null;
         };
 
@@ -4007,25 +4321,27 @@ export const rm = $root.rm = (() => {
                 return object;
             let message = new $root.rm.RobotModuleStatus();
             if (object.powerManager != null)
-                message.powerManager = object.powerManager | 0;
+                message.powerManager = object.powerManager >>> 0;
             if (object.rfid != null)
-                message.rfid = object.rfid | 0;
+                message.rfid = object.rfid >>> 0;
             if (object.lightStrip != null)
-                message.lightStrip = object.lightStrip | 0;
+                message.lightStrip = object.lightStrip >>> 0;
             if (object.smallShooter != null)
-                message.smallShooter = object.smallShooter | 0;
+                message.smallShooter = object.smallShooter >>> 0;
             if (object.bigShooter != null)
-                message.bigShooter = object.bigShooter | 0;
+                message.bigShooter = object.bigShooter >>> 0;
             if (object.uwb != null)
-                message.uwb = object.uwb | 0;
+                message.uwb = object.uwb >>> 0;
             if (object.armor != null)
-                message.armor = object.armor | 0;
+                message.armor = object.armor >>> 0;
             if (object.videoTransmission != null)
-                message.videoTransmission = object.videoTransmission | 0;
+                message.videoTransmission = object.videoTransmission >>> 0;
             if (object.capacitor != null)
-                message.capacitor = object.capacitor | 0;
+                message.capacitor = object.capacitor >>> 0;
             if (object.mainController != null)
-                message.mainController = object.mainController | 0;
+                message.mainController = object.mainController >>> 0;
+            if (object.laserDetectionModule != null)
+                message.laserDetectionModule = object.laserDetectionModule >>> 0;
             return message;
         };
 
@@ -4053,6 +4369,7 @@ export const rm = $root.rm = (() => {
                 object.videoTransmission = 0;
                 object.capacitor = 0;
                 object.mainController = 0;
+                object.laserDetectionModule = 0;
             }
             if (message.powerManager != null && message.hasOwnProperty("powerManager"))
                 object.powerManager = message.powerManager;
@@ -4074,6 +4391,8 @@ export const rm = $root.rm = (() => {
                 object.capacitor = message.capacitor;
             if (message.mainController != null && message.hasOwnProperty("mainController"))
                 object.mainController = message.mainController;
+            if (message.laserDetectionModule != null && message.hasOwnProperty("laserDetectionModule"))
+                object.laserDetectionModule = message.laserDetectionModule;
             return object;
         };
 
@@ -4106,7 +4425,7 @@ export const rm = $root.rm = (() => {
         return RobotModuleStatus;
     })();
 
-    rm.RobotPosition = (function () {
+    rm.RobotPosition = (function() {
 
         /**
          * Properties of a RobotPosition.
@@ -4116,6 +4435,7 @@ export const rm = $root.rm = (() => {
          * @property {number|null} [y] RobotPosition y
          * @property {number|null} [z] RobotPosition z
          * @property {number|null} [yaw] RobotPosition yaw
+         * @property {number|null} [robotId] RobotPosition robotId
          */
 
         /**
@@ -4166,6 +4486,14 @@ export const rm = $root.rm = (() => {
         RobotPosition.prototype.yaw = 0;
 
         /**
+         * RobotPosition robotId.
+         * @member {number} robotId
+         * @memberof rm.RobotPosition
+         * @instance
+         */
+        RobotPosition.prototype.robotId = 0;
+
+        /**
          * Creates a new RobotPosition instance using the specified properties.
          * @function create
          * @memberof rm.RobotPosition
@@ -4197,6 +4525,8 @@ export const rm = $root.rm = (() => {
                 writer.uint32(/* id 3, wireType 5 =*/29).float(message.z);
             if (message.yaw != null && Object.hasOwnProperty.call(message, "yaw"))
                 writer.uint32(/* id 4, wireType 5 =*/37).float(message.yaw);
+            if (message.robotId != null && Object.hasOwnProperty.call(message, "robotId"))
+                writer.uint32(/* id 5, wireType 0 =*/40).uint32(message.robotId);
             return writer;
         };
 
@@ -4231,25 +4561,29 @@ export const rm = $root.rm = (() => {
             while (reader.pos < end) {
                 let tag = reader.uint32();
                 switch (tag >>> 3) {
-                    case 1: {
+                case 1: {
                         message.x = reader.float();
                         break;
                     }
-                    case 2: {
+                case 2: {
                         message.y = reader.float();
                         break;
                     }
-                    case 3: {
+                case 3: {
                         message.z = reader.float();
                         break;
                     }
-                    case 4: {
+                case 4: {
                         message.yaw = reader.float();
                         break;
                     }
-                    default:
-                        reader.skipType(tag & 7);
+                case 5: {
+                        message.robotId = reader.uint32();
                         break;
+                    }
+                default:
+                    reader.skipType(tag & 7);
+                    break;
                 }
             }
             return message;
@@ -4294,6 +4628,9 @@ export const rm = $root.rm = (() => {
             if (message.yaw != null && message.hasOwnProperty("yaw"))
                 if (typeof message.yaw !== "number")
                     return "yaw: number expected";
+            if (message.robotId != null && message.hasOwnProperty("robotId"))
+                if (!$util.isInteger(message.robotId))
+                    return "robotId: integer expected";
             return null;
         };
 
@@ -4317,6 +4654,8 @@ export const rm = $root.rm = (() => {
                 message.z = Number(object.z);
             if (object.yaw != null)
                 message.yaw = Number(object.yaw);
+            if (object.robotId != null)
+                message.robotId = object.robotId >>> 0;
             return message;
         };
 
@@ -4338,6 +4677,7 @@ export const rm = $root.rm = (() => {
                 object.y = 0;
                 object.z = 0;
                 object.yaw = 0;
+                object.robotId = 0;
             }
             if (message.x != null && message.hasOwnProperty("x"))
                 object.x = options.json && !isFinite(message.x) ? String(message.x) : message.x;
@@ -4347,6 +4687,8 @@ export const rm = $root.rm = (() => {
                 object.z = options.json && !isFinite(message.z) ? String(message.z) : message.z;
             if (message.yaw != null && message.hasOwnProperty("yaw"))
                 object.yaw = options.json && !isFinite(message.yaw) ? String(message.yaw) : message.yaw;
+            if (message.robotId != null && message.hasOwnProperty("robotId"))
+                object.robotId = message.robotId;
             return object;
         };
 
@@ -4379,7 +4721,7 @@ export const rm = $root.rm = (() => {
         return RobotPosition;
     })();
 
-    rm.Buff = (function () {
+    rm.Buff = (function() {
 
         /**
          * Properties of a Buff.
@@ -4390,7 +4732,6 @@ export const rm = $root.rm = (() => {
          * @property {number|null} [buffLevel] Buff buffLevel
          * @property {number|null} [buffMaxTime] Buff buffMaxTime
          * @property {number|null} [buffLeftTime] Buff buffLeftTime
-         * @property {string|null} [msgParams] Buff msgParams
          */
 
         /**
@@ -4449,14 +4790,6 @@ export const rm = $root.rm = (() => {
         Buff.prototype.buffLeftTime = 0;
 
         /**
-         * Buff msgParams.
-         * @member {string} msgParams
-         * @memberof rm.Buff
-         * @instance
-         */
-        Buff.prototype.msgParams = "";
-
-        /**
          * Creates a new Buff instance using the specified properties.
          * @function create
          * @memberof rm.Buff
@@ -4481,17 +4814,15 @@ export const rm = $root.rm = (() => {
             if (!writer)
                 writer = $Writer.create();
             if (message.robotId != null && Object.hasOwnProperty.call(message, "robotId"))
-                writer.uint32(/* id 1, wireType 0 =*/8).int32(message.robotId);
+                writer.uint32(/* id 1, wireType 0 =*/8).uint32(message.robotId);
             if (message.buffType != null && Object.hasOwnProperty.call(message, "buffType"))
-                writer.uint32(/* id 2, wireType 0 =*/16).int32(message.buffType);
+                writer.uint32(/* id 2, wireType 0 =*/16).uint32(message.buffType);
             if (message.buffLevel != null && Object.hasOwnProperty.call(message, "buffLevel"))
-                writer.uint32(/* id 3, wireType 5 =*/29).float(message.buffLevel);
+                writer.uint32(/* id 3, wireType 0 =*/24).int32(message.buffLevel);
             if (message.buffMaxTime != null && Object.hasOwnProperty.call(message, "buffMaxTime"))
-                writer.uint32(/* id 4, wireType 0 =*/32).int32(message.buffMaxTime);
+                writer.uint32(/* id 4, wireType 0 =*/32).uint32(message.buffMaxTime);
             if (message.buffLeftTime != null && Object.hasOwnProperty.call(message, "buffLeftTime"))
-                writer.uint32(/* id 5, wireType 0 =*/40).int32(message.buffLeftTime);
-            if (message.msgParams != null && Object.hasOwnProperty.call(message, "msgParams"))
-                writer.uint32(/* id 6, wireType 2 =*/50).string(message.msgParams);
+                writer.uint32(/* id 5, wireType 0 =*/40).uint32(message.buffLeftTime);
             return writer;
         };
 
@@ -4526,33 +4857,29 @@ export const rm = $root.rm = (() => {
             while (reader.pos < end) {
                 let tag = reader.uint32();
                 switch (tag >>> 3) {
-                    case 1: {
-                        message.robotId = reader.int32();
+                case 1: {
+                        message.robotId = reader.uint32();
                         break;
                     }
-                    case 2: {
-                        message.buffType = reader.int32();
+                case 2: {
+                        message.buffType = reader.uint32();
                         break;
                     }
-                    case 3: {
-                        message.buffLevel = reader.float();
+                case 3: {
+                        message.buffLevel = reader.int32();
                         break;
                     }
-                    case 4: {
-                        message.buffMaxTime = reader.int32();
+                case 4: {
+                        message.buffMaxTime = reader.uint32();
                         break;
                     }
-                    case 5: {
-                        message.buffLeftTime = reader.int32();
+                case 5: {
+                        message.buffLeftTime = reader.uint32();
                         break;
                     }
-                    case 6: {
-                        message.msgParams = reader.string();
-                        break;
-                    }
-                    default:
-                        reader.skipType(tag & 7);
-                        break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
                 }
             }
             return message;
@@ -4592,17 +4919,14 @@ export const rm = $root.rm = (() => {
                 if (!$util.isInteger(message.buffType))
                     return "buffType: integer expected";
             if (message.buffLevel != null && message.hasOwnProperty("buffLevel"))
-                if (typeof message.buffLevel !== "number")
-                    return "buffLevel: number expected";
+                if (!$util.isInteger(message.buffLevel))
+                    return "buffLevel: integer expected";
             if (message.buffMaxTime != null && message.hasOwnProperty("buffMaxTime"))
                 if (!$util.isInteger(message.buffMaxTime))
                     return "buffMaxTime: integer expected";
             if (message.buffLeftTime != null && message.hasOwnProperty("buffLeftTime"))
                 if (!$util.isInteger(message.buffLeftTime))
                     return "buffLeftTime: integer expected";
-            if (message.msgParams != null && message.hasOwnProperty("msgParams"))
-                if (!$util.isString(message.msgParams))
-                    return "msgParams: string expected";
             return null;
         };
 
@@ -4619,17 +4943,15 @@ export const rm = $root.rm = (() => {
                 return object;
             let message = new $root.rm.Buff();
             if (object.robotId != null)
-                message.robotId = object.robotId | 0;
+                message.robotId = object.robotId >>> 0;
             if (object.buffType != null)
-                message.buffType = object.buffType | 0;
+                message.buffType = object.buffType >>> 0;
             if (object.buffLevel != null)
-                message.buffLevel = Number(object.buffLevel);
+                message.buffLevel = object.buffLevel | 0;
             if (object.buffMaxTime != null)
-                message.buffMaxTime = object.buffMaxTime | 0;
+                message.buffMaxTime = object.buffMaxTime >>> 0;
             if (object.buffLeftTime != null)
-                message.buffLeftTime = object.buffLeftTime | 0;
-            if (object.msgParams != null)
-                message.msgParams = String(object.msgParams);
+                message.buffLeftTime = object.buffLeftTime >>> 0;
             return message;
         };
 
@@ -4652,20 +4974,17 @@ export const rm = $root.rm = (() => {
                 object.buffLevel = 0;
                 object.buffMaxTime = 0;
                 object.buffLeftTime = 0;
-                object.msgParams = "";
             }
             if (message.robotId != null && message.hasOwnProperty("robotId"))
                 object.robotId = message.robotId;
             if (message.buffType != null && message.hasOwnProperty("buffType"))
                 object.buffType = message.buffType;
             if (message.buffLevel != null && message.hasOwnProperty("buffLevel"))
-                object.buffLevel = options.json && !isFinite(message.buffLevel) ? String(message.buffLevel) : message.buffLevel;
+                object.buffLevel = message.buffLevel;
             if (message.buffMaxTime != null && message.hasOwnProperty("buffMaxTime"))
                 object.buffMaxTime = message.buffMaxTime;
             if (message.buffLeftTime != null && message.hasOwnProperty("buffLeftTime"))
                 object.buffLeftTime = message.buffLeftTime;
-            if (message.msgParams != null && message.hasOwnProperty("msgParams"))
-                object.msgParams = message.msgParams;
             return object;
         };
 
@@ -4698,7 +5017,7 @@ export const rm = $root.rm = (() => {
         return Buff;
     })();
 
-    rm.PenaltyInfo = (function () {
+    rm.PenaltyInfo = (function() {
 
         /**
          * Properties of a PenaltyInfo.
@@ -4773,11 +5092,11 @@ export const rm = $root.rm = (() => {
             if (!writer)
                 writer = $Writer.create();
             if (message.penaltyType != null && Object.hasOwnProperty.call(message, "penaltyType"))
-                writer.uint32(/* id 1, wireType 0 =*/8).int32(message.penaltyType);
+                writer.uint32(/* id 1, wireType 0 =*/8).uint32(message.penaltyType);
             if (message.penaltyEffectSec != null && Object.hasOwnProperty.call(message, "penaltyEffectSec"))
-                writer.uint32(/* id 2, wireType 0 =*/16).int32(message.penaltyEffectSec);
+                writer.uint32(/* id 2, wireType 0 =*/16).uint32(message.penaltyEffectSec);
             if (message.totalPenaltyNum != null && Object.hasOwnProperty.call(message, "totalPenaltyNum"))
-                writer.uint32(/* id 3, wireType 0 =*/24).int32(message.totalPenaltyNum);
+                writer.uint32(/* id 3, wireType 0 =*/24).uint32(message.totalPenaltyNum);
             return writer;
         };
 
@@ -4812,21 +5131,21 @@ export const rm = $root.rm = (() => {
             while (reader.pos < end) {
                 let tag = reader.uint32();
                 switch (tag >>> 3) {
-                    case 1: {
-                        message.penaltyType = reader.int32();
+                case 1: {
+                        message.penaltyType = reader.uint32();
                         break;
                     }
-                    case 2: {
-                        message.penaltyEffectSec = reader.int32();
+                case 2: {
+                        message.penaltyEffectSec = reader.uint32();
                         break;
                     }
-                    case 3: {
-                        message.totalPenaltyNum = reader.int32();
+                case 3: {
+                        message.totalPenaltyNum = reader.uint32();
                         break;
                     }
-                    default:
-                        reader.skipType(tag & 7);
-                        break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
                 }
             }
             return message;
@@ -4884,11 +5203,11 @@ export const rm = $root.rm = (() => {
                 return object;
             let message = new $root.rm.PenaltyInfo();
             if (object.penaltyType != null)
-                message.penaltyType = object.penaltyType | 0;
+                message.penaltyType = object.penaltyType >>> 0;
             if (object.penaltyEffectSec != null)
-                message.penaltyEffectSec = object.penaltyEffectSec | 0;
+                message.penaltyEffectSec = object.penaltyEffectSec >>> 0;
             if (object.totalPenaltyNum != null)
-                message.totalPenaltyNum = object.totalPenaltyNum | 0;
+                message.totalPenaltyNum = object.totalPenaltyNum >>> 0;
             return message;
         };
 
@@ -4948,7 +5267,7 @@ export const rm = $root.rm = (() => {
         return PenaltyInfo;
     })();
 
-    rm.RobotPathPlanInfo = (function () {
+    rm.RobotPathPlanInfo = (function() {
 
         /**
          * Properties of a RobotPathPlanInfo.
@@ -5052,25 +5371,25 @@ export const rm = $root.rm = (() => {
             if (!writer)
                 writer = $Writer.create();
             if (message.intention != null && Object.hasOwnProperty.call(message, "intention"))
-                writer.uint32(/* id 1, wireType 0 =*/8).int32(message.intention);
+                writer.uint32(/* id 1, wireType 0 =*/8).uint32(message.intention);
             if (message.startPosX != null && Object.hasOwnProperty.call(message, "startPosX"))
-                writer.uint32(/* id 2, wireType 5 =*/21).float(message.startPosX);
+                writer.uint32(/* id 2, wireType 0 =*/16).uint32(message.startPosX);
             if (message.startPosY != null && Object.hasOwnProperty.call(message, "startPosY"))
-                writer.uint32(/* id 3, wireType 5 =*/29).float(message.startPosY);
+                writer.uint32(/* id 3, wireType 0 =*/24).uint32(message.startPosY);
             if (message.offsetX != null && message.offsetX.length) {
                 writer.uint32(/* id 4, wireType 2 =*/34).fork();
                 for (let i = 0; i < message.offsetX.length; ++i)
-                    writer.float(message.offsetX[i]);
+                    writer.int32(message.offsetX[i]);
                 writer.ldelim();
             }
             if (message.offsetY != null && message.offsetY.length) {
                 writer.uint32(/* id 5, wireType 2 =*/42).fork();
                 for (let i = 0; i < message.offsetY.length; ++i)
-                    writer.float(message.offsetY[i]);
+                    writer.int32(message.offsetY[i]);
                 writer.ldelim();
             }
             if (message.senderId != null && Object.hasOwnProperty.call(message, "senderId"))
-                writer.uint32(/* id 6, wireType 0 =*/48).int32(message.senderId);
+                writer.uint32(/* id 6, wireType 0 =*/48).uint32(message.senderId);
             return writer;
         };
 
@@ -5105,47 +5424,47 @@ export const rm = $root.rm = (() => {
             while (reader.pos < end) {
                 let tag = reader.uint32();
                 switch (tag >>> 3) {
-                    case 1: {
-                        message.intention = reader.int32();
+                case 1: {
+                        message.intention = reader.uint32();
                         break;
                     }
-                    case 2: {
-                        message.startPosX = reader.float();
+                case 2: {
+                        message.startPosX = reader.uint32();
                         break;
                     }
-                    case 3: {
-                        message.startPosY = reader.float();
+                case 3: {
+                        message.startPosY = reader.uint32();
                         break;
                     }
-                    case 4: {
+                case 4: {
                         if (!(message.offsetX && message.offsetX.length))
                             message.offsetX = [];
                         if ((tag & 7) === 2) {
                             let end2 = reader.uint32() + reader.pos;
                             while (reader.pos < end2)
-                                message.offsetX.push(reader.float());
+                                message.offsetX.push(reader.int32());
                         } else
-                            message.offsetX.push(reader.float());
+                            message.offsetX.push(reader.int32());
                         break;
                     }
-                    case 5: {
+                case 5: {
                         if (!(message.offsetY && message.offsetY.length))
                             message.offsetY = [];
                         if ((tag & 7) === 2) {
                             let end2 = reader.uint32() + reader.pos;
                             while (reader.pos < end2)
-                                message.offsetY.push(reader.float());
+                                message.offsetY.push(reader.int32());
                         } else
-                            message.offsetY.push(reader.float());
+                            message.offsetY.push(reader.int32());
                         break;
                     }
-                    case 6: {
-                        message.senderId = reader.int32();
+                case 6: {
+                        message.senderId = reader.uint32();
                         break;
                     }
-                    default:
-                        reader.skipType(tag & 7);
-                        break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
                 }
             }
             return message;
@@ -5182,24 +5501,24 @@ export const rm = $root.rm = (() => {
                 if (!$util.isInteger(message.intention))
                     return "intention: integer expected";
             if (message.startPosX != null && message.hasOwnProperty("startPosX"))
-                if (typeof message.startPosX !== "number")
-                    return "startPosX: number expected";
+                if (!$util.isInteger(message.startPosX))
+                    return "startPosX: integer expected";
             if (message.startPosY != null && message.hasOwnProperty("startPosY"))
-                if (typeof message.startPosY !== "number")
-                    return "startPosY: number expected";
+                if (!$util.isInteger(message.startPosY))
+                    return "startPosY: integer expected";
             if (message.offsetX != null && message.hasOwnProperty("offsetX")) {
                 if (!Array.isArray(message.offsetX))
                     return "offsetX: array expected";
                 for (let i = 0; i < message.offsetX.length; ++i)
-                    if (typeof message.offsetX[i] !== "number")
-                        return "offsetX: number[] expected";
+                    if (!$util.isInteger(message.offsetX[i]))
+                        return "offsetX: integer[] expected";
             }
             if (message.offsetY != null && message.hasOwnProperty("offsetY")) {
                 if (!Array.isArray(message.offsetY))
                     return "offsetY: array expected";
                 for (let i = 0; i < message.offsetY.length; ++i)
-                    if (typeof message.offsetY[i] !== "number")
-                        return "offsetY: number[] expected";
+                    if (!$util.isInteger(message.offsetY[i]))
+                        return "offsetY: integer[] expected";
             }
             if (message.senderId != null && message.hasOwnProperty("senderId"))
                 if (!$util.isInteger(message.senderId))
@@ -5220,27 +5539,27 @@ export const rm = $root.rm = (() => {
                 return object;
             let message = new $root.rm.RobotPathPlanInfo();
             if (object.intention != null)
-                message.intention = object.intention | 0;
+                message.intention = object.intention >>> 0;
             if (object.startPosX != null)
-                message.startPosX = Number(object.startPosX);
+                message.startPosX = object.startPosX >>> 0;
             if (object.startPosY != null)
-                message.startPosY = Number(object.startPosY);
+                message.startPosY = object.startPosY >>> 0;
             if (object.offsetX) {
                 if (!Array.isArray(object.offsetX))
                     throw TypeError(".rm.RobotPathPlanInfo.offsetX: array expected");
                 message.offsetX = [];
                 for (let i = 0; i < object.offsetX.length; ++i)
-                    message.offsetX[i] = Number(object.offsetX[i]);
+                    message.offsetX[i] = object.offsetX[i] | 0;
             }
             if (object.offsetY) {
                 if (!Array.isArray(object.offsetY))
                     throw TypeError(".rm.RobotPathPlanInfo.offsetY: array expected");
                 message.offsetY = [];
                 for (let i = 0; i < object.offsetY.length; ++i)
-                    message.offsetY[i] = Number(object.offsetY[i]);
+                    message.offsetY[i] = object.offsetY[i] | 0;
             }
             if (object.senderId != null)
-                message.senderId = object.senderId | 0;
+                message.senderId = object.senderId >>> 0;
             return message;
         };
 
@@ -5270,18 +5589,18 @@ export const rm = $root.rm = (() => {
             if (message.intention != null && message.hasOwnProperty("intention"))
                 object.intention = message.intention;
             if (message.startPosX != null && message.hasOwnProperty("startPosX"))
-                object.startPosX = options.json && !isFinite(message.startPosX) ? String(message.startPosX) : message.startPosX;
+                object.startPosX = message.startPosX;
             if (message.startPosY != null && message.hasOwnProperty("startPosY"))
-                object.startPosY = options.json && !isFinite(message.startPosY) ? String(message.startPosY) : message.startPosY;
+                object.startPosY = message.startPosY;
             if (message.offsetX && message.offsetX.length) {
                 object.offsetX = [];
                 for (let j = 0; j < message.offsetX.length; ++j)
-                    object.offsetX[j] = options.json && !isFinite(message.offsetX[j]) ? String(message.offsetX[j]) : message.offsetX[j];
+                    object.offsetX[j] = message.offsetX[j];
             }
             if (message.offsetY && message.offsetY.length) {
                 object.offsetY = [];
                 for (let j = 0; j < message.offsetY.length; ++j)
-                    object.offsetY[j] = options.json && !isFinite(message.offsetY[j]) ? String(message.offsetY[j]) : message.offsetY[j];
+                    object.offsetY[j] = message.offsetY[j];
             }
             if (message.senderId != null && message.hasOwnProperty("senderId"))
                 object.senderId = message.senderId;
@@ -5317,7 +5636,7 @@ export const rm = $root.rm = (() => {
         return RobotPathPlanInfo;
     })();
 
-    rm.MapClickInfoNotify = (function () {
+    rm.MapClickInfoNotify = (function() {
 
         /**
          * Properties of a MapClickInfoNotify.
@@ -5329,8 +5648,6 @@ export const rm = $root.rm = (() => {
          * @property {number|null} [enemyId] MapClickInfoNotify enemyId
          * @property {number|null} [ascii] MapClickInfoNotify ascii
          * @property {number|null} [type] MapClickInfoNotify type
-         * @property {number|null} [screenX] MapClickInfoNotify screenX
-         * @property {number|null} [screenY] MapClickInfoNotify screenY
          * @property {number|null} [mapX] MapClickInfoNotify mapX
          * @property {number|null} [mapY] MapClickInfoNotify mapY
          */
@@ -5399,22 +5716,6 @@ export const rm = $root.rm = (() => {
         MapClickInfoNotify.prototype.type = 0;
 
         /**
-         * MapClickInfoNotify screenX.
-         * @member {number} screenX
-         * @memberof rm.MapClickInfoNotify
-         * @instance
-         */
-        MapClickInfoNotify.prototype.screenX = 0;
-
-        /**
-         * MapClickInfoNotify screenY.
-         * @member {number} screenY
-         * @memberof rm.MapClickInfoNotify
-         * @instance
-         */
-        MapClickInfoNotify.prototype.screenY = 0;
-
-        /**
          * MapClickInfoNotify mapX.
          * @member {number} mapX
          * @memberof rm.MapClickInfoNotify
@@ -5455,25 +5756,21 @@ export const rm = $root.rm = (() => {
             if (!writer)
                 writer = $Writer.create();
             if (message.isSendAll != null && Object.hasOwnProperty.call(message, "isSendAll"))
-                writer.uint32(/* id 1, wireType 0 =*/8).int32(message.isSendAll);
+                writer.uint32(/* id 1, wireType 0 =*/8).uint32(message.isSendAll);
             if (message.robotId != null && Object.hasOwnProperty.call(message, "robotId"))
                 writer.uint32(/* id 2, wireType 2 =*/18).bytes(message.robotId);
             if (message.mode != null && Object.hasOwnProperty.call(message, "mode"))
-                writer.uint32(/* id 3, wireType 0 =*/24).int32(message.mode);
+                writer.uint32(/* id 3, wireType 0 =*/24).uint32(message.mode);
             if (message.enemyId != null && Object.hasOwnProperty.call(message, "enemyId"))
-                writer.uint32(/* id 4, wireType 0 =*/32).int32(message.enemyId);
+                writer.uint32(/* id 4, wireType 0 =*/32).uint32(message.enemyId);
             if (message.ascii != null && Object.hasOwnProperty.call(message, "ascii"))
-                writer.uint32(/* id 5, wireType 0 =*/40).int32(message.ascii);
+                writer.uint32(/* id 5, wireType 0 =*/40).uint32(message.ascii);
             if (message.type != null && Object.hasOwnProperty.call(message, "type"))
-                writer.uint32(/* id 6, wireType 0 =*/48).int32(message.type);
-            if (message.screenX != null && Object.hasOwnProperty.call(message, "screenX"))
-                writer.uint32(/* id 7, wireType 5 =*/61).float(message.screenX);
-            if (message.screenY != null && Object.hasOwnProperty.call(message, "screenY"))
-                writer.uint32(/* id 8, wireType 5 =*/69).float(message.screenY);
+                writer.uint32(/* id 6, wireType 0 =*/48).uint32(message.type);
             if (message.mapX != null && Object.hasOwnProperty.call(message, "mapX"))
-                writer.uint32(/* id 9, wireType 5 =*/77).float(message.mapX);
+                writer.uint32(/* id 7, wireType 5 =*/61).float(message.mapX);
             if (message.mapY != null && Object.hasOwnProperty.call(message, "mapY"))
-                writer.uint32(/* id 10, wireType 5 =*/85).float(message.mapY);
+                writer.uint32(/* id 8, wireType 5 =*/69).float(message.mapY);
             return writer;
         };
 
@@ -5508,49 +5805,41 @@ export const rm = $root.rm = (() => {
             while (reader.pos < end) {
                 let tag = reader.uint32();
                 switch (tag >>> 3) {
-                    case 1: {
-                        message.isSendAll = reader.int32();
+                case 1: {
+                        message.isSendAll = reader.uint32();
                         break;
                     }
-                    case 2: {
+                case 2: {
                         message.robotId = reader.bytes();
                         break;
                     }
-                    case 3: {
-                        message.mode = reader.int32();
+                case 3: {
+                        message.mode = reader.uint32();
                         break;
                     }
-                    case 4: {
-                        message.enemyId = reader.int32();
+                case 4: {
+                        message.enemyId = reader.uint32();
                         break;
                     }
-                    case 5: {
-                        message.ascii = reader.int32();
+                case 5: {
+                        message.ascii = reader.uint32();
                         break;
                     }
-                    case 6: {
-                        message.type = reader.int32();
+                case 6: {
+                        message.type = reader.uint32();
                         break;
                     }
-                    case 7: {
-                        message.screenX = reader.float();
-                        break;
-                    }
-                    case 8: {
-                        message.screenY = reader.float();
-                        break;
-                    }
-                    case 9: {
+                case 7: {
                         message.mapX = reader.float();
                         break;
                     }
-                    case 10: {
+                case 8: {
                         message.mapY = reader.float();
                         break;
                     }
-                    default:
-                        reader.skipType(tag & 7);
-                        break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
                 }
             }
             return message;
@@ -5601,12 +5890,6 @@ export const rm = $root.rm = (() => {
             if (message.type != null && message.hasOwnProperty("type"))
                 if (!$util.isInteger(message.type))
                     return "type: integer expected";
-            if (message.screenX != null && message.hasOwnProperty("screenX"))
-                if (typeof message.screenX !== "number")
-                    return "screenX: number expected";
-            if (message.screenY != null && message.hasOwnProperty("screenY"))
-                if (typeof message.screenY !== "number")
-                    return "screenY: number expected";
             if (message.mapX != null && message.hasOwnProperty("mapX"))
                 if (typeof message.mapX !== "number")
                     return "mapX: number expected";
@@ -5629,24 +5912,20 @@ export const rm = $root.rm = (() => {
                 return object;
             let message = new $root.rm.MapClickInfoNotify();
             if (object.isSendAll != null)
-                message.isSendAll = object.isSendAll | 0;
+                message.isSendAll = object.isSendAll >>> 0;
             if (object.robotId != null)
                 if (typeof object.robotId === "string")
                     $util.base64.decode(object.robotId, message.robotId = $util.newBuffer($util.base64.length(object.robotId)), 0);
                 else if (object.robotId.length >= 0)
                     message.robotId = object.robotId;
             if (object.mode != null)
-                message.mode = object.mode | 0;
+                message.mode = object.mode >>> 0;
             if (object.enemyId != null)
-                message.enemyId = object.enemyId | 0;
+                message.enemyId = object.enemyId >>> 0;
             if (object.ascii != null)
-                message.ascii = object.ascii | 0;
+                message.ascii = object.ascii >>> 0;
             if (object.type != null)
-                message.type = object.type | 0;
-            if (object.screenX != null)
-                message.screenX = Number(object.screenX);
-            if (object.screenY != null)
-                message.screenY = Number(object.screenY);
+                message.type = object.type >>> 0;
             if (object.mapX != null)
                 message.mapX = Number(object.mapX);
             if (object.mapY != null)
@@ -5680,8 +5959,6 @@ export const rm = $root.rm = (() => {
                 object.enemyId = 0;
                 object.ascii = 0;
                 object.type = 0;
-                object.screenX = 0;
-                object.screenY = 0;
                 object.mapX = 0;
                 object.mapY = 0;
             }
@@ -5697,10 +5974,6 @@ export const rm = $root.rm = (() => {
                 object.ascii = message.ascii;
             if (message.type != null && message.hasOwnProperty("type"))
                 object.type = message.type;
-            if (message.screenX != null && message.hasOwnProperty("screenX"))
-                object.screenX = options.json && !isFinite(message.screenX) ? String(message.screenX) : message.screenX;
-            if (message.screenY != null && message.hasOwnProperty("screenY"))
-                object.screenY = options.json && !isFinite(message.screenY) ? String(message.screenY) : message.screenY;
             if (message.mapX != null && message.hasOwnProperty("mapX"))
                 object.mapX = options.json && !isFinite(message.mapX) ? String(message.mapX) : message.mapX;
             if (message.mapY != null && message.hasOwnProperty("mapY"))
@@ -5737,28 +6010,26 @@ export const rm = $root.rm = (() => {
         return MapClickInfoNotify;
     })();
 
-    rm.RaderInfoToClient = (function () {
+    rm.RadarSingleRobotInfo = (function() {
 
         /**
-         * Properties of a RaderInfoToClient.
+         * Properties of a RadarSingleRobotInfo.
          * @memberof rm
-         * @interface IRaderInfoToClient
-         * @property {number|null} [targetRobotId] RaderInfoToClient targetRobotId
-         * @property {number|null} [targetPosX] RaderInfoToClient targetPosX
-         * @property {number|null} [targetPosY] RaderInfoToClient targetPosY
-         * @property {number|null} [torwardAngle] RaderInfoToClient torwardAngle
-         * @property {number|null} [isHighLight] RaderInfoToClient isHighLight
+         * @interface IRadarSingleRobotInfo
+         * @property {number|null} [targetPosX] RadarSingleRobotInfo targetPosX
+         * @property {number|null} [targetPosY] RadarSingleRobotInfo targetPosY
+         * @property {number|null} [isHighLight] RadarSingleRobotInfo isHighLight
          */
 
         /**
-         * Constructs a new RaderInfoToClient.
+         * Constructs a new RadarSingleRobotInfo.
          * @memberof rm
-         * @classdesc Represents a RaderInfoToClient.
-         * @implements IRaderInfoToClient
+         * @classdesc Represents a RadarSingleRobotInfo.
+         * @implements IRadarSingleRobotInfo
          * @constructor
-         * @param {rm.IRaderInfoToClient=} [properties] Properties to set
+         * @param {rm.IRadarSingleRobotInfo=} [properties] Properties to set
          */
-        function RaderInfoToClient(properties) {
+        function RadarSingleRobotInfo(properties) {
             if (properties)
                 for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
                     if (properties[keys[i]] != null)
@@ -5766,180 +6037,146 @@ export const rm = $root.rm = (() => {
         }
 
         /**
-         * RaderInfoToClient targetRobotId.
-         * @member {number} targetRobotId
-         * @memberof rm.RaderInfoToClient
-         * @instance
-         */
-        RaderInfoToClient.prototype.targetRobotId = 0;
-
-        /**
-         * RaderInfoToClient targetPosX.
+         * RadarSingleRobotInfo targetPosX.
          * @member {number} targetPosX
-         * @memberof rm.RaderInfoToClient
+         * @memberof rm.RadarSingleRobotInfo
          * @instance
          */
-        RaderInfoToClient.prototype.targetPosX = 0;
+        RadarSingleRobotInfo.prototype.targetPosX = 0;
 
         /**
-         * RaderInfoToClient targetPosY.
+         * RadarSingleRobotInfo targetPosY.
          * @member {number} targetPosY
-         * @memberof rm.RaderInfoToClient
+         * @memberof rm.RadarSingleRobotInfo
          * @instance
          */
-        RaderInfoToClient.prototype.targetPosY = 0;
+        RadarSingleRobotInfo.prototype.targetPosY = 0;
 
         /**
-         * RaderInfoToClient torwardAngle.
-         * @member {number} torwardAngle
-         * @memberof rm.RaderInfoToClient
-         * @instance
-         */
-        RaderInfoToClient.prototype.torwardAngle = 0;
-
-        /**
-         * RaderInfoToClient isHighLight.
+         * RadarSingleRobotInfo isHighLight.
          * @member {number} isHighLight
-         * @memberof rm.RaderInfoToClient
+         * @memberof rm.RadarSingleRobotInfo
          * @instance
          */
-        RaderInfoToClient.prototype.isHighLight = 0;
+        RadarSingleRobotInfo.prototype.isHighLight = 0;
 
         /**
-         * Creates a new RaderInfoToClient instance using the specified properties.
+         * Creates a new RadarSingleRobotInfo instance using the specified properties.
          * @function create
-         * @memberof rm.RaderInfoToClient
+         * @memberof rm.RadarSingleRobotInfo
          * @static
-         * @param {rm.IRaderInfoToClient=} [properties] Properties to set
-         * @returns {rm.RaderInfoToClient} RaderInfoToClient instance
+         * @param {rm.IRadarSingleRobotInfo=} [properties] Properties to set
+         * @returns {rm.RadarSingleRobotInfo} RadarSingleRobotInfo instance
          */
-        RaderInfoToClient.create = function create(properties) {
-            return new RaderInfoToClient(properties);
+        RadarSingleRobotInfo.create = function create(properties) {
+            return new RadarSingleRobotInfo(properties);
         };
 
         /**
-         * Encodes the specified RaderInfoToClient message. Does not implicitly {@link rm.RaderInfoToClient.verify|verify} messages.
+         * Encodes the specified RadarSingleRobotInfo message. Does not implicitly {@link rm.RadarSingleRobotInfo.verify|verify} messages.
          * @function encode
-         * @memberof rm.RaderInfoToClient
+         * @memberof rm.RadarSingleRobotInfo
          * @static
-         * @param {rm.IRaderInfoToClient} message RaderInfoToClient message or plain object to encode
+         * @param {rm.IRadarSingleRobotInfo} message RadarSingleRobotInfo message or plain object to encode
          * @param {$protobuf.Writer} [writer] Writer to encode to
          * @returns {$protobuf.Writer} Writer
          */
-        RaderInfoToClient.encode = function encode(message, writer) {
+        RadarSingleRobotInfo.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
-            if (message.targetRobotId != null && Object.hasOwnProperty.call(message, "targetRobotId"))
-                writer.uint32(/* id 1, wireType 0 =*/8).int32(message.targetRobotId);
             if (message.targetPosX != null && Object.hasOwnProperty.call(message, "targetPosX"))
-                writer.uint32(/* id 2, wireType 5 =*/21).float(message.targetPosX);
+                writer.uint32(/* id 1, wireType 0 =*/8).uint32(message.targetPosX);
             if (message.targetPosY != null && Object.hasOwnProperty.call(message, "targetPosY"))
-                writer.uint32(/* id 3, wireType 5 =*/29).float(message.targetPosY);
-            if (message.torwardAngle != null && Object.hasOwnProperty.call(message, "torwardAngle"))
-                writer.uint32(/* id 4, wireType 5 =*/37).float(message.torwardAngle);
+                writer.uint32(/* id 2, wireType 0 =*/16).uint32(message.targetPosY);
             if (message.isHighLight != null && Object.hasOwnProperty.call(message, "isHighLight"))
-                writer.uint32(/* id 5, wireType 0 =*/40).int32(message.isHighLight);
+                writer.uint32(/* id 3, wireType 0 =*/24).uint32(message.isHighLight);
             return writer;
         };
 
         /**
-         * Encodes the specified RaderInfoToClient message, length delimited. Does not implicitly {@link rm.RaderInfoToClient.verify|verify} messages.
+         * Encodes the specified RadarSingleRobotInfo message, length delimited. Does not implicitly {@link rm.RadarSingleRobotInfo.verify|verify} messages.
          * @function encodeDelimited
-         * @memberof rm.RaderInfoToClient
+         * @memberof rm.RadarSingleRobotInfo
          * @static
-         * @param {rm.IRaderInfoToClient} message RaderInfoToClient message or plain object to encode
+         * @param {rm.IRadarSingleRobotInfo} message RadarSingleRobotInfo message or plain object to encode
          * @param {$protobuf.Writer} [writer] Writer to encode to
          * @returns {$protobuf.Writer} Writer
          */
-        RaderInfoToClient.encodeDelimited = function encodeDelimited(message, writer) {
+        RadarSingleRobotInfo.encodeDelimited = function encodeDelimited(message, writer) {
             return this.encode(message, writer).ldelim();
         };
 
         /**
-         * Decodes a RaderInfoToClient message from the specified reader or buffer.
+         * Decodes a RadarSingleRobotInfo message from the specified reader or buffer.
          * @function decode
-         * @memberof rm.RaderInfoToClient
+         * @memberof rm.RadarSingleRobotInfo
          * @static
          * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
          * @param {number} [length] Message length if known beforehand
-         * @returns {rm.RaderInfoToClient} RaderInfoToClient
+         * @returns {rm.RadarSingleRobotInfo} RadarSingleRobotInfo
          * @throws {Error} If the payload is not a reader or valid buffer
          * @throws {$protobuf.util.ProtocolError} If required fields are missing
          */
-        RaderInfoToClient.decode = function decode(reader, length) {
+        RadarSingleRobotInfo.decode = function decode(reader, length) {
             if (!(reader instanceof $Reader))
                 reader = $Reader.create(reader);
-            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.rm.RaderInfoToClient();
+            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.rm.RadarSingleRobotInfo();
             while (reader.pos < end) {
                 let tag = reader.uint32();
                 switch (tag >>> 3) {
-                    case 1: {
-                        message.targetRobotId = reader.int32();
+                case 1: {
+                        message.targetPosX = reader.uint32();
                         break;
                     }
-                    case 2: {
-                        message.targetPosX = reader.float();
+                case 2: {
+                        message.targetPosY = reader.uint32();
                         break;
                     }
-                    case 3: {
-                        message.targetPosY = reader.float();
+                case 3: {
+                        message.isHighLight = reader.uint32();
                         break;
                     }
-                    case 4: {
-                        message.torwardAngle = reader.float();
-                        break;
-                    }
-                    case 5: {
-                        message.isHighLight = reader.int32();
-                        break;
-                    }
-                    default:
-                        reader.skipType(tag & 7);
-                        break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
                 }
             }
             return message;
         };
 
         /**
-         * Decodes a RaderInfoToClient message from the specified reader or buffer, length delimited.
+         * Decodes a RadarSingleRobotInfo message from the specified reader or buffer, length delimited.
          * @function decodeDelimited
-         * @memberof rm.RaderInfoToClient
+         * @memberof rm.RadarSingleRobotInfo
          * @static
          * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-         * @returns {rm.RaderInfoToClient} RaderInfoToClient
+         * @returns {rm.RadarSingleRobotInfo} RadarSingleRobotInfo
          * @throws {Error} If the payload is not a reader or valid buffer
          * @throws {$protobuf.util.ProtocolError} If required fields are missing
          */
-        RaderInfoToClient.decodeDelimited = function decodeDelimited(reader) {
+        RadarSingleRobotInfo.decodeDelimited = function decodeDelimited(reader) {
             if (!(reader instanceof $Reader))
                 reader = new $Reader(reader);
             return this.decode(reader, reader.uint32());
         };
 
         /**
-         * Verifies a RaderInfoToClient message.
+         * Verifies a RadarSingleRobotInfo message.
          * @function verify
-         * @memberof rm.RaderInfoToClient
+         * @memberof rm.RadarSingleRobotInfo
          * @static
          * @param {Object.<string,*>} message Plain object to verify
          * @returns {string|null} `null` if valid, otherwise the reason why it is not
          */
-        RaderInfoToClient.verify = function verify(message) {
+        RadarSingleRobotInfo.verify = function verify(message) {
             if (typeof message !== "object" || message === null)
                 return "object expected";
-            if (message.targetRobotId != null && message.hasOwnProperty("targetRobotId"))
-                if (!$util.isInteger(message.targetRobotId))
-                    return "targetRobotId: integer expected";
             if (message.targetPosX != null && message.hasOwnProperty("targetPosX"))
-                if (typeof message.targetPosX !== "number")
-                    return "targetPosX: number expected";
+                if (!$util.isInteger(message.targetPosX))
+                    return "targetPosX: integer expected";
             if (message.targetPosY != null && message.hasOwnProperty("targetPosY"))
-                if (typeof message.targetPosY !== "number")
-                    return "targetPosY: number expected";
-            if (message.torwardAngle != null && message.hasOwnProperty("torwardAngle"))
-                if (typeof message.torwardAngle !== "number")
-                    return "torwardAngle: number expected";
+                if (!$util.isInteger(message.targetPosY))
+                    return "targetPosY: integer expected";
             if (message.isHighLight != null && message.hasOwnProperty("isHighLight"))
                 if (!$util.isInteger(message.isHighLight))
                     return "isHighLight: integer expected";
@@ -5947,93 +6184,307 @@ export const rm = $root.rm = (() => {
         };
 
         /**
-         * Creates a RaderInfoToClient message from a plain object. Also converts values to their respective internal types.
+         * Creates a RadarSingleRobotInfo message from a plain object. Also converts values to their respective internal types.
          * @function fromObject
-         * @memberof rm.RaderInfoToClient
+         * @memberof rm.RadarSingleRobotInfo
          * @static
          * @param {Object.<string,*>} object Plain object
-         * @returns {rm.RaderInfoToClient} RaderInfoToClient
+         * @returns {rm.RadarSingleRobotInfo} RadarSingleRobotInfo
          */
-        RaderInfoToClient.fromObject = function fromObject(object) {
-            if (object instanceof $root.rm.RaderInfoToClient)
+        RadarSingleRobotInfo.fromObject = function fromObject(object) {
+            if (object instanceof $root.rm.RadarSingleRobotInfo)
                 return object;
-            let message = new $root.rm.RaderInfoToClient();
-            if (object.targetRobotId != null)
-                message.targetRobotId = object.targetRobotId | 0;
+            let message = new $root.rm.RadarSingleRobotInfo();
             if (object.targetPosX != null)
-                message.targetPosX = Number(object.targetPosX);
+                message.targetPosX = object.targetPosX >>> 0;
             if (object.targetPosY != null)
-                message.targetPosY = Number(object.targetPosY);
-            if (object.torwardAngle != null)
-                message.torwardAngle = Number(object.torwardAngle);
+                message.targetPosY = object.targetPosY >>> 0;
             if (object.isHighLight != null)
-                message.isHighLight = object.isHighLight | 0;
+                message.isHighLight = object.isHighLight >>> 0;
             return message;
         };
 
         /**
-         * Creates a plain object from a RaderInfoToClient message. Also converts values to other types if specified.
+         * Creates a plain object from a RadarSingleRobotInfo message. Also converts values to other types if specified.
          * @function toObject
-         * @memberof rm.RaderInfoToClient
+         * @memberof rm.RadarSingleRobotInfo
          * @static
-         * @param {rm.RaderInfoToClient} message RaderInfoToClient
+         * @param {rm.RadarSingleRobotInfo} message RadarSingleRobotInfo
          * @param {$protobuf.IConversionOptions} [options] Conversion options
          * @returns {Object.<string,*>} Plain object
          */
-        RaderInfoToClient.toObject = function toObject(message, options) {
+        RadarSingleRobotInfo.toObject = function toObject(message, options) {
             if (!options)
                 options = {};
             let object = {};
             if (options.defaults) {
-                object.targetRobotId = 0;
                 object.targetPosX = 0;
                 object.targetPosY = 0;
-                object.torwardAngle = 0;
                 object.isHighLight = 0;
             }
-            if (message.targetRobotId != null && message.hasOwnProperty("targetRobotId"))
-                object.targetRobotId = message.targetRobotId;
             if (message.targetPosX != null && message.hasOwnProperty("targetPosX"))
-                object.targetPosX = options.json && !isFinite(message.targetPosX) ? String(message.targetPosX) : message.targetPosX;
+                object.targetPosX = message.targetPosX;
             if (message.targetPosY != null && message.hasOwnProperty("targetPosY"))
-                object.targetPosY = options.json && !isFinite(message.targetPosY) ? String(message.targetPosY) : message.targetPosY;
-            if (message.torwardAngle != null && message.hasOwnProperty("torwardAngle"))
-                object.torwardAngle = options.json && !isFinite(message.torwardAngle) ? String(message.torwardAngle) : message.torwardAngle;
+                object.targetPosY = message.targetPosY;
             if (message.isHighLight != null && message.hasOwnProperty("isHighLight"))
                 object.isHighLight = message.isHighLight;
             return object;
         };
 
         /**
-         * Converts this RaderInfoToClient to JSON.
+         * Converts this RadarSingleRobotInfo to JSON.
          * @function toJSON
-         * @memberof rm.RaderInfoToClient
+         * @memberof rm.RadarSingleRobotInfo
          * @instance
          * @returns {Object.<string,*>} JSON object
          */
-        RaderInfoToClient.prototype.toJSON = function toJSON() {
+        RadarSingleRobotInfo.prototype.toJSON = function toJSON() {
             return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
         };
 
         /**
-         * Gets the default type url for RaderInfoToClient
+         * Gets the default type url for RadarSingleRobotInfo
          * @function getTypeUrl
-         * @memberof rm.RaderInfoToClient
+         * @memberof rm.RadarSingleRobotInfo
          * @static
          * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
          * @returns {string} The default type url
          */
-        RaderInfoToClient.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+        RadarSingleRobotInfo.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
             if (typeUrlPrefix === undefined) {
                 typeUrlPrefix = "type.googleapis.com";
             }
-            return typeUrlPrefix + "/rm.RaderInfoToClient";
+            return typeUrlPrefix + "/rm.RadarSingleRobotInfo";
         };
 
-        return RaderInfoToClient;
+        return RadarSingleRobotInfo;
     })();
 
-    rm.CustomByteBlock = (function () {
+    rm.RadarInfoToClient = (function() {
+
+        /**
+         * Properties of a RadarInfoToClient.
+         * @memberof rm
+         * @interface IRadarInfoToClient
+         * @property {Array.<rm.IRadarSingleRobotInfo>|null} [RadarSingleRobotInfo] RadarInfoToClient RadarSingleRobotInfo
+         */
+
+        /**
+         * Constructs a new RadarInfoToClient.
+         * @memberof rm
+         * @classdesc Represents a RadarInfoToClient.
+         * @implements IRadarInfoToClient
+         * @constructor
+         * @param {rm.IRadarInfoToClient=} [properties] Properties to set
+         */
+        function RadarInfoToClient(properties) {
+            this.RadarSingleRobotInfo = [];
+            if (properties)
+                for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+
+        /**
+         * RadarInfoToClient RadarSingleRobotInfo.
+         * @member {Array.<rm.IRadarSingleRobotInfo>} RadarSingleRobotInfo
+         * @memberof rm.RadarInfoToClient
+         * @instance
+         */
+        RadarInfoToClient.prototype.RadarSingleRobotInfo = $util.emptyArray;
+
+        /**
+         * Creates a new RadarInfoToClient instance using the specified properties.
+         * @function create
+         * @memberof rm.RadarInfoToClient
+         * @static
+         * @param {rm.IRadarInfoToClient=} [properties] Properties to set
+         * @returns {rm.RadarInfoToClient} RadarInfoToClient instance
+         */
+        RadarInfoToClient.create = function create(properties) {
+            return new RadarInfoToClient(properties);
+        };
+
+        /**
+         * Encodes the specified RadarInfoToClient message. Does not implicitly {@link rm.RadarInfoToClient.verify|verify} messages.
+         * @function encode
+         * @memberof rm.RadarInfoToClient
+         * @static
+         * @param {rm.IRadarInfoToClient} message RadarInfoToClient message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        RadarInfoToClient.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            if (message.RadarSingleRobotInfo != null && message.RadarSingleRobotInfo.length)
+                for (let i = 0; i < message.RadarSingleRobotInfo.length; ++i)
+                    $root.rm.RadarSingleRobotInfo.encode(message.RadarSingleRobotInfo[i], writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+            return writer;
+        };
+
+        /**
+         * Encodes the specified RadarInfoToClient message, length delimited. Does not implicitly {@link rm.RadarInfoToClient.verify|verify} messages.
+         * @function encodeDelimited
+         * @memberof rm.RadarInfoToClient
+         * @static
+         * @param {rm.IRadarInfoToClient} message RadarInfoToClient message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        RadarInfoToClient.encodeDelimited = function encodeDelimited(message, writer) {
+            return this.encode(message, writer).ldelim();
+        };
+
+        /**
+         * Decodes a RadarInfoToClient message from the specified reader or buffer.
+         * @function decode
+         * @memberof rm.RadarInfoToClient
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @param {number} [length] Message length if known beforehand
+         * @returns {rm.RadarInfoToClient} RadarInfoToClient
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        RadarInfoToClient.decode = function decode(reader, length) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.rm.RadarInfoToClient();
+            while (reader.pos < end) {
+                let tag = reader.uint32();
+                switch (tag >>> 3) {
+                case 1: {
+                        if (!(message.RadarSingleRobotInfo && message.RadarSingleRobotInfo.length))
+                            message.RadarSingleRobotInfo = [];
+                        message.RadarSingleRobotInfo.push($root.rm.RadarSingleRobotInfo.decode(reader, reader.uint32()));
+                        break;
+                    }
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            return message;
+        };
+
+        /**
+         * Decodes a RadarInfoToClient message from the specified reader or buffer, length delimited.
+         * @function decodeDelimited
+         * @memberof rm.RadarInfoToClient
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @returns {rm.RadarInfoToClient} RadarInfoToClient
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        RadarInfoToClient.decodeDelimited = function decodeDelimited(reader) {
+            if (!(reader instanceof $Reader))
+                reader = new $Reader(reader);
+            return this.decode(reader, reader.uint32());
+        };
+
+        /**
+         * Verifies a RadarInfoToClient message.
+         * @function verify
+         * @memberof rm.RadarInfoToClient
+         * @static
+         * @param {Object.<string,*>} message Plain object to verify
+         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+         */
+        RadarInfoToClient.verify = function verify(message) {
+            if (typeof message !== "object" || message === null)
+                return "object expected";
+            if (message.RadarSingleRobotInfo != null && message.hasOwnProperty("RadarSingleRobotInfo")) {
+                if (!Array.isArray(message.RadarSingleRobotInfo))
+                    return "RadarSingleRobotInfo: array expected";
+                for (let i = 0; i < message.RadarSingleRobotInfo.length; ++i) {
+                    let error = $root.rm.RadarSingleRobotInfo.verify(message.RadarSingleRobotInfo[i]);
+                    if (error)
+                        return "RadarSingleRobotInfo." + error;
+                }
+            }
+            return null;
+        };
+
+        /**
+         * Creates a RadarInfoToClient message from a plain object. Also converts values to their respective internal types.
+         * @function fromObject
+         * @memberof rm.RadarInfoToClient
+         * @static
+         * @param {Object.<string,*>} object Plain object
+         * @returns {rm.RadarInfoToClient} RadarInfoToClient
+         */
+        RadarInfoToClient.fromObject = function fromObject(object) {
+            if (object instanceof $root.rm.RadarInfoToClient)
+                return object;
+            let message = new $root.rm.RadarInfoToClient();
+            if (object.RadarSingleRobotInfo) {
+                if (!Array.isArray(object.RadarSingleRobotInfo))
+                    throw TypeError(".rm.RadarInfoToClient.RadarSingleRobotInfo: array expected");
+                message.RadarSingleRobotInfo = [];
+                for (let i = 0; i < object.RadarSingleRobotInfo.length; ++i) {
+                    if (typeof object.RadarSingleRobotInfo[i] !== "object")
+                        throw TypeError(".rm.RadarInfoToClient.RadarSingleRobotInfo: object expected");
+                    message.RadarSingleRobotInfo[i] = $root.rm.RadarSingleRobotInfo.fromObject(object.RadarSingleRobotInfo[i]);
+                }
+            }
+            return message;
+        };
+
+        /**
+         * Creates a plain object from a RadarInfoToClient message. Also converts values to other types if specified.
+         * @function toObject
+         * @memberof rm.RadarInfoToClient
+         * @static
+         * @param {rm.RadarInfoToClient} message RadarInfoToClient
+         * @param {$protobuf.IConversionOptions} [options] Conversion options
+         * @returns {Object.<string,*>} Plain object
+         */
+        RadarInfoToClient.toObject = function toObject(message, options) {
+            if (!options)
+                options = {};
+            let object = {};
+            if (options.arrays || options.defaults)
+                object.RadarSingleRobotInfo = [];
+            if (message.RadarSingleRobotInfo && message.RadarSingleRobotInfo.length) {
+                object.RadarSingleRobotInfo = [];
+                for (let j = 0; j < message.RadarSingleRobotInfo.length; ++j)
+                    object.RadarSingleRobotInfo[j] = $root.rm.RadarSingleRobotInfo.toObject(message.RadarSingleRobotInfo[j], options);
+            }
+            return object;
+        };
+
+        /**
+         * Converts this RadarInfoToClient to JSON.
+         * @function toJSON
+         * @memberof rm.RadarInfoToClient
+         * @instance
+         * @returns {Object.<string,*>} JSON object
+         */
+        RadarInfoToClient.prototype.toJSON = function toJSON() {
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+
+        /**
+         * Gets the default type url for RadarInfoToClient
+         * @function getTypeUrl
+         * @memberof rm.RadarInfoToClient
+         * @static
+         * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+         * @returns {string} The default type url
+         */
+        RadarInfoToClient.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+            if (typeUrlPrefix === undefined) {
+                typeUrlPrefix = "type.googleapis.com";
+            }
+            return typeUrlPrefix + "/rm.RadarInfoToClient";
+        };
+
+        return RadarInfoToClient;
+    })();
+
+    rm.CustomByteBlock = (function() {
 
         /**
          * Properties of a CustomByteBlock.
@@ -6125,13 +6576,13 @@ export const rm = $root.rm = (() => {
             while (reader.pos < end) {
                 let tag = reader.uint32();
                 switch (tag >>> 3) {
-                    case 1: {
+                case 1: {
                         message.data = reader.bytes();
                         break;
                     }
-                    default:
-                        reader.skipType(tag & 7);
-                        break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
                 }
             }
             return message;
@@ -6245,7 +6696,7 @@ export const rm = $root.rm = (() => {
         return CustomByteBlock;
     })();
 
-    rm.AssemblyCommand = (function () {
+    rm.AssemblyCommand = (function() {
 
         /**
          * Properties of an AssemblyCommand.
@@ -6311,9 +6762,9 @@ export const rm = $root.rm = (() => {
             if (!writer)
                 writer = $Writer.create();
             if (message.operation != null && Object.hasOwnProperty.call(message, "operation"))
-                writer.uint32(/* id 1, wireType 0 =*/8).int32(message.operation);
+                writer.uint32(/* id 1, wireType 0 =*/8).uint32(message.operation);
             if (message.difficulty != null && Object.hasOwnProperty.call(message, "difficulty"))
-                writer.uint32(/* id 2, wireType 0 =*/16).int32(message.difficulty);
+                writer.uint32(/* id 2, wireType 0 =*/16).uint32(message.difficulty);
             return writer;
         };
 
@@ -6348,17 +6799,17 @@ export const rm = $root.rm = (() => {
             while (reader.pos < end) {
                 let tag = reader.uint32();
                 switch (tag >>> 3) {
-                    case 1: {
-                        message.operation = reader.int32();
+                case 1: {
+                        message.operation = reader.uint32();
                         break;
                     }
-                    case 2: {
-                        message.difficulty = reader.int32();
+                case 2: {
+                        message.difficulty = reader.uint32();
                         break;
                     }
-                    default:
-                        reader.skipType(tag & 7);
-                        break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
                 }
             }
             return message;
@@ -6413,9 +6864,9 @@ export const rm = $root.rm = (() => {
                 return object;
             let message = new $root.rm.AssemblyCommand();
             if (object.operation != null)
-                message.operation = object.operation | 0;
+                message.operation = object.operation >>> 0;
             if (object.difficulty != null)
-                message.difficulty = object.difficulty | 0;
+                message.difficulty = object.difficulty >>> 0;
             return message;
         };
 
@@ -6472,14 +6923,20 @@ export const rm = $root.rm = (() => {
         return AssemblyCommand;
     })();
 
-    rm.TechCoreMotionStateSync = (function () {
+    rm.TechCoreMotionStateSync = (function() {
 
         /**
          * Properties of a TechCoreMotionStateSync.
          * @memberof rm
          * @interface ITechCoreMotionStateSync
          * @property {number|null} [maximumDifficultyLevel] TechCoreMotionStateSync maximumDifficultyLevel
-         * @property {number|null} [status] TechCoreMotionStateSync status
+         * @property {number|null} [basicState] TechCoreMotionStateSync basicState
+         * @property {number|null} [putinState] TechCoreMotionStateSync putinState
+         * @property {number|null} [moveState] TechCoreMotionStateSync moveState
+         * @property {number|null} [rotateState] TechCoreMotionStateSync rotateState
+         * @property {number|null} [enemyCoreStatus] TechCoreMotionStateSync enemyCoreStatus
+         * @property {number|null} [remainTimeAll] TechCoreMotionStateSync remainTimeAll
+         * @property {number|null} [remainTimeStep] TechCoreMotionStateSync remainTimeStep
          */
 
         /**
@@ -6506,12 +6963,60 @@ export const rm = $root.rm = (() => {
         TechCoreMotionStateSync.prototype.maximumDifficultyLevel = 0;
 
         /**
-         * TechCoreMotionStateSync status.
-         * @member {number} status
+         * TechCoreMotionStateSync basicState.
+         * @member {number} basicState
          * @memberof rm.TechCoreMotionStateSync
          * @instance
          */
-        TechCoreMotionStateSync.prototype.status = 0;
+        TechCoreMotionStateSync.prototype.basicState = 0;
+
+        /**
+         * TechCoreMotionStateSync putinState.
+         * @member {number} putinState
+         * @memberof rm.TechCoreMotionStateSync
+         * @instance
+         */
+        TechCoreMotionStateSync.prototype.putinState = 0;
+
+        /**
+         * TechCoreMotionStateSync moveState.
+         * @member {number} moveState
+         * @memberof rm.TechCoreMotionStateSync
+         * @instance
+         */
+        TechCoreMotionStateSync.prototype.moveState = 0;
+
+        /**
+         * TechCoreMotionStateSync rotateState.
+         * @member {number} rotateState
+         * @memberof rm.TechCoreMotionStateSync
+         * @instance
+         */
+        TechCoreMotionStateSync.prototype.rotateState = 0;
+
+        /**
+         * TechCoreMotionStateSync enemyCoreStatus.
+         * @member {number} enemyCoreStatus
+         * @memberof rm.TechCoreMotionStateSync
+         * @instance
+         */
+        TechCoreMotionStateSync.prototype.enemyCoreStatus = 0;
+
+        /**
+         * TechCoreMotionStateSync remainTimeAll.
+         * @member {number} remainTimeAll
+         * @memberof rm.TechCoreMotionStateSync
+         * @instance
+         */
+        TechCoreMotionStateSync.prototype.remainTimeAll = 0;
+
+        /**
+         * TechCoreMotionStateSync remainTimeStep.
+         * @member {number} remainTimeStep
+         * @memberof rm.TechCoreMotionStateSync
+         * @instance
+         */
+        TechCoreMotionStateSync.prototype.remainTimeStep = 0;
 
         /**
          * Creates a new TechCoreMotionStateSync instance using the specified properties.
@@ -6538,9 +7043,21 @@ export const rm = $root.rm = (() => {
             if (!writer)
                 writer = $Writer.create();
             if (message.maximumDifficultyLevel != null && Object.hasOwnProperty.call(message, "maximumDifficultyLevel"))
-                writer.uint32(/* id 1, wireType 0 =*/8).int32(message.maximumDifficultyLevel);
-            if (message.status != null && Object.hasOwnProperty.call(message, "status"))
-                writer.uint32(/* id 2, wireType 0 =*/16).int32(message.status);
+                writer.uint32(/* id 1, wireType 0 =*/8).uint32(message.maximumDifficultyLevel);
+            if (message.basicState != null && Object.hasOwnProperty.call(message, "basicState"))
+                writer.uint32(/* id 2, wireType 0 =*/16).uint32(message.basicState);
+            if (message.putinState != null && Object.hasOwnProperty.call(message, "putinState"))
+                writer.uint32(/* id 3, wireType 0 =*/24).uint32(message.putinState);
+            if (message.moveState != null && Object.hasOwnProperty.call(message, "moveState"))
+                writer.uint32(/* id 4, wireType 0 =*/32).uint32(message.moveState);
+            if (message.rotateState != null && Object.hasOwnProperty.call(message, "rotateState"))
+                writer.uint32(/* id 5, wireType 0 =*/40).uint32(message.rotateState);
+            if (message.enemyCoreStatus != null && Object.hasOwnProperty.call(message, "enemyCoreStatus"))
+                writer.uint32(/* id 6, wireType 0 =*/48).uint32(message.enemyCoreStatus);
+            if (message.remainTimeAll != null && Object.hasOwnProperty.call(message, "remainTimeAll"))
+                writer.uint32(/* id 7, wireType 0 =*/56).uint32(message.remainTimeAll);
+            if (message.remainTimeStep != null && Object.hasOwnProperty.call(message, "remainTimeStep"))
+                writer.uint32(/* id 8, wireType 0 =*/64).uint32(message.remainTimeStep);
             return writer;
         };
 
@@ -6575,17 +7092,41 @@ export const rm = $root.rm = (() => {
             while (reader.pos < end) {
                 let tag = reader.uint32();
                 switch (tag >>> 3) {
-                    case 1: {
-                        message.maximumDifficultyLevel = reader.int32();
+                case 1: {
+                        message.maximumDifficultyLevel = reader.uint32();
                         break;
                     }
-                    case 2: {
-                        message.status = reader.int32();
+                case 2: {
+                        message.basicState = reader.uint32();
                         break;
                     }
-                    default:
-                        reader.skipType(tag & 7);
+                case 3: {
+                        message.putinState = reader.uint32();
                         break;
+                    }
+                case 4: {
+                        message.moveState = reader.uint32();
+                        break;
+                    }
+                case 5: {
+                        message.rotateState = reader.uint32();
+                        break;
+                    }
+                case 6: {
+                        message.enemyCoreStatus = reader.uint32();
+                        break;
+                    }
+                case 7: {
+                        message.remainTimeAll = reader.uint32();
+                        break;
+                    }
+                case 8: {
+                        message.remainTimeStep = reader.uint32();
+                        break;
+                    }
+                default:
+                    reader.skipType(tag & 7);
+                    break;
                 }
             }
             return message;
@@ -6621,9 +7162,27 @@ export const rm = $root.rm = (() => {
             if (message.maximumDifficultyLevel != null && message.hasOwnProperty("maximumDifficultyLevel"))
                 if (!$util.isInteger(message.maximumDifficultyLevel))
                     return "maximumDifficultyLevel: integer expected";
-            if (message.status != null && message.hasOwnProperty("status"))
-                if (!$util.isInteger(message.status))
-                    return "status: integer expected";
+            if (message.basicState != null && message.hasOwnProperty("basicState"))
+                if (!$util.isInteger(message.basicState))
+                    return "basicState: integer expected";
+            if (message.putinState != null && message.hasOwnProperty("putinState"))
+                if (!$util.isInteger(message.putinState))
+                    return "putinState: integer expected";
+            if (message.moveState != null && message.hasOwnProperty("moveState"))
+                if (!$util.isInteger(message.moveState))
+                    return "moveState: integer expected";
+            if (message.rotateState != null && message.hasOwnProperty("rotateState"))
+                if (!$util.isInteger(message.rotateState))
+                    return "rotateState: integer expected";
+            if (message.enemyCoreStatus != null && message.hasOwnProperty("enemyCoreStatus"))
+                if (!$util.isInteger(message.enemyCoreStatus))
+                    return "enemyCoreStatus: integer expected";
+            if (message.remainTimeAll != null && message.hasOwnProperty("remainTimeAll"))
+                if (!$util.isInteger(message.remainTimeAll))
+                    return "remainTimeAll: integer expected";
+            if (message.remainTimeStep != null && message.hasOwnProperty("remainTimeStep"))
+                if (!$util.isInteger(message.remainTimeStep))
+                    return "remainTimeStep: integer expected";
             return null;
         };
 
@@ -6640,9 +7199,21 @@ export const rm = $root.rm = (() => {
                 return object;
             let message = new $root.rm.TechCoreMotionStateSync();
             if (object.maximumDifficultyLevel != null)
-                message.maximumDifficultyLevel = object.maximumDifficultyLevel | 0;
-            if (object.status != null)
-                message.status = object.status | 0;
+                message.maximumDifficultyLevel = object.maximumDifficultyLevel >>> 0;
+            if (object.basicState != null)
+                message.basicState = object.basicState >>> 0;
+            if (object.putinState != null)
+                message.putinState = object.putinState >>> 0;
+            if (object.moveState != null)
+                message.moveState = object.moveState >>> 0;
+            if (object.rotateState != null)
+                message.rotateState = object.rotateState >>> 0;
+            if (object.enemyCoreStatus != null)
+                message.enemyCoreStatus = object.enemyCoreStatus >>> 0;
+            if (object.remainTimeAll != null)
+                message.remainTimeAll = object.remainTimeAll >>> 0;
+            if (object.remainTimeStep != null)
+                message.remainTimeStep = object.remainTimeStep >>> 0;
             return message;
         };
 
@@ -6661,12 +7232,30 @@ export const rm = $root.rm = (() => {
             let object = {};
             if (options.defaults) {
                 object.maximumDifficultyLevel = 0;
-                object.status = 0;
+                object.basicState = 0;
+                object.putinState = 0;
+                object.moveState = 0;
+                object.rotateState = 0;
+                object.enemyCoreStatus = 0;
+                object.remainTimeAll = 0;
+                object.remainTimeStep = 0;
             }
             if (message.maximumDifficultyLevel != null && message.hasOwnProperty("maximumDifficultyLevel"))
                 object.maximumDifficultyLevel = message.maximumDifficultyLevel;
-            if (message.status != null && message.hasOwnProperty("status"))
-                object.status = message.status;
+            if (message.basicState != null && message.hasOwnProperty("basicState"))
+                object.basicState = message.basicState;
+            if (message.putinState != null && message.hasOwnProperty("putinState"))
+                object.putinState = message.putinState;
+            if (message.moveState != null && message.hasOwnProperty("moveState"))
+                object.moveState = message.moveState;
+            if (message.rotateState != null && message.hasOwnProperty("rotateState"))
+                object.rotateState = message.rotateState;
+            if (message.enemyCoreStatus != null && message.hasOwnProperty("enemyCoreStatus"))
+                object.enemyCoreStatus = message.enemyCoreStatus;
+            if (message.remainTimeAll != null && message.hasOwnProperty("remainTimeAll"))
+                object.remainTimeAll = message.remainTimeAll;
+            if (message.remainTimeStep != null && message.hasOwnProperty("remainTimeStep"))
+                object.remainTimeStep = message.remainTimeStep;
             return object;
         };
 
@@ -6699,25 +7288,26 @@ export const rm = $root.rm = (() => {
         return TechCoreMotionStateSync;
     })();
 
-    rm.PerformanceSelection = (function () {
+    rm.RobotPerformanceSelectionCommand = (function() {
 
         /**
-         * Properties of a PerformanceSelection.
+         * Properties of a RobotPerformanceSelectionCommand.
          * @memberof rm
-         * @interface IPerformanceSelection
-         * @property {number|null} [shooter] PerformanceSelection shooter
-         * @property {number|null} [chassis] PerformanceSelection chassis
+         * @interface IRobotPerformanceSelectionCommand
+         * @property {number|null} [shooter] RobotPerformanceSelectionCommand shooter
+         * @property {number|null} [chassis] RobotPerformanceSelectionCommand chassis
+         * @property {number|null} [sentryControl] RobotPerformanceSelectionCommand sentryControl
          */
 
         /**
-         * Constructs a new PerformanceSelection.
+         * Constructs a new RobotPerformanceSelectionCommand.
          * @memberof rm
-         * @classdesc Represents a PerformanceSelection.
-         * @implements IPerformanceSelection
+         * @classdesc Represents a RobotPerformanceSelectionCommand.
+         * @implements IRobotPerformanceSelectionCommand
          * @constructor
-         * @param {rm.IPerformanceSelection=} [properties] Properties to set
+         * @param {rm.IRobotPerformanceSelectionCommand=} [properties] Properties to set
          */
-        function PerformanceSelection(properties) {
+        function RobotPerformanceSelectionCommand(properties) {
             if (properties)
                 for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
                     if (properties[keys[i]] != null)
@@ -6725,124 +7315,138 @@ export const rm = $root.rm = (() => {
         }
 
         /**
-         * PerformanceSelection shooter.
+         * RobotPerformanceSelectionCommand shooter.
          * @member {number} shooter
-         * @memberof rm.PerformanceSelection
+         * @memberof rm.RobotPerformanceSelectionCommand
          * @instance
          */
-        PerformanceSelection.prototype.shooter = 0;
+        RobotPerformanceSelectionCommand.prototype.shooter = 0;
 
         /**
-         * PerformanceSelection chassis.
+         * RobotPerformanceSelectionCommand chassis.
          * @member {number} chassis
-         * @memberof rm.PerformanceSelection
+         * @memberof rm.RobotPerformanceSelectionCommand
          * @instance
          */
-        PerformanceSelection.prototype.chassis = 0;
+        RobotPerformanceSelectionCommand.prototype.chassis = 0;
 
         /**
-         * Creates a new PerformanceSelection instance using the specified properties.
-         * @function create
-         * @memberof rm.PerformanceSelection
-         * @static
-         * @param {rm.IPerformanceSelection=} [properties] Properties to set
-         * @returns {rm.PerformanceSelection} PerformanceSelection instance
+         * RobotPerformanceSelectionCommand sentryControl.
+         * @member {number} sentryControl
+         * @memberof rm.RobotPerformanceSelectionCommand
+         * @instance
          */
-        PerformanceSelection.create = function create(properties) {
-            return new PerformanceSelection(properties);
+        RobotPerformanceSelectionCommand.prototype.sentryControl = 0;
+
+        /**
+         * Creates a new RobotPerformanceSelectionCommand instance using the specified properties.
+         * @function create
+         * @memberof rm.RobotPerformanceSelectionCommand
+         * @static
+         * @param {rm.IRobotPerformanceSelectionCommand=} [properties] Properties to set
+         * @returns {rm.RobotPerformanceSelectionCommand} RobotPerformanceSelectionCommand instance
+         */
+        RobotPerformanceSelectionCommand.create = function create(properties) {
+            return new RobotPerformanceSelectionCommand(properties);
         };
 
         /**
-         * Encodes the specified PerformanceSelection message. Does not implicitly {@link rm.PerformanceSelection.verify|verify} messages.
+         * Encodes the specified RobotPerformanceSelectionCommand message. Does not implicitly {@link rm.RobotPerformanceSelectionCommand.verify|verify} messages.
          * @function encode
-         * @memberof rm.PerformanceSelection
+         * @memberof rm.RobotPerformanceSelectionCommand
          * @static
-         * @param {rm.IPerformanceSelection} message PerformanceSelection message or plain object to encode
+         * @param {rm.IRobotPerformanceSelectionCommand} message RobotPerformanceSelectionCommand message or plain object to encode
          * @param {$protobuf.Writer} [writer] Writer to encode to
          * @returns {$protobuf.Writer} Writer
          */
-        PerformanceSelection.encode = function encode(message, writer) {
+        RobotPerformanceSelectionCommand.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
             if (message.shooter != null && Object.hasOwnProperty.call(message, "shooter"))
-                writer.uint32(/* id 1, wireType 0 =*/8).int32(message.shooter);
+                writer.uint32(/* id 1, wireType 0 =*/8).uint32(message.shooter);
             if (message.chassis != null && Object.hasOwnProperty.call(message, "chassis"))
-                writer.uint32(/* id 2, wireType 0 =*/16).int32(message.chassis);
+                writer.uint32(/* id 2, wireType 0 =*/16).uint32(message.chassis);
+            if (message.sentryControl != null && Object.hasOwnProperty.call(message, "sentryControl"))
+                writer.uint32(/* id 3, wireType 0 =*/24).uint32(message.sentryControl);
             return writer;
         };
 
         /**
-         * Encodes the specified PerformanceSelection message, length delimited. Does not implicitly {@link rm.PerformanceSelection.verify|verify} messages.
+         * Encodes the specified RobotPerformanceSelectionCommand message, length delimited. Does not implicitly {@link rm.RobotPerformanceSelectionCommand.verify|verify} messages.
          * @function encodeDelimited
-         * @memberof rm.PerformanceSelection
+         * @memberof rm.RobotPerformanceSelectionCommand
          * @static
-         * @param {rm.IPerformanceSelection} message PerformanceSelection message or plain object to encode
+         * @param {rm.IRobotPerformanceSelectionCommand} message RobotPerformanceSelectionCommand message or plain object to encode
          * @param {$protobuf.Writer} [writer] Writer to encode to
          * @returns {$protobuf.Writer} Writer
          */
-        PerformanceSelection.encodeDelimited = function encodeDelimited(message, writer) {
+        RobotPerformanceSelectionCommand.encodeDelimited = function encodeDelimited(message, writer) {
             return this.encode(message, writer).ldelim();
         };
 
         /**
-         * Decodes a PerformanceSelection message from the specified reader or buffer.
+         * Decodes a RobotPerformanceSelectionCommand message from the specified reader or buffer.
          * @function decode
-         * @memberof rm.PerformanceSelection
+         * @memberof rm.RobotPerformanceSelectionCommand
          * @static
          * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
          * @param {number} [length] Message length if known beforehand
-         * @returns {rm.PerformanceSelection} PerformanceSelection
+         * @returns {rm.RobotPerformanceSelectionCommand} RobotPerformanceSelectionCommand
          * @throws {Error} If the payload is not a reader or valid buffer
          * @throws {$protobuf.util.ProtocolError} If required fields are missing
          */
-        PerformanceSelection.decode = function decode(reader, length) {
+        RobotPerformanceSelectionCommand.decode = function decode(reader, length) {
             if (!(reader instanceof $Reader))
                 reader = $Reader.create(reader);
-            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.rm.PerformanceSelection();
+            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.rm.RobotPerformanceSelectionCommand();
             while (reader.pos < end) {
                 let tag = reader.uint32();
                 switch (tag >>> 3) {
-                    case 1: {
-                        message.shooter = reader.int32();
+                case 1: {
+                        message.shooter = reader.uint32();
                         break;
                     }
-                    case 2: {
-                        message.chassis = reader.int32();
+                case 2: {
+                        message.chassis = reader.uint32();
                         break;
                     }
-                    default:
-                        reader.skipType(tag & 7);
+                case 3: {
+                        message.sentryControl = reader.uint32();
                         break;
+                    }
+                default:
+                    reader.skipType(tag & 7);
+                    break;
                 }
             }
             return message;
         };
 
         /**
-         * Decodes a PerformanceSelection message from the specified reader or buffer, length delimited.
+         * Decodes a RobotPerformanceSelectionCommand message from the specified reader or buffer, length delimited.
          * @function decodeDelimited
-         * @memberof rm.PerformanceSelection
+         * @memberof rm.RobotPerformanceSelectionCommand
          * @static
          * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-         * @returns {rm.PerformanceSelection} PerformanceSelection
+         * @returns {rm.RobotPerformanceSelectionCommand} RobotPerformanceSelectionCommand
          * @throws {Error} If the payload is not a reader or valid buffer
          * @throws {$protobuf.util.ProtocolError} If required fields are missing
          */
-        PerformanceSelection.decodeDelimited = function decodeDelimited(reader) {
+        RobotPerformanceSelectionCommand.decodeDelimited = function decodeDelimited(reader) {
             if (!(reader instanceof $Reader))
                 reader = new $Reader(reader);
             return this.decode(reader, reader.uint32());
         };
 
         /**
-         * Verifies a PerformanceSelection message.
+         * Verifies a RobotPerformanceSelectionCommand message.
          * @function verify
-         * @memberof rm.PerformanceSelection
+         * @memberof rm.RobotPerformanceSelectionCommand
          * @static
          * @param {Object.<string,*>} message Plain object to verify
          * @returns {string|null} `null` if valid, otherwise the reason why it is not
          */
-        PerformanceSelection.verify = function verify(message) {
+        RobotPerformanceSelectionCommand.verify = function verify(message) {
             if (typeof message !== "object" || message === null)
                 return "object expected";
             if (message.shooter != null && message.hasOwnProperty("shooter"))
@@ -6851,99 +7455,109 @@ export const rm = $root.rm = (() => {
             if (message.chassis != null && message.hasOwnProperty("chassis"))
                 if (!$util.isInteger(message.chassis))
                     return "chassis: integer expected";
+            if (message.sentryControl != null && message.hasOwnProperty("sentryControl"))
+                if (!$util.isInteger(message.sentryControl))
+                    return "sentryControl: integer expected";
             return null;
         };
 
         /**
-         * Creates a PerformanceSelection message from a plain object. Also converts values to their respective internal types.
+         * Creates a RobotPerformanceSelectionCommand message from a plain object. Also converts values to their respective internal types.
          * @function fromObject
-         * @memberof rm.PerformanceSelection
+         * @memberof rm.RobotPerformanceSelectionCommand
          * @static
          * @param {Object.<string,*>} object Plain object
-         * @returns {rm.PerformanceSelection} PerformanceSelection
+         * @returns {rm.RobotPerformanceSelectionCommand} RobotPerformanceSelectionCommand
          */
-        PerformanceSelection.fromObject = function fromObject(object) {
-            if (object instanceof $root.rm.PerformanceSelection)
+        RobotPerformanceSelectionCommand.fromObject = function fromObject(object) {
+            if (object instanceof $root.rm.RobotPerformanceSelectionCommand)
                 return object;
-            let message = new $root.rm.PerformanceSelection();
+            let message = new $root.rm.RobotPerformanceSelectionCommand();
             if (object.shooter != null)
-                message.shooter = object.shooter | 0;
+                message.shooter = object.shooter >>> 0;
             if (object.chassis != null)
-                message.chassis = object.chassis | 0;
+                message.chassis = object.chassis >>> 0;
+            if (object.sentryControl != null)
+                message.sentryControl = object.sentryControl >>> 0;
             return message;
         };
 
         /**
-         * Creates a plain object from a PerformanceSelection message. Also converts values to other types if specified.
+         * Creates a plain object from a RobotPerformanceSelectionCommand message. Also converts values to other types if specified.
          * @function toObject
-         * @memberof rm.PerformanceSelection
+         * @memberof rm.RobotPerformanceSelectionCommand
          * @static
-         * @param {rm.PerformanceSelection} message PerformanceSelection
+         * @param {rm.RobotPerformanceSelectionCommand} message RobotPerformanceSelectionCommand
          * @param {$protobuf.IConversionOptions} [options] Conversion options
          * @returns {Object.<string,*>} Plain object
          */
-        PerformanceSelection.toObject = function toObject(message, options) {
+        RobotPerformanceSelectionCommand.toObject = function toObject(message, options) {
             if (!options)
                 options = {};
             let object = {};
             if (options.defaults) {
                 object.shooter = 0;
                 object.chassis = 0;
+                object.sentryControl = 0;
             }
             if (message.shooter != null && message.hasOwnProperty("shooter"))
                 object.shooter = message.shooter;
             if (message.chassis != null && message.hasOwnProperty("chassis"))
                 object.chassis = message.chassis;
+            if (message.sentryControl != null && message.hasOwnProperty("sentryControl"))
+                object.sentryControl = message.sentryControl;
             return object;
         };
 
         /**
-         * Converts this PerformanceSelection to JSON.
+         * Converts this RobotPerformanceSelectionCommand to JSON.
          * @function toJSON
-         * @memberof rm.PerformanceSelection
+         * @memberof rm.RobotPerformanceSelectionCommand
          * @instance
          * @returns {Object.<string,*>} JSON object
          */
-        PerformanceSelection.prototype.toJSON = function toJSON() {
+        RobotPerformanceSelectionCommand.prototype.toJSON = function toJSON() {
             return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
         };
 
         /**
-         * Gets the default type url for PerformanceSelection
+         * Gets the default type url for RobotPerformanceSelectionCommand
          * @function getTypeUrl
-         * @memberof rm.PerformanceSelection
+         * @memberof rm.RobotPerformanceSelectionCommand
          * @static
          * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
          * @returns {string} The default type url
          */
-        PerformanceSelection.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+        RobotPerformanceSelectionCommand.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
             if (typeUrlPrefix === undefined) {
                 typeUrlPrefix = "type.googleapis.com";
             }
-            return typeUrlPrefix + "/rm.PerformanceSelection";
+            return typeUrlPrefix + "/rm.RobotPerformanceSelectionCommand";
         };
 
-        return PerformanceSelection;
+        return RobotPerformanceSelectionCommand;
     })();
 
-    rm.HeroDeployMode = (function () {
+    rm.RobotPerformanceSelectionSync = (function() {
 
         /**
-         * Properties of a HeroDeployMode.
+         * Properties of a RobotPerformanceSelectionSync.
          * @memberof rm
-         * @interface IHeroDeployMode
-         * @property {number|null} [modeOrStatus] HeroDeployMode modeOrStatus
+         * @interface IRobotPerformanceSelectionSync
+         * @property {number|null} [shooter] RobotPerformanceSelectionSync shooter
+         * @property {number|null} [chassis] RobotPerformanceSelectionSync chassis
+         * @property {number|null} [sentryControl] RobotPerformanceSelectionSync sentryControl
          */
 
         /**
-         * Constructs a new HeroDeployMode.
+         * Constructs a new RobotPerformanceSelectionSync.
          * @memberof rm
-         * @classdesc Represents a HeroDeployMode.
-         * @implements IHeroDeployMode
+         * @classdesc Represents a RobotPerformanceSelectionSync.
+         * @implements IRobotPerformanceSelectionSync
          * @constructor
-         * @param {rm.IHeroDeployMode=} [properties] Properties to set
+         * @param {rm.IRobotPerformanceSelectionSync=} [properties] Properties to set
          */
-        function HeroDeployMode(properties) {
+        function RobotPerformanceSelectionSync(properties) {
             if (properties)
                 for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
                     if (properties[keys[i]] != null)
@@ -6951,205 +7565,248 @@ export const rm = $root.rm = (() => {
         }
 
         /**
-         * HeroDeployMode modeOrStatus.
-         * @member {number} modeOrStatus
-         * @memberof rm.HeroDeployMode
+         * RobotPerformanceSelectionSync shooter.
+         * @member {number} shooter
+         * @memberof rm.RobotPerformanceSelectionSync
          * @instance
          */
-        HeroDeployMode.prototype.modeOrStatus = 0;
+        RobotPerformanceSelectionSync.prototype.shooter = 0;
 
         /**
-         * Creates a new HeroDeployMode instance using the specified properties.
-         * @function create
-         * @memberof rm.HeroDeployMode
-         * @static
-         * @param {rm.IHeroDeployMode=} [properties] Properties to set
-         * @returns {rm.HeroDeployMode} HeroDeployMode instance
+         * RobotPerformanceSelectionSync chassis.
+         * @member {number} chassis
+         * @memberof rm.RobotPerformanceSelectionSync
+         * @instance
          */
-        HeroDeployMode.create = function create(properties) {
-            return new HeroDeployMode(properties);
+        RobotPerformanceSelectionSync.prototype.chassis = 0;
+
+        /**
+         * RobotPerformanceSelectionSync sentryControl.
+         * @member {number} sentryControl
+         * @memberof rm.RobotPerformanceSelectionSync
+         * @instance
+         */
+        RobotPerformanceSelectionSync.prototype.sentryControl = 0;
+
+        /**
+         * Creates a new RobotPerformanceSelectionSync instance using the specified properties.
+         * @function create
+         * @memberof rm.RobotPerformanceSelectionSync
+         * @static
+         * @param {rm.IRobotPerformanceSelectionSync=} [properties] Properties to set
+         * @returns {rm.RobotPerformanceSelectionSync} RobotPerformanceSelectionSync instance
+         */
+        RobotPerformanceSelectionSync.create = function create(properties) {
+            return new RobotPerformanceSelectionSync(properties);
         };
 
         /**
-         * Encodes the specified HeroDeployMode message. Does not implicitly {@link rm.HeroDeployMode.verify|verify} messages.
+         * Encodes the specified RobotPerformanceSelectionSync message. Does not implicitly {@link rm.RobotPerformanceSelectionSync.verify|verify} messages.
          * @function encode
-         * @memberof rm.HeroDeployMode
+         * @memberof rm.RobotPerformanceSelectionSync
          * @static
-         * @param {rm.IHeroDeployMode} message HeroDeployMode message or plain object to encode
+         * @param {rm.IRobotPerformanceSelectionSync} message RobotPerformanceSelectionSync message or plain object to encode
          * @param {$protobuf.Writer} [writer] Writer to encode to
          * @returns {$protobuf.Writer} Writer
          */
-        HeroDeployMode.encode = function encode(message, writer) {
+        RobotPerformanceSelectionSync.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
-            if (message.modeOrStatus != null && Object.hasOwnProperty.call(message, "modeOrStatus"))
-                writer.uint32(/* id 1, wireType 0 =*/8).int32(message.modeOrStatus);
+            if (message.shooter != null && Object.hasOwnProperty.call(message, "shooter"))
+                writer.uint32(/* id 1, wireType 0 =*/8).uint32(message.shooter);
+            if (message.chassis != null && Object.hasOwnProperty.call(message, "chassis"))
+                writer.uint32(/* id 2, wireType 0 =*/16).uint32(message.chassis);
+            if (message.sentryControl != null && Object.hasOwnProperty.call(message, "sentryControl"))
+                writer.uint32(/* id 3, wireType 0 =*/24).uint32(message.sentryControl);
             return writer;
         };
 
         /**
-         * Encodes the specified HeroDeployMode message, length delimited. Does not implicitly {@link rm.HeroDeployMode.verify|verify} messages.
+         * Encodes the specified RobotPerformanceSelectionSync message, length delimited. Does not implicitly {@link rm.RobotPerformanceSelectionSync.verify|verify} messages.
          * @function encodeDelimited
-         * @memberof rm.HeroDeployMode
+         * @memberof rm.RobotPerformanceSelectionSync
          * @static
-         * @param {rm.IHeroDeployMode} message HeroDeployMode message or plain object to encode
+         * @param {rm.IRobotPerformanceSelectionSync} message RobotPerformanceSelectionSync message or plain object to encode
          * @param {$protobuf.Writer} [writer] Writer to encode to
          * @returns {$protobuf.Writer} Writer
          */
-        HeroDeployMode.encodeDelimited = function encodeDelimited(message, writer) {
+        RobotPerformanceSelectionSync.encodeDelimited = function encodeDelimited(message, writer) {
             return this.encode(message, writer).ldelim();
         };
 
         /**
-         * Decodes a HeroDeployMode message from the specified reader or buffer.
+         * Decodes a RobotPerformanceSelectionSync message from the specified reader or buffer.
          * @function decode
-         * @memberof rm.HeroDeployMode
+         * @memberof rm.RobotPerformanceSelectionSync
          * @static
          * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
          * @param {number} [length] Message length if known beforehand
-         * @returns {rm.HeroDeployMode} HeroDeployMode
+         * @returns {rm.RobotPerformanceSelectionSync} RobotPerformanceSelectionSync
          * @throws {Error} If the payload is not a reader or valid buffer
          * @throws {$protobuf.util.ProtocolError} If required fields are missing
          */
-        HeroDeployMode.decode = function decode(reader, length) {
+        RobotPerformanceSelectionSync.decode = function decode(reader, length) {
             if (!(reader instanceof $Reader))
                 reader = $Reader.create(reader);
-            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.rm.HeroDeployMode();
+            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.rm.RobotPerformanceSelectionSync();
             while (reader.pos < end) {
                 let tag = reader.uint32();
                 switch (tag >>> 3) {
-                    case 1: {
-                        message.modeOrStatus = reader.int32();
+                case 1: {
+                        message.shooter = reader.uint32();
                         break;
                     }
-                    default:
-                        reader.skipType(tag & 7);
+                case 2: {
+                        message.chassis = reader.uint32();
                         break;
+                    }
+                case 3: {
+                        message.sentryControl = reader.uint32();
+                        break;
+                    }
+                default:
+                    reader.skipType(tag & 7);
+                    break;
                 }
             }
             return message;
         };
 
         /**
-         * Decodes a HeroDeployMode message from the specified reader or buffer, length delimited.
+         * Decodes a RobotPerformanceSelectionSync message from the specified reader or buffer, length delimited.
          * @function decodeDelimited
-         * @memberof rm.HeroDeployMode
+         * @memberof rm.RobotPerformanceSelectionSync
          * @static
          * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-         * @returns {rm.HeroDeployMode} HeroDeployMode
+         * @returns {rm.RobotPerformanceSelectionSync} RobotPerformanceSelectionSync
          * @throws {Error} If the payload is not a reader or valid buffer
          * @throws {$protobuf.util.ProtocolError} If required fields are missing
          */
-        HeroDeployMode.decodeDelimited = function decodeDelimited(reader) {
+        RobotPerformanceSelectionSync.decodeDelimited = function decodeDelimited(reader) {
             if (!(reader instanceof $Reader))
                 reader = new $Reader(reader);
             return this.decode(reader, reader.uint32());
         };
 
         /**
-         * Verifies a HeroDeployMode message.
+         * Verifies a RobotPerformanceSelectionSync message.
          * @function verify
-         * @memberof rm.HeroDeployMode
+         * @memberof rm.RobotPerformanceSelectionSync
          * @static
          * @param {Object.<string,*>} message Plain object to verify
          * @returns {string|null} `null` if valid, otherwise the reason why it is not
          */
-        HeroDeployMode.verify = function verify(message) {
+        RobotPerformanceSelectionSync.verify = function verify(message) {
             if (typeof message !== "object" || message === null)
                 return "object expected";
-            if (message.modeOrStatus != null && message.hasOwnProperty("modeOrStatus"))
-                if (!$util.isInteger(message.modeOrStatus))
-                    return "modeOrStatus: integer expected";
+            if (message.shooter != null && message.hasOwnProperty("shooter"))
+                if (!$util.isInteger(message.shooter))
+                    return "shooter: integer expected";
+            if (message.chassis != null && message.hasOwnProperty("chassis"))
+                if (!$util.isInteger(message.chassis))
+                    return "chassis: integer expected";
+            if (message.sentryControl != null && message.hasOwnProperty("sentryControl"))
+                if (!$util.isInteger(message.sentryControl))
+                    return "sentryControl: integer expected";
             return null;
         };
 
         /**
-         * Creates a HeroDeployMode message from a plain object. Also converts values to their respective internal types.
+         * Creates a RobotPerformanceSelectionSync message from a plain object. Also converts values to their respective internal types.
          * @function fromObject
-         * @memberof rm.HeroDeployMode
+         * @memberof rm.RobotPerformanceSelectionSync
          * @static
          * @param {Object.<string,*>} object Plain object
-         * @returns {rm.HeroDeployMode} HeroDeployMode
+         * @returns {rm.RobotPerformanceSelectionSync} RobotPerformanceSelectionSync
          */
-        HeroDeployMode.fromObject = function fromObject(object) {
-            if (object instanceof $root.rm.HeroDeployMode)
+        RobotPerformanceSelectionSync.fromObject = function fromObject(object) {
+            if (object instanceof $root.rm.RobotPerformanceSelectionSync)
                 return object;
-            let message = new $root.rm.HeroDeployMode();
-            if (object.modeOrStatus != null)
-                message.modeOrStatus = object.modeOrStatus | 0;
+            let message = new $root.rm.RobotPerformanceSelectionSync();
+            if (object.shooter != null)
+                message.shooter = object.shooter >>> 0;
+            if (object.chassis != null)
+                message.chassis = object.chassis >>> 0;
+            if (object.sentryControl != null)
+                message.sentryControl = object.sentryControl >>> 0;
             return message;
         };
 
         /**
-         * Creates a plain object from a HeroDeployMode message. Also converts values to other types if specified.
+         * Creates a plain object from a RobotPerformanceSelectionSync message. Also converts values to other types if specified.
          * @function toObject
-         * @memberof rm.HeroDeployMode
+         * @memberof rm.RobotPerformanceSelectionSync
          * @static
-         * @param {rm.HeroDeployMode} message HeroDeployMode
+         * @param {rm.RobotPerformanceSelectionSync} message RobotPerformanceSelectionSync
          * @param {$protobuf.IConversionOptions} [options] Conversion options
          * @returns {Object.<string,*>} Plain object
          */
-        HeroDeployMode.toObject = function toObject(message, options) {
+        RobotPerformanceSelectionSync.toObject = function toObject(message, options) {
             if (!options)
                 options = {};
             let object = {};
-            if (options.defaults)
-                object.modeOrStatus = 0;
-            if (message.modeOrStatus != null && message.hasOwnProperty("modeOrStatus"))
-                object.modeOrStatus = message.modeOrStatus;
+            if (options.defaults) {
+                object.shooter = 0;
+                object.chassis = 0;
+                object.sentryControl = 0;
+            }
+            if (message.shooter != null && message.hasOwnProperty("shooter"))
+                object.shooter = message.shooter;
+            if (message.chassis != null && message.hasOwnProperty("chassis"))
+                object.chassis = message.chassis;
+            if (message.sentryControl != null && message.hasOwnProperty("sentryControl"))
+                object.sentryControl = message.sentryControl;
             return object;
         };
 
         /**
-         * Converts this HeroDeployMode to JSON.
+         * Converts this RobotPerformanceSelectionSync to JSON.
          * @function toJSON
-         * @memberof rm.HeroDeployMode
+         * @memberof rm.RobotPerformanceSelectionSync
          * @instance
          * @returns {Object.<string,*>} JSON object
          */
-        HeroDeployMode.prototype.toJSON = function toJSON() {
+        RobotPerformanceSelectionSync.prototype.toJSON = function toJSON() {
             return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
         };
 
         /**
-         * Gets the default type url for HeroDeployMode
+         * Gets the default type url for RobotPerformanceSelectionSync
          * @function getTypeUrl
-         * @memberof rm.HeroDeployMode
+         * @memberof rm.RobotPerformanceSelectionSync
          * @static
          * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
          * @returns {string} The default type url
          */
-        HeroDeployMode.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+        RobotPerformanceSelectionSync.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
             if (typeUrlPrefix === undefined) {
                 typeUrlPrefix = "type.googleapis.com";
             }
-            return typeUrlPrefix + "/rm.HeroDeployMode";
+            return typeUrlPrefix + "/rm.RobotPerformanceSelectionSync";
         };
 
-        return HeroDeployMode;
+        return RobotPerformanceSelectionSync;
     })();
 
-    rm.RuneStatus = (function () {
+    rm.CommonCommand = (function() {
 
         /**
-         * Properties of a RuneStatus.
+         * Properties of a CommonCommand.
          * @memberof rm
-         * @interface IRuneStatus
-         * @property {number|null} [activate] RuneStatus activate
-         * @property {number|null} [runeStatus] RuneStatus runeStatus
-         * @property {number|null} [activatedArms] RuneStatus activatedArms
-         * @property {number|null} [averageRings] RuneStatus averageRings
+         * @interface ICommonCommand
+         * @property {number|null} [cmdType] CommonCommand cmdType
+         * @property {number|null} [param] CommonCommand param
          */
 
         /**
-         * Constructs a new RuneStatus.
+         * Constructs a new CommonCommand.
          * @memberof rm
-         * @classdesc Represents a RuneStatus.
-         * @implements IRuneStatus
+         * @classdesc Represents a CommonCommand.
+         * @implements ICommonCommand
          * @constructor
-         * @param {rm.IRuneStatus=} [properties] Properties to set
+         * @param {rm.ICommonCommand=} [properties] Properties to set
          */
-        function RuneStatus(properties) {
+        function CommonCommand(properties) {
             if (properties)
                 for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
                     if (properties[keys[i]] != null)
@@ -7157,157 +7814,977 @@ export const rm = $root.rm = (() => {
         }
 
         /**
-         * RuneStatus activate.
-         * @member {number} activate
-         * @memberof rm.RuneStatus
+         * CommonCommand cmdType.
+         * @member {number} cmdType
+         * @memberof rm.CommonCommand
          * @instance
          */
-        RuneStatus.prototype.activate = 0;
+        CommonCommand.prototype.cmdType = 0;
 
         /**
-         * RuneStatus runeStatus.
-         * @member {number} runeStatus
-         * @memberof rm.RuneStatus
+         * CommonCommand param.
+         * @member {number} param
+         * @memberof rm.CommonCommand
          * @instance
          */
-        RuneStatus.prototype.runeStatus = 0;
+        CommonCommand.prototype.param = 0;
 
         /**
-         * RuneStatus activatedArms.
-         * @member {number} activatedArms
-         * @memberof rm.RuneStatus
-         * @instance
-         */
-        RuneStatus.prototype.activatedArms = 0;
-
-        /**
-         * RuneStatus averageRings.
-         * @member {number} averageRings
-         * @memberof rm.RuneStatus
-         * @instance
-         */
-        RuneStatus.prototype.averageRings = 0;
-
-        /**
-         * Creates a new RuneStatus instance using the specified properties.
+         * Creates a new CommonCommand instance using the specified properties.
          * @function create
-         * @memberof rm.RuneStatus
+         * @memberof rm.CommonCommand
          * @static
-         * @param {rm.IRuneStatus=} [properties] Properties to set
-         * @returns {rm.RuneStatus} RuneStatus instance
+         * @param {rm.ICommonCommand=} [properties] Properties to set
+         * @returns {rm.CommonCommand} CommonCommand instance
          */
-        RuneStatus.create = function create(properties) {
-            return new RuneStatus(properties);
+        CommonCommand.create = function create(properties) {
+            return new CommonCommand(properties);
         };
 
         /**
-         * Encodes the specified RuneStatus message. Does not implicitly {@link rm.RuneStatus.verify|verify} messages.
+         * Encodes the specified CommonCommand message. Does not implicitly {@link rm.CommonCommand.verify|verify} messages.
          * @function encode
-         * @memberof rm.RuneStatus
+         * @memberof rm.CommonCommand
          * @static
-         * @param {rm.IRuneStatus} message RuneStatus message or plain object to encode
+         * @param {rm.ICommonCommand} message CommonCommand message or plain object to encode
          * @param {$protobuf.Writer} [writer] Writer to encode to
          * @returns {$protobuf.Writer} Writer
          */
-        RuneStatus.encode = function encode(message, writer) {
+        CommonCommand.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
-            if (message.activate != null && Object.hasOwnProperty.call(message, "activate"))
-                writer.uint32(/* id 1, wireType 0 =*/8).int32(message.activate);
-            if (message.runeStatus != null && Object.hasOwnProperty.call(message, "runeStatus"))
-                writer.uint32(/* id 2, wireType 0 =*/16).int32(message.runeStatus);
-            if (message.activatedArms != null && Object.hasOwnProperty.call(message, "activatedArms"))
-                writer.uint32(/* id 3, wireType 0 =*/24).int32(message.activatedArms);
-            if (message.averageRings != null && Object.hasOwnProperty.call(message, "averageRings"))
-                writer.uint32(/* id 4, wireType 0 =*/32).int32(message.averageRings);
+            if (message.cmdType != null && Object.hasOwnProperty.call(message, "cmdType"))
+                writer.uint32(/* id 1, wireType 0 =*/8).uint32(message.cmdType);
+            if (message.param != null && Object.hasOwnProperty.call(message, "param"))
+                writer.uint32(/* id 2, wireType 0 =*/16).uint32(message.param);
             return writer;
         };
 
         /**
-         * Encodes the specified RuneStatus message, length delimited. Does not implicitly {@link rm.RuneStatus.verify|verify} messages.
+         * Encodes the specified CommonCommand message, length delimited. Does not implicitly {@link rm.CommonCommand.verify|verify} messages.
          * @function encodeDelimited
-         * @memberof rm.RuneStatus
+         * @memberof rm.CommonCommand
          * @static
-         * @param {rm.IRuneStatus} message RuneStatus message or plain object to encode
+         * @param {rm.ICommonCommand} message CommonCommand message or plain object to encode
          * @param {$protobuf.Writer} [writer] Writer to encode to
          * @returns {$protobuf.Writer} Writer
          */
-        RuneStatus.encodeDelimited = function encodeDelimited(message, writer) {
+        CommonCommand.encodeDelimited = function encodeDelimited(message, writer) {
             return this.encode(message, writer).ldelim();
         };
 
         /**
-         * Decodes a RuneStatus message from the specified reader or buffer.
+         * Decodes a CommonCommand message from the specified reader or buffer.
          * @function decode
-         * @memberof rm.RuneStatus
+         * @memberof rm.CommonCommand
          * @static
          * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
          * @param {number} [length] Message length if known beforehand
-         * @returns {rm.RuneStatus} RuneStatus
+         * @returns {rm.CommonCommand} CommonCommand
          * @throws {Error} If the payload is not a reader or valid buffer
          * @throws {$protobuf.util.ProtocolError} If required fields are missing
          */
-        RuneStatus.decode = function decode(reader, length) {
+        CommonCommand.decode = function decode(reader, length) {
             if (!(reader instanceof $Reader))
                 reader = $Reader.create(reader);
-            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.rm.RuneStatus();
+            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.rm.CommonCommand();
             while (reader.pos < end) {
                 let tag = reader.uint32();
                 switch (tag >>> 3) {
-                    case 1: {
-                        message.activate = reader.int32();
+                case 1: {
+                        message.cmdType = reader.uint32();
                         break;
                     }
-                    case 2: {
-                        message.runeStatus = reader.int32();
+                case 2: {
+                        message.param = reader.uint32();
                         break;
                     }
-                    case 3: {
-                        message.activatedArms = reader.int32();
-                        break;
-                    }
-                    case 4: {
-                        message.averageRings = reader.int32();
-                        break;
-                    }
-                    default:
-                        reader.skipType(tag & 7);
-                        break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
                 }
             }
             return message;
         };
 
         /**
-         * Decodes a RuneStatus message from the specified reader or buffer, length delimited.
+         * Decodes a CommonCommand message from the specified reader or buffer, length delimited.
          * @function decodeDelimited
-         * @memberof rm.RuneStatus
+         * @memberof rm.CommonCommand
          * @static
          * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-         * @returns {rm.RuneStatus} RuneStatus
+         * @returns {rm.CommonCommand} CommonCommand
          * @throws {Error} If the payload is not a reader or valid buffer
          * @throws {$protobuf.util.ProtocolError} If required fields are missing
          */
-        RuneStatus.decodeDelimited = function decodeDelimited(reader) {
+        CommonCommand.decodeDelimited = function decodeDelimited(reader) {
             if (!(reader instanceof $Reader))
                 reader = new $Reader(reader);
             return this.decode(reader, reader.uint32());
         };
 
         /**
-         * Verifies a RuneStatus message.
+         * Verifies a CommonCommand message.
          * @function verify
-         * @memberof rm.RuneStatus
+         * @memberof rm.CommonCommand
          * @static
          * @param {Object.<string,*>} message Plain object to verify
          * @returns {string|null} `null` if valid, otherwise the reason why it is not
          */
-        RuneStatus.verify = function verify(message) {
+        CommonCommand.verify = function verify(message) {
+            if (typeof message !== "object" || message === null)
+                return "object expected";
+            if (message.cmdType != null && message.hasOwnProperty("cmdType"))
+                if (!$util.isInteger(message.cmdType))
+                    return "cmdType: integer expected";
+            if (message.param != null && message.hasOwnProperty("param"))
+                if (!$util.isInteger(message.param))
+                    return "param: integer expected";
+            return null;
+        };
+
+        /**
+         * Creates a CommonCommand message from a plain object. Also converts values to their respective internal types.
+         * @function fromObject
+         * @memberof rm.CommonCommand
+         * @static
+         * @param {Object.<string,*>} object Plain object
+         * @returns {rm.CommonCommand} CommonCommand
+         */
+        CommonCommand.fromObject = function fromObject(object) {
+            if (object instanceof $root.rm.CommonCommand)
+                return object;
+            let message = new $root.rm.CommonCommand();
+            if (object.cmdType != null)
+                message.cmdType = object.cmdType >>> 0;
+            if (object.param != null)
+                message.param = object.param >>> 0;
+            return message;
+        };
+
+        /**
+         * Creates a plain object from a CommonCommand message. Also converts values to other types if specified.
+         * @function toObject
+         * @memberof rm.CommonCommand
+         * @static
+         * @param {rm.CommonCommand} message CommonCommand
+         * @param {$protobuf.IConversionOptions} [options] Conversion options
+         * @returns {Object.<string,*>} Plain object
+         */
+        CommonCommand.toObject = function toObject(message, options) {
+            if (!options)
+                options = {};
+            let object = {};
+            if (options.defaults) {
+                object.cmdType = 0;
+                object.param = 0;
+            }
+            if (message.cmdType != null && message.hasOwnProperty("cmdType"))
+                object.cmdType = message.cmdType;
+            if (message.param != null && message.hasOwnProperty("param"))
+                object.param = message.param;
+            return object;
+        };
+
+        /**
+         * Converts this CommonCommand to JSON.
+         * @function toJSON
+         * @memberof rm.CommonCommand
+         * @instance
+         * @returns {Object.<string,*>} JSON object
+         */
+        CommonCommand.prototype.toJSON = function toJSON() {
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+
+        /**
+         * Gets the default type url for CommonCommand
+         * @function getTypeUrl
+         * @memberof rm.CommonCommand
+         * @static
+         * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+         * @returns {string} The default type url
+         */
+        CommonCommand.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+            if (typeUrlPrefix === undefined) {
+                typeUrlPrefix = "type.googleapis.com";
+            }
+            return typeUrlPrefix + "/rm.CommonCommand";
+        };
+
+        return CommonCommand;
+    })();
+
+    rm.HeroDeployModeEventCommand = (function() {
+
+        /**
+         * Properties of a HeroDeployModeEventCommand.
+         * @memberof rm
+         * @interface IHeroDeployModeEventCommand
+         * @property {number|null} [mode] HeroDeployModeEventCommand mode
+         */
+
+        /**
+         * Constructs a new HeroDeployModeEventCommand.
+         * @memberof rm
+         * @classdesc Represents a HeroDeployModeEventCommand.
+         * @implements IHeroDeployModeEventCommand
+         * @constructor
+         * @param {rm.IHeroDeployModeEventCommand=} [properties] Properties to set
+         */
+        function HeroDeployModeEventCommand(properties) {
+            if (properties)
+                for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+
+        /**
+         * HeroDeployModeEventCommand mode.
+         * @member {number} mode
+         * @memberof rm.HeroDeployModeEventCommand
+         * @instance
+         */
+        HeroDeployModeEventCommand.prototype.mode = 0;
+
+        /**
+         * Creates a new HeroDeployModeEventCommand instance using the specified properties.
+         * @function create
+         * @memberof rm.HeroDeployModeEventCommand
+         * @static
+         * @param {rm.IHeroDeployModeEventCommand=} [properties] Properties to set
+         * @returns {rm.HeroDeployModeEventCommand} HeroDeployModeEventCommand instance
+         */
+        HeroDeployModeEventCommand.create = function create(properties) {
+            return new HeroDeployModeEventCommand(properties);
+        };
+
+        /**
+         * Encodes the specified HeroDeployModeEventCommand message. Does not implicitly {@link rm.HeroDeployModeEventCommand.verify|verify} messages.
+         * @function encode
+         * @memberof rm.HeroDeployModeEventCommand
+         * @static
+         * @param {rm.IHeroDeployModeEventCommand} message HeroDeployModeEventCommand message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        HeroDeployModeEventCommand.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            if (message.mode != null && Object.hasOwnProperty.call(message, "mode"))
+                writer.uint32(/* id 1, wireType 0 =*/8).uint32(message.mode);
+            return writer;
+        };
+
+        /**
+         * Encodes the specified HeroDeployModeEventCommand message, length delimited. Does not implicitly {@link rm.HeroDeployModeEventCommand.verify|verify} messages.
+         * @function encodeDelimited
+         * @memberof rm.HeroDeployModeEventCommand
+         * @static
+         * @param {rm.IHeroDeployModeEventCommand} message HeroDeployModeEventCommand message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        HeroDeployModeEventCommand.encodeDelimited = function encodeDelimited(message, writer) {
+            return this.encode(message, writer).ldelim();
+        };
+
+        /**
+         * Decodes a HeroDeployModeEventCommand message from the specified reader or buffer.
+         * @function decode
+         * @memberof rm.HeroDeployModeEventCommand
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @param {number} [length] Message length if known beforehand
+         * @returns {rm.HeroDeployModeEventCommand} HeroDeployModeEventCommand
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        HeroDeployModeEventCommand.decode = function decode(reader, length) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.rm.HeroDeployModeEventCommand();
+            while (reader.pos < end) {
+                let tag = reader.uint32();
+                switch (tag >>> 3) {
+                case 1: {
+                        message.mode = reader.uint32();
+                        break;
+                    }
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            return message;
+        };
+
+        /**
+         * Decodes a HeroDeployModeEventCommand message from the specified reader or buffer, length delimited.
+         * @function decodeDelimited
+         * @memberof rm.HeroDeployModeEventCommand
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @returns {rm.HeroDeployModeEventCommand} HeroDeployModeEventCommand
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        HeroDeployModeEventCommand.decodeDelimited = function decodeDelimited(reader) {
+            if (!(reader instanceof $Reader))
+                reader = new $Reader(reader);
+            return this.decode(reader, reader.uint32());
+        };
+
+        /**
+         * Verifies a HeroDeployModeEventCommand message.
+         * @function verify
+         * @memberof rm.HeroDeployModeEventCommand
+         * @static
+         * @param {Object.<string,*>} message Plain object to verify
+         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+         */
+        HeroDeployModeEventCommand.verify = function verify(message) {
+            if (typeof message !== "object" || message === null)
+                return "object expected";
+            if (message.mode != null && message.hasOwnProperty("mode"))
+                if (!$util.isInteger(message.mode))
+                    return "mode: integer expected";
+            return null;
+        };
+
+        /**
+         * Creates a HeroDeployModeEventCommand message from a plain object. Also converts values to their respective internal types.
+         * @function fromObject
+         * @memberof rm.HeroDeployModeEventCommand
+         * @static
+         * @param {Object.<string,*>} object Plain object
+         * @returns {rm.HeroDeployModeEventCommand} HeroDeployModeEventCommand
+         */
+        HeroDeployModeEventCommand.fromObject = function fromObject(object) {
+            if (object instanceof $root.rm.HeroDeployModeEventCommand)
+                return object;
+            let message = new $root.rm.HeroDeployModeEventCommand();
+            if (object.mode != null)
+                message.mode = object.mode >>> 0;
+            return message;
+        };
+
+        /**
+         * Creates a plain object from a HeroDeployModeEventCommand message. Also converts values to other types if specified.
+         * @function toObject
+         * @memberof rm.HeroDeployModeEventCommand
+         * @static
+         * @param {rm.HeroDeployModeEventCommand} message HeroDeployModeEventCommand
+         * @param {$protobuf.IConversionOptions} [options] Conversion options
+         * @returns {Object.<string,*>} Plain object
+         */
+        HeroDeployModeEventCommand.toObject = function toObject(message, options) {
+            if (!options)
+                options = {};
+            let object = {};
+            if (options.defaults)
+                object.mode = 0;
+            if (message.mode != null && message.hasOwnProperty("mode"))
+                object.mode = message.mode;
+            return object;
+        };
+
+        /**
+         * Converts this HeroDeployModeEventCommand to JSON.
+         * @function toJSON
+         * @memberof rm.HeroDeployModeEventCommand
+         * @instance
+         * @returns {Object.<string,*>} JSON object
+         */
+        HeroDeployModeEventCommand.prototype.toJSON = function toJSON() {
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+
+        /**
+         * Gets the default type url for HeroDeployModeEventCommand
+         * @function getTypeUrl
+         * @memberof rm.HeroDeployModeEventCommand
+         * @static
+         * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+         * @returns {string} The default type url
+         */
+        HeroDeployModeEventCommand.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+            if (typeUrlPrefix === undefined) {
+                typeUrlPrefix = "type.googleapis.com";
+            }
+            return typeUrlPrefix + "/rm.HeroDeployModeEventCommand";
+        };
+
+        return HeroDeployModeEventCommand;
+    })();
+
+    rm.DeployModeStatusSync = (function() {
+
+        /**
+         * Properties of a DeployModeStatusSync.
+         * @memberof rm
+         * @interface IDeployModeStatusSync
+         * @property {number|null} [status] DeployModeStatusSync status
+         */
+
+        /**
+         * Constructs a new DeployModeStatusSync.
+         * @memberof rm
+         * @classdesc Represents a DeployModeStatusSync.
+         * @implements IDeployModeStatusSync
+         * @constructor
+         * @param {rm.IDeployModeStatusSync=} [properties] Properties to set
+         */
+        function DeployModeStatusSync(properties) {
+            if (properties)
+                for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+
+        /**
+         * DeployModeStatusSync status.
+         * @member {number} status
+         * @memberof rm.DeployModeStatusSync
+         * @instance
+         */
+        DeployModeStatusSync.prototype.status = 0;
+
+        /**
+         * Creates a new DeployModeStatusSync instance using the specified properties.
+         * @function create
+         * @memberof rm.DeployModeStatusSync
+         * @static
+         * @param {rm.IDeployModeStatusSync=} [properties] Properties to set
+         * @returns {rm.DeployModeStatusSync} DeployModeStatusSync instance
+         */
+        DeployModeStatusSync.create = function create(properties) {
+            return new DeployModeStatusSync(properties);
+        };
+
+        /**
+         * Encodes the specified DeployModeStatusSync message. Does not implicitly {@link rm.DeployModeStatusSync.verify|verify} messages.
+         * @function encode
+         * @memberof rm.DeployModeStatusSync
+         * @static
+         * @param {rm.IDeployModeStatusSync} message DeployModeStatusSync message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        DeployModeStatusSync.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            if (message.status != null && Object.hasOwnProperty.call(message, "status"))
+                writer.uint32(/* id 1, wireType 0 =*/8).uint32(message.status);
+            return writer;
+        };
+
+        /**
+         * Encodes the specified DeployModeStatusSync message, length delimited. Does not implicitly {@link rm.DeployModeStatusSync.verify|verify} messages.
+         * @function encodeDelimited
+         * @memberof rm.DeployModeStatusSync
+         * @static
+         * @param {rm.IDeployModeStatusSync} message DeployModeStatusSync message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        DeployModeStatusSync.encodeDelimited = function encodeDelimited(message, writer) {
+            return this.encode(message, writer).ldelim();
+        };
+
+        /**
+         * Decodes a DeployModeStatusSync message from the specified reader or buffer.
+         * @function decode
+         * @memberof rm.DeployModeStatusSync
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @param {number} [length] Message length if known beforehand
+         * @returns {rm.DeployModeStatusSync} DeployModeStatusSync
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        DeployModeStatusSync.decode = function decode(reader, length) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.rm.DeployModeStatusSync();
+            while (reader.pos < end) {
+                let tag = reader.uint32();
+                switch (tag >>> 3) {
+                case 1: {
+                        message.status = reader.uint32();
+                        break;
+                    }
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            return message;
+        };
+
+        /**
+         * Decodes a DeployModeStatusSync message from the specified reader or buffer, length delimited.
+         * @function decodeDelimited
+         * @memberof rm.DeployModeStatusSync
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @returns {rm.DeployModeStatusSync} DeployModeStatusSync
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        DeployModeStatusSync.decodeDelimited = function decodeDelimited(reader) {
+            if (!(reader instanceof $Reader))
+                reader = new $Reader(reader);
+            return this.decode(reader, reader.uint32());
+        };
+
+        /**
+         * Verifies a DeployModeStatusSync message.
+         * @function verify
+         * @memberof rm.DeployModeStatusSync
+         * @static
+         * @param {Object.<string,*>} message Plain object to verify
+         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+         */
+        DeployModeStatusSync.verify = function verify(message) {
+            if (typeof message !== "object" || message === null)
+                return "object expected";
+            if (message.status != null && message.hasOwnProperty("status"))
+                if (!$util.isInteger(message.status))
+                    return "status: integer expected";
+            return null;
+        };
+
+        /**
+         * Creates a DeployModeStatusSync message from a plain object. Also converts values to their respective internal types.
+         * @function fromObject
+         * @memberof rm.DeployModeStatusSync
+         * @static
+         * @param {Object.<string,*>} object Plain object
+         * @returns {rm.DeployModeStatusSync} DeployModeStatusSync
+         */
+        DeployModeStatusSync.fromObject = function fromObject(object) {
+            if (object instanceof $root.rm.DeployModeStatusSync)
+                return object;
+            let message = new $root.rm.DeployModeStatusSync();
+            if (object.status != null)
+                message.status = object.status >>> 0;
+            return message;
+        };
+
+        /**
+         * Creates a plain object from a DeployModeStatusSync message. Also converts values to other types if specified.
+         * @function toObject
+         * @memberof rm.DeployModeStatusSync
+         * @static
+         * @param {rm.DeployModeStatusSync} message DeployModeStatusSync
+         * @param {$protobuf.IConversionOptions} [options] Conversion options
+         * @returns {Object.<string,*>} Plain object
+         */
+        DeployModeStatusSync.toObject = function toObject(message, options) {
+            if (!options)
+                options = {};
+            let object = {};
+            if (options.defaults)
+                object.status = 0;
+            if (message.status != null && message.hasOwnProperty("status"))
+                object.status = message.status;
+            return object;
+        };
+
+        /**
+         * Converts this DeployModeStatusSync to JSON.
+         * @function toJSON
+         * @memberof rm.DeployModeStatusSync
+         * @instance
+         * @returns {Object.<string,*>} JSON object
+         */
+        DeployModeStatusSync.prototype.toJSON = function toJSON() {
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+
+        /**
+         * Gets the default type url for DeployModeStatusSync
+         * @function getTypeUrl
+         * @memberof rm.DeployModeStatusSync
+         * @static
+         * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+         * @returns {string} The default type url
+         */
+        DeployModeStatusSync.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+            if (typeUrlPrefix === undefined) {
+                typeUrlPrefix = "type.googleapis.com";
+            }
+            return typeUrlPrefix + "/rm.DeployModeStatusSync";
+        };
+
+        return DeployModeStatusSync;
+    })();
+
+    rm.RuneActivateCommand = (function() {
+
+        /**
+         * Properties of a RuneActivateCommand.
+         * @memberof rm
+         * @interface IRuneActivateCommand
+         * @property {number|null} [activate] RuneActivateCommand activate
+         */
+
+        /**
+         * Constructs a new RuneActivateCommand.
+         * @memberof rm
+         * @classdesc Represents a RuneActivateCommand.
+         * @implements IRuneActivateCommand
+         * @constructor
+         * @param {rm.IRuneActivateCommand=} [properties] Properties to set
+         */
+        function RuneActivateCommand(properties) {
+            if (properties)
+                for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+
+        /**
+         * RuneActivateCommand activate.
+         * @member {number} activate
+         * @memberof rm.RuneActivateCommand
+         * @instance
+         */
+        RuneActivateCommand.prototype.activate = 0;
+
+        /**
+         * Creates a new RuneActivateCommand instance using the specified properties.
+         * @function create
+         * @memberof rm.RuneActivateCommand
+         * @static
+         * @param {rm.IRuneActivateCommand=} [properties] Properties to set
+         * @returns {rm.RuneActivateCommand} RuneActivateCommand instance
+         */
+        RuneActivateCommand.create = function create(properties) {
+            return new RuneActivateCommand(properties);
+        };
+
+        /**
+         * Encodes the specified RuneActivateCommand message. Does not implicitly {@link rm.RuneActivateCommand.verify|verify} messages.
+         * @function encode
+         * @memberof rm.RuneActivateCommand
+         * @static
+         * @param {rm.IRuneActivateCommand} message RuneActivateCommand message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        RuneActivateCommand.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            if (message.activate != null && Object.hasOwnProperty.call(message, "activate"))
+                writer.uint32(/* id 1, wireType 0 =*/8).uint32(message.activate);
+            return writer;
+        };
+
+        /**
+         * Encodes the specified RuneActivateCommand message, length delimited. Does not implicitly {@link rm.RuneActivateCommand.verify|verify} messages.
+         * @function encodeDelimited
+         * @memberof rm.RuneActivateCommand
+         * @static
+         * @param {rm.IRuneActivateCommand} message RuneActivateCommand message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        RuneActivateCommand.encodeDelimited = function encodeDelimited(message, writer) {
+            return this.encode(message, writer).ldelim();
+        };
+
+        /**
+         * Decodes a RuneActivateCommand message from the specified reader or buffer.
+         * @function decode
+         * @memberof rm.RuneActivateCommand
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @param {number} [length] Message length if known beforehand
+         * @returns {rm.RuneActivateCommand} RuneActivateCommand
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        RuneActivateCommand.decode = function decode(reader, length) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.rm.RuneActivateCommand();
+            while (reader.pos < end) {
+                let tag = reader.uint32();
+                switch (tag >>> 3) {
+                case 1: {
+                        message.activate = reader.uint32();
+                        break;
+                    }
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            return message;
+        };
+
+        /**
+         * Decodes a RuneActivateCommand message from the specified reader or buffer, length delimited.
+         * @function decodeDelimited
+         * @memberof rm.RuneActivateCommand
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @returns {rm.RuneActivateCommand} RuneActivateCommand
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        RuneActivateCommand.decodeDelimited = function decodeDelimited(reader) {
+            if (!(reader instanceof $Reader))
+                reader = new $Reader(reader);
+            return this.decode(reader, reader.uint32());
+        };
+
+        /**
+         * Verifies a RuneActivateCommand message.
+         * @function verify
+         * @memberof rm.RuneActivateCommand
+         * @static
+         * @param {Object.<string,*>} message Plain object to verify
+         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+         */
+        RuneActivateCommand.verify = function verify(message) {
             if (typeof message !== "object" || message === null)
                 return "object expected";
             if (message.activate != null && message.hasOwnProperty("activate"))
                 if (!$util.isInteger(message.activate))
                     return "activate: integer expected";
+            return null;
+        };
+
+        /**
+         * Creates a RuneActivateCommand message from a plain object. Also converts values to their respective internal types.
+         * @function fromObject
+         * @memberof rm.RuneActivateCommand
+         * @static
+         * @param {Object.<string,*>} object Plain object
+         * @returns {rm.RuneActivateCommand} RuneActivateCommand
+         */
+        RuneActivateCommand.fromObject = function fromObject(object) {
+            if (object instanceof $root.rm.RuneActivateCommand)
+                return object;
+            let message = new $root.rm.RuneActivateCommand();
+            if (object.activate != null)
+                message.activate = object.activate >>> 0;
+            return message;
+        };
+
+        /**
+         * Creates a plain object from a RuneActivateCommand message. Also converts values to other types if specified.
+         * @function toObject
+         * @memberof rm.RuneActivateCommand
+         * @static
+         * @param {rm.RuneActivateCommand} message RuneActivateCommand
+         * @param {$protobuf.IConversionOptions} [options] Conversion options
+         * @returns {Object.<string,*>} Plain object
+         */
+        RuneActivateCommand.toObject = function toObject(message, options) {
+            if (!options)
+                options = {};
+            let object = {};
+            if (options.defaults)
+                object.activate = 0;
+            if (message.activate != null && message.hasOwnProperty("activate"))
+                object.activate = message.activate;
+            return object;
+        };
+
+        /**
+         * Converts this RuneActivateCommand to JSON.
+         * @function toJSON
+         * @memberof rm.RuneActivateCommand
+         * @instance
+         * @returns {Object.<string,*>} JSON object
+         */
+        RuneActivateCommand.prototype.toJSON = function toJSON() {
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+
+        /**
+         * Gets the default type url for RuneActivateCommand
+         * @function getTypeUrl
+         * @memberof rm.RuneActivateCommand
+         * @static
+         * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+         * @returns {string} The default type url
+         */
+        RuneActivateCommand.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+            if (typeUrlPrefix === undefined) {
+                typeUrlPrefix = "type.googleapis.com";
+            }
+            return typeUrlPrefix + "/rm.RuneActivateCommand";
+        };
+
+        return RuneActivateCommand;
+    })();
+
+    rm.RuneStatusSync = (function() {
+
+        /**
+         * Properties of a RuneStatusSync.
+         * @memberof rm
+         * @interface IRuneStatusSync
+         * @property {number|null} [runeStatus] RuneStatusSync runeStatus
+         * @property {number|null} [activatedArms] RuneStatusSync activatedArms
+         * @property {number|null} [averageRings] RuneStatusSync averageRings
+         */
+
+        /**
+         * Constructs a new RuneStatusSync.
+         * @memberof rm
+         * @classdesc Represents a RuneStatusSync.
+         * @implements IRuneStatusSync
+         * @constructor
+         * @param {rm.IRuneStatusSync=} [properties] Properties to set
+         */
+        function RuneStatusSync(properties) {
+            if (properties)
+                for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+
+        /**
+         * RuneStatusSync runeStatus.
+         * @member {number} runeStatus
+         * @memberof rm.RuneStatusSync
+         * @instance
+         */
+        RuneStatusSync.prototype.runeStatus = 0;
+
+        /**
+         * RuneStatusSync activatedArms.
+         * @member {number} activatedArms
+         * @memberof rm.RuneStatusSync
+         * @instance
+         */
+        RuneStatusSync.prototype.activatedArms = 0;
+
+        /**
+         * RuneStatusSync averageRings.
+         * @member {number} averageRings
+         * @memberof rm.RuneStatusSync
+         * @instance
+         */
+        RuneStatusSync.prototype.averageRings = 0;
+
+        /**
+         * Creates a new RuneStatusSync instance using the specified properties.
+         * @function create
+         * @memberof rm.RuneStatusSync
+         * @static
+         * @param {rm.IRuneStatusSync=} [properties] Properties to set
+         * @returns {rm.RuneStatusSync} RuneStatusSync instance
+         */
+        RuneStatusSync.create = function create(properties) {
+            return new RuneStatusSync(properties);
+        };
+
+        /**
+         * Encodes the specified RuneStatusSync message. Does not implicitly {@link rm.RuneStatusSync.verify|verify} messages.
+         * @function encode
+         * @memberof rm.RuneStatusSync
+         * @static
+         * @param {rm.IRuneStatusSync} message RuneStatusSync message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        RuneStatusSync.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            if (message.runeStatus != null && Object.hasOwnProperty.call(message, "runeStatus"))
+                writer.uint32(/* id 1, wireType 0 =*/8).uint32(message.runeStatus);
+            if (message.activatedArms != null && Object.hasOwnProperty.call(message, "activatedArms"))
+                writer.uint32(/* id 2, wireType 0 =*/16).uint32(message.activatedArms);
+            if (message.averageRings != null && Object.hasOwnProperty.call(message, "averageRings"))
+                writer.uint32(/* id 3, wireType 5 =*/29).float(message.averageRings);
+            return writer;
+        };
+
+        /**
+         * Encodes the specified RuneStatusSync message, length delimited. Does not implicitly {@link rm.RuneStatusSync.verify|verify} messages.
+         * @function encodeDelimited
+         * @memberof rm.RuneStatusSync
+         * @static
+         * @param {rm.IRuneStatusSync} message RuneStatusSync message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        RuneStatusSync.encodeDelimited = function encodeDelimited(message, writer) {
+            return this.encode(message, writer).ldelim();
+        };
+
+        /**
+         * Decodes a RuneStatusSync message from the specified reader or buffer.
+         * @function decode
+         * @memberof rm.RuneStatusSync
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @param {number} [length] Message length if known beforehand
+         * @returns {rm.RuneStatusSync} RuneStatusSync
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        RuneStatusSync.decode = function decode(reader, length) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.rm.RuneStatusSync();
+            while (reader.pos < end) {
+                let tag = reader.uint32();
+                switch (tag >>> 3) {
+                case 1: {
+                        message.runeStatus = reader.uint32();
+                        break;
+                    }
+                case 2: {
+                        message.activatedArms = reader.uint32();
+                        break;
+                    }
+                case 3: {
+                        message.averageRings = reader.float();
+                        break;
+                    }
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            return message;
+        };
+
+        /**
+         * Decodes a RuneStatusSync message from the specified reader or buffer, length delimited.
+         * @function decodeDelimited
+         * @memberof rm.RuneStatusSync
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @returns {rm.RuneStatusSync} RuneStatusSync
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        RuneStatusSync.decodeDelimited = function decodeDelimited(reader) {
+            if (!(reader instanceof $Reader))
+                reader = new $Reader(reader);
+            return this.decode(reader, reader.uint32());
+        };
+
+        /**
+         * Verifies a RuneStatusSync message.
+         * @function verify
+         * @memberof rm.RuneStatusSync
+         * @static
+         * @param {Object.<string,*>} message Plain object to verify
+         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+         */
+        RuneStatusSync.verify = function verify(message) {
+            if (typeof message !== "object" || message === null)
+                return "object expected";
             if (message.runeStatus != null && message.hasOwnProperty("runeStatus"))
                 if (!$util.isInteger(message.runeStatus))
                     return "runeStatus: integer expected";
@@ -7315,112 +8792,107 @@ export const rm = $root.rm = (() => {
                 if (!$util.isInteger(message.activatedArms))
                     return "activatedArms: integer expected";
             if (message.averageRings != null && message.hasOwnProperty("averageRings"))
-                if (!$util.isInteger(message.averageRings))
-                    return "averageRings: integer expected";
+                if (typeof message.averageRings !== "number")
+                    return "averageRings: number expected";
             return null;
         };
 
         /**
-         * Creates a RuneStatus message from a plain object. Also converts values to their respective internal types.
+         * Creates a RuneStatusSync message from a plain object. Also converts values to their respective internal types.
          * @function fromObject
-         * @memberof rm.RuneStatus
+         * @memberof rm.RuneStatusSync
          * @static
          * @param {Object.<string,*>} object Plain object
-         * @returns {rm.RuneStatus} RuneStatus
+         * @returns {rm.RuneStatusSync} RuneStatusSync
          */
-        RuneStatus.fromObject = function fromObject(object) {
-            if (object instanceof $root.rm.RuneStatus)
+        RuneStatusSync.fromObject = function fromObject(object) {
+            if (object instanceof $root.rm.RuneStatusSync)
                 return object;
-            let message = new $root.rm.RuneStatus();
-            if (object.activate != null)
-                message.activate = object.activate | 0;
+            let message = new $root.rm.RuneStatusSync();
             if (object.runeStatus != null)
-                message.runeStatus = object.runeStatus | 0;
+                message.runeStatus = object.runeStatus >>> 0;
             if (object.activatedArms != null)
-                message.activatedArms = object.activatedArms | 0;
+                message.activatedArms = object.activatedArms >>> 0;
             if (object.averageRings != null)
-                message.averageRings = object.averageRings | 0;
+                message.averageRings = Number(object.averageRings);
             return message;
         };
 
         /**
-         * Creates a plain object from a RuneStatus message. Also converts values to other types if specified.
+         * Creates a plain object from a RuneStatusSync message. Also converts values to other types if specified.
          * @function toObject
-         * @memberof rm.RuneStatus
+         * @memberof rm.RuneStatusSync
          * @static
-         * @param {rm.RuneStatus} message RuneStatus
+         * @param {rm.RuneStatusSync} message RuneStatusSync
          * @param {$protobuf.IConversionOptions} [options] Conversion options
          * @returns {Object.<string,*>} Plain object
          */
-        RuneStatus.toObject = function toObject(message, options) {
+        RuneStatusSync.toObject = function toObject(message, options) {
             if (!options)
                 options = {};
             let object = {};
             if (options.defaults) {
-                object.activate = 0;
                 object.runeStatus = 0;
                 object.activatedArms = 0;
                 object.averageRings = 0;
             }
-            if (message.activate != null && message.hasOwnProperty("activate"))
-                object.activate = message.activate;
             if (message.runeStatus != null && message.hasOwnProperty("runeStatus"))
                 object.runeStatus = message.runeStatus;
             if (message.activatedArms != null && message.hasOwnProperty("activatedArms"))
                 object.activatedArms = message.activatedArms;
             if (message.averageRings != null && message.hasOwnProperty("averageRings"))
-                object.averageRings = message.averageRings;
+                object.averageRings = options.json && !isFinite(message.averageRings) ? String(message.averageRings) : message.averageRings;
             return object;
         };
 
         /**
-         * Converts this RuneStatus to JSON.
+         * Converts this RuneStatusSync to JSON.
          * @function toJSON
-         * @memberof rm.RuneStatus
+         * @memberof rm.RuneStatusSync
          * @instance
          * @returns {Object.<string,*>} JSON object
          */
-        RuneStatus.prototype.toJSON = function toJSON() {
+        RuneStatusSync.prototype.toJSON = function toJSON() {
             return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
         };
 
         /**
-         * Gets the default type url for RuneStatus
+         * Gets the default type url for RuneStatusSync
          * @function getTypeUrl
-         * @memberof rm.RuneStatus
+         * @memberof rm.RuneStatusSync
          * @static
          * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
          * @returns {string} The default type url
          */
-        RuneStatus.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+        RuneStatusSync.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
             if (typeUrlPrefix === undefined) {
                 typeUrlPrefix = "type.googleapis.com";
             }
-            return typeUrlPrefix + "/rm.RuneStatus";
+            return typeUrlPrefix + "/rm.RuneStatusSync";
         };
 
-        return RuneStatus;
+        return RuneStatusSync;
     })();
 
-    rm.SentinelStatusSync = (function () {
+    rm.SentryStatusSync = (function() {
 
         /**
-         * Properties of a SentinelStatusSync.
+         * Properties of a SentryStatusSync.
          * @memberof rm
-         * @interface ISentinelStatusSync
-         * @property {number|null} [postureId] SentinelStatusSync postureId
-         * @property {boolean|null} [isWeakened] SentinelStatusSync isWeakened
+         * @interface ISentryStatusSync
+         * @property {number|null} [postureId] SentryStatusSync postureId
+         * @property {boolean|null} [isWeakened] SentryStatusSync isWeakened
          */
 
         /**
-         * Constructs a new SentinelStatusSync.
+         * Constructs a new SentryStatusSync.
          * @memberof rm
-         * @classdesc Represents a SentinelStatusSync.
-         * @implements ISentinelStatusSync
+         * @classdesc Represents a SentryStatusSync.
+         * @implements ISentryStatusSync
          * @constructor
-         * @param {rm.ISentinelStatusSync=} [properties] Properties to set
+         * @param {rm.ISentryStatusSync=} [properties] Properties to set
          */
-        function SentinelStatusSync(properties) {
+        function SentryStatusSync(properties) {
             if (properties)
                 for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
                     if (properties[keys[i]] != null)
@@ -7428,124 +8900,124 @@ export const rm = $root.rm = (() => {
         }
 
         /**
-         * SentinelStatusSync postureId.
+         * SentryStatusSync postureId.
          * @member {number} postureId
-         * @memberof rm.SentinelStatusSync
+         * @memberof rm.SentryStatusSync
          * @instance
          */
-        SentinelStatusSync.prototype.postureId = 0;
+        SentryStatusSync.prototype.postureId = 0;
 
         /**
-         * SentinelStatusSync isWeakened.
+         * SentryStatusSync isWeakened.
          * @member {boolean} isWeakened
-         * @memberof rm.SentinelStatusSync
+         * @memberof rm.SentryStatusSync
          * @instance
          */
-        SentinelStatusSync.prototype.isWeakened = false;
+        SentryStatusSync.prototype.isWeakened = false;
 
         /**
-         * Creates a new SentinelStatusSync instance using the specified properties.
+         * Creates a new SentryStatusSync instance using the specified properties.
          * @function create
-         * @memberof rm.SentinelStatusSync
+         * @memberof rm.SentryStatusSync
          * @static
-         * @param {rm.ISentinelStatusSync=} [properties] Properties to set
-         * @returns {rm.SentinelStatusSync} SentinelStatusSync instance
+         * @param {rm.ISentryStatusSync=} [properties] Properties to set
+         * @returns {rm.SentryStatusSync} SentryStatusSync instance
          */
-        SentinelStatusSync.create = function create(properties) {
-            return new SentinelStatusSync(properties);
+        SentryStatusSync.create = function create(properties) {
+            return new SentryStatusSync(properties);
         };
 
         /**
-         * Encodes the specified SentinelStatusSync message. Does not implicitly {@link rm.SentinelStatusSync.verify|verify} messages.
+         * Encodes the specified SentryStatusSync message. Does not implicitly {@link rm.SentryStatusSync.verify|verify} messages.
          * @function encode
-         * @memberof rm.SentinelStatusSync
+         * @memberof rm.SentryStatusSync
          * @static
-         * @param {rm.ISentinelStatusSync} message SentinelStatusSync message or plain object to encode
+         * @param {rm.ISentryStatusSync} message SentryStatusSync message or plain object to encode
          * @param {$protobuf.Writer} [writer] Writer to encode to
          * @returns {$protobuf.Writer} Writer
          */
-        SentinelStatusSync.encode = function encode(message, writer) {
+        SentryStatusSync.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
             if (message.postureId != null && Object.hasOwnProperty.call(message, "postureId"))
-                writer.uint32(/* id 1, wireType 0 =*/8).int32(message.postureId);
+                writer.uint32(/* id 1, wireType 0 =*/8).uint32(message.postureId);
             if (message.isWeakened != null && Object.hasOwnProperty.call(message, "isWeakened"))
                 writer.uint32(/* id 2, wireType 0 =*/16).bool(message.isWeakened);
             return writer;
         };
 
         /**
-         * Encodes the specified SentinelStatusSync message, length delimited. Does not implicitly {@link rm.SentinelStatusSync.verify|verify} messages.
+         * Encodes the specified SentryStatusSync message, length delimited. Does not implicitly {@link rm.SentryStatusSync.verify|verify} messages.
          * @function encodeDelimited
-         * @memberof rm.SentinelStatusSync
+         * @memberof rm.SentryStatusSync
          * @static
-         * @param {rm.ISentinelStatusSync} message SentinelStatusSync message or plain object to encode
+         * @param {rm.ISentryStatusSync} message SentryStatusSync message or plain object to encode
          * @param {$protobuf.Writer} [writer] Writer to encode to
          * @returns {$protobuf.Writer} Writer
          */
-        SentinelStatusSync.encodeDelimited = function encodeDelimited(message, writer) {
+        SentryStatusSync.encodeDelimited = function encodeDelimited(message, writer) {
             return this.encode(message, writer).ldelim();
         };
 
         /**
-         * Decodes a SentinelStatusSync message from the specified reader or buffer.
+         * Decodes a SentryStatusSync message from the specified reader or buffer.
          * @function decode
-         * @memberof rm.SentinelStatusSync
+         * @memberof rm.SentryStatusSync
          * @static
          * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
          * @param {number} [length] Message length if known beforehand
-         * @returns {rm.SentinelStatusSync} SentinelStatusSync
+         * @returns {rm.SentryStatusSync} SentryStatusSync
          * @throws {Error} If the payload is not a reader or valid buffer
          * @throws {$protobuf.util.ProtocolError} If required fields are missing
          */
-        SentinelStatusSync.decode = function decode(reader, length) {
+        SentryStatusSync.decode = function decode(reader, length) {
             if (!(reader instanceof $Reader))
                 reader = $Reader.create(reader);
-            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.rm.SentinelStatusSync();
+            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.rm.SentryStatusSync();
             while (reader.pos < end) {
                 let tag = reader.uint32();
                 switch (tag >>> 3) {
-                    case 1: {
-                        message.postureId = reader.int32();
+                case 1: {
+                        message.postureId = reader.uint32();
                         break;
                     }
-                    case 2: {
+                case 2: {
                         message.isWeakened = reader.bool();
                         break;
                     }
-                    default:
-                        reader.skipType(tag & 7);
-                        break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
                 }
             }
             return message;
         };
 
         /**
-         * Decodes a SentinelStatusSync message from the specified reader or buffer, length delimited.
+         * Decodes a SentryStatusSync message from the specified reader or buffer, length delimited.
          * @function decodeDelimited
-         * @memberof rm.SentinelStatusSync
+         * @memberof rm.SentryStatusSync
          * @static
          * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-         * @returns {rm.SentinelStatusSync} SentinelStatusSync
+         * @returns {rm.SentryStatusSync} SentryStatusSync
          * @throws {Error} If the payload is not a reader or valid buffer
          * @throws {$protobuf.util.ProtocolError} If required fields are missing
          */
-        SentinelStatusSync.decodeDelimited = function decodeDelimited(reader) {
+        SentryStatusSync.decodeDelimited = function decodeDelimited(reader) {
             if (!(reader instanceof $Reader))
                 reader = new $Reader(reader);
             return this.decode(reader, reader.uint32());
         };
 
         /**
-         * Verifies a SentinelStatusSync message.
+         * Verifies a SentryStatusSync message.
          * @function verify
-         * @memberof rm.SentinelStatusSync
+         * @memberof rm.SentryStatusSync
          * @static
          * @param {Object.<string,*>} message Plain object to verify
          * @returns {string|null} `null` if valid, otherwise the reason why it is not
          */
-        SentinelStatusSync.verify = function verify(message) {
+        SentryStatusSync.verify = function verify(message) {
             if (typeof message !== "object" || message === null)
                 return "object expected";
             if (message.postureId != null && message.hasOwnProperty("postureId"))
@@ -7558,34 +9030,34 @@ export const rm = $root.rm = (() => {
         };
 
         /**
-         * Creates a SentinelStatusSync message from a plain object. Also converts values to their respective internal types.
+         * Creates a SentryStatusSync message from a plain object. Also converts values to their respective internal types.
          * @function fromObject
-         * @memberof rm.SentinelStatusSync
+         * @memberof rm.SentryStatusSync
          * @static
          * @param {Object.<string,*>} object Plain object
-         * @returns {rm.SentinelStatusSync} SentinelStatusSync
+         * @returns {rm.SentryStatusSync} SentryStatusSync
          */
-        SentinelStatusSync.fromObject = function fromObject(object) {
-            if (object instanceof $root.rm.SentinelStatusSync)
+        SentryStatusSync.fromObject = function fromObject(object) {
+            if (object instanceof $root.rm.SentryStatusSync)
                 return object;
-            let message = new $root.rm.SentinelStatusSync();
+            let message = new $root.rm.SentryStatusSync();
             if (object.postureId != null)
-                message.postureId = object.postureId | 0;
+                message.postureId = object.postureId >>> 0;
             if (object.isWeakened != null)
                 message.isWeakened = Boolean(object.isWeakened);
             return message;
         };
 
         /**
-         * Creates a plain object from a SentinelStatusSync message. Also converts values to other types if specified.
+         * Creates a plain object from a SentryStatusSync message. Also converts values to other types if specified.
          * @function toObject
-         * @memberof rm.SentinelStatusSync
+         * @memberof rm.SentryStatusSync
          * @static
-         * @param {rm.SentinelStatusSync} message SentinelStatusSync
+         * @param {rm.SentryStatusSync} message SentryStatusSync
          * @param {$protobuf.IConversionOptions} [options] Conversion options
          * @returns {Object.<string,*>} Plain object
          */
-        SentinelStatusSync.toObject = function toObject(message, options) {
+        SentryStatusSync.toObject = function toObject(message, options) {
             if (!options)
                 options = {};
             let object = {};
@@ -7601,53 +9073,54 @@ export const rm = $root.rm = (() => {
         };
 
         /**
-         * Converts this SentinelStatusSync to JSON.
+         * Converts this SentryStatusSync to JSON.
          * @function toJSON
-         * @memberof rm.SentinelStatusSync
+         * @memberof rm.SentryStatusSync
          * @instance
          * @returns {Object.<string,*>} JSON object
          */
-        SentinelStatusSync.prototype.toJSON = function toJSON() {
+        SentryStatusSync.prototype.toJSON = function toJSON() {
             return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
         };
 
         /**
-         * Gets the default type url for SentinelStatusSync
+         * Gets the default type url for SentryStatusSync
          * @function getTypeUrl
-         * @memberof rm.SentinelStatusSync
+         * @memberof rm.SentryStatusSync
          * @static
          * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
          * @returns {string} The default type url
          */
-        SentinelStatusSync.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+        SentryStatusSync.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
             if (typeUrlPrefix === undefined) {
                 typeUrlPrefix = "type.googleapis.com";
             }
-            return typeUrlPrefix + "/rm.SentinelStatusSync";
+            return typeUrlPrefix + "/rm.SentryStatusSync";
         };
 
-        return SentinelStatusSync;
+        return SentryStatusSync;
     })();
 
-    rm.DartInfo = (function () {
+    rm.DartCommand = (function() {
 
         /**
-         * Properties of a DartInfo.
+         * Properties of a DartCommand.
          * @memberof rm
-         * @interface IDartInfo
-         * @property {number|null} [targetId] DartInfo targetId
-         * @property {boolean|null} [open] DartInfo open
+         * @interface IDartCommand
+         * @property {number|null} [targetId] DartCommand targetId
+         * @property {boolean|null} [open] DartCommand open
+         * @property {boolean|null} [launchConfirm] DartCommand launchConfirm
          */
 
         /**
-         * Constructs a new DartInfo.
+         * Constructs a new DartCommand.
          * @memberof rm
-         * @classdesc Represents a DartInfo.
-         * @implements IDartInfo
+         * @classdesc Represents a DartCommand.
+         * @implements IDartCommand
          * @constructor
-         * @param {rm.IDartInfo=} [properties] Properties to set
+         * @param {rm.IDartCommand=} [properties] Properties to set
          */
-        function DartInfo(properties) {
+        function DartCommand(properties) {
             if (properties)
                 for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
                     if (properties[keys[i]] != null)
@@ -7655,124 +9128,138 @@ export const rm = $root.rm = (() => {
         }
 
         /**
-         * DartInfo targetId.
+         * DartCommand targetId.
          * @member {number} targetId
-         * @memberof rm.DartInfo
+         * @memberof rm.DartCommand
          * @instance
          */
-        DartInfo.prototype.targetId = 0;
+        DartCommand.prototype.targetId = 0;
 
         /**
-         * DartInfo open.
+         * DartCommand open.
          * @member {boolean} open
-         * @memberof rm.DartInfo
+         * @memberof rm.DartCommand
          * @instance
          */
-        DartInfo.prototype.open = false;
+        DartCommand.prototype.open = false;
 
         /**
-         * Creates a new DartInfo instance using the specified properties.
-         * @function create
-         * @memberof rm.DartInfo
-         * @static
-         * @param {rm.IDartInfo=} [properties] Properties to set
-         * @returns {rm.DartInfo} DartInfo instance
+         * DartCommand launchConfirm.
+         * @member {boolean} launchConfirm
+         * @memberof rm.DartCommand
+         * @instance
          */
-        DartInfo.create = function create(properties) {
-            return new DartInfo(properties);
+        DartCommand.prototype.launchConfirm = false;
+
+        /**
+         * Creates a new DartCommand instance using the specified properties.
+         * @function create
+         * @memberof rm.DartCommand
+         * @static
+         * @param {rm.IDartCommand=} [properties] Properties to set
+         * @returns {rm.DartCommand} DartCommand instance
+         */
+        DartCommand.create = function create(properties) {
+            return new DartCommand(properties);
         };
 
         /**
-         * Encodes the specified DartInfo message. Does not implicitly {@link rm.DartInfo.verify|verify} messages.
+         * Encodes the specified DartCommand message. Does not implicitly {@link rm.DartCommand.verify|verify} messages.
          * @function encode
-         * @memberof rm.DartInfo
+         * @memberof rm.DartCommand
          * @static
-         * @param {rm.IDartInfo} message DartInfo message or plain object to encode
+         * @param {rm.IDartCommand} message DartCommand message or plain object to encode
          * @param {$protobuf.Writer} [writer] Writer to encode to
          * @returns {$protobuf.Writer} Writer
          */
-        DartInfo.encode = function encode(message, writer) {
+        DartCommand.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
             if (message.targetId != null && Object.hasOwnProperty.call(message, "targetId"))
-                writer.uint32(/* id 1, wireType 0 =*/8).int32(message.targetId);
+                writer.uint32(/* id 1, wireType 0 =*/8).uint32(message.targetId);
             if (message.open != null && Object.hasOwnProperty.call(message, "open"))
                 writer.uint32(/* id 2, wireType 0 =*/16).bool(message.open);
+            if (message.launchConfirm != null && Object.hasOwnProperty.call(message, "launchConfirm"))
+                writer.uint32(/* id 3, wireType 0 =*/24).bool(message.launchConfirm);
             return writer;
         };
 
         /**
-         * Encodes the specified DartInfo message, length delimited. Does not implicitly {@link rm.DartInfo.verify|verify} messages.
+         * Encodes the specified DartCommand message, length delimited. Does not implicitly {@link rm.DartCommand.verify|verify} messages.
          * @function encodeDelimited
-         * @memberof rm.DartInfo
+         * @memberof rm.DartCommand
          * @static
-         * @param {rm.IDartInfo} message DartInfo message or plain object to encode
+         * @param {rm.IDartCommand} message DartCommand message or plain object to encode
          * @param {$protobuf.Writer} [writer] Writer to encode to
          * @returns {$protobuf.Writer} Writer
          */
-        DartInfo.encodeDelimited = function encodeDelimited(message, writer) {
+        DartCommand.encodeDelimited = function encodeDelimited(message, writer) {
             return this.encode(message, writer).ldelim();
         };
 
         /**
-         * Decodes a DartInfo message from the specified reader or buffer.
+         * Decodes a DartCommand message from the specified reader or buffer.
          * @function decode
-         * @memberof rm.DartInfo
+         * @memberof rm.DartCommand
          * @static
          * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
          * @param {number} [length] Message length if known beforehand
-         * @returns {rm.DartInfo} DartInfo
+         * @returns {rm.DartCommand} DartCommand
          * @throws {Error} If the payload is not a reader or valid buffer
          * @throws {$protobuf.util.ProtocolError} If required fields are missing
          */
-        DartInfo.decode = function decode(reader, length) {
+        DartCommand.decode = function decode(reader, length) {
             if (!(reader instanceof $Reader))
                 reader = $Reader.create(reader);
-            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.rm.DartInfo();
+            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.rm.DartCommand();
             while (reader.pos < end) {
                 let tag = reader.uint32();
                 switch (tag >>> 3) {
-                    case 1: {
-                        message.targetId = reader.int32();
+                case 1: {
+                        message.targetId = reader.uint32();
                         break;
                     }
-                    case 2: {
+                case 2: {
                         message.open = reader.bool();
                         break;
                     }
-                    default:
-                        reader.skipType(tag & 7);
+                case 3: {
+                        message.launchConfirm = reader.bool();
                         break;
+                    }
+                default:
+                    reader.skipType(tag & 7);
+                    break;
                 }
             }
             return message;
         };
 
         /**
-         * Decodes a DartInfo message from the specified reader or buffer, length delimited.
+         * Decodes a DartCommand message from the specified reader or buffer, length delimited.
          * @function decodeDelimited
-         * @memberof rm.DartInfo
+         * @memberof rm.DartCommand
          * @static
          * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-         * @returns {rm.DartInfo} DartInfo
+         * @returns {rm.DartCommand} DartCommand
          * @throws {Error} If the payload is not a reader or valid buffer
          * @throws {$protobuf.util.ProtocolError} If required fields are missing
          */
-        DartInfo.decodeDelimited = function decodeDelimited(reader) {
+        DartCommand.decodeDelimited = function decodeDelimited(reader) {
             if (!(reader instanceof $Reader))
                 reader = new $Reader(reader);
             return this.decode(reader, reader.uint32());
         };
 
         /**
-         * Verifies a DartInfo message.
+         * Verifies a DartCommand message.
          * @function verify
-         * @memberof rm.DartInfo
+         * @memberof rm.DartCommand
          * @static
          * @param {Object.<string,*>} message Plain object to verify
          * @returns {string|null} `null` if valid, otherwise the reason why it is not
          */
-        DartInfo.verify = function verify(message) {
+        DartCommand.verify = function verify(message) {
             if (typeof message !== "object" || message === null)
                 return "object expected";
             if (message.targetId != null && message.hasOwnProperty("targetId"))
@@ -7781,44 +9268,279 @@ export const rm = $root.rm = (() => {
             if (message.open != null && message.hasOwnProperty("open"))
                 if (typeof message.open !== "boolean")
                     return "open: boolean expected";
+            if (message.launchConfirm != null && message.hasOwnProperty("launchConfirm"))
+                if (typeof message.launchConfirm !== "boolean")
+                    return "launchConfirm: boolean expected";
             return null;
         };
 
         /**
-         * Creates a DartInfo message from a plain object. Also converts values to their respective internal types.
+         * Creates a DartCommand message from a plain object. Also converts values to their respective internal types.
          * @function fromObject
-         * @memberof rm.DartInfo
+         * @memberof rm.DartCommand
          * @static
          * @param {Object.<string,*>} object Plain object
-         * @returns {rm.DartInfo} DartInfo
+         * @returns {rm.DartCommand} DartCommand
          */
-        DartInfo.fromObject = function fromObject(object) {
-            if (object instanceof $root.rm.DartInfo)
+        DartCommand.fromObject = function fromObject(object) {
+            if (object instanceof $root.rm.DartCommand)
                 return object;
-            let message = new $root.rm.DartInfo();
+            let message = new $root.rm.DartCommand();
             if (object.targetId != null)
-                message.targetId = object.targetId | 0;
+                message.targetId = object.targetId >>> 0;
             if (object.open != null)
                 message.open = Boolean(object.open);
+            if (object.launchConfirm != null)
+                message.launchConfirm = Boolean(object.launchConfirm);
             return message;
         };
 
         /**
-         * Creates a plain object from a DartInfo message. Also converts values to other types if specified.
+         * Creates a plain object from a DartCommand message. Also converts values to other types if specified.
          * @function toObject
-         * @memberof rm.DartInfo
+         * @memberof rm.DartCommand
          * @static
-         * @param {rm.DartInfo} message DartInfo
+         * @param {rm.DartCommand} message DartCommand
          * @param {$protobuf.IConversionOptions} [options] Conversion options
          * @returns {Object.<string,*>} Plain object
          */
-        DartInfo.toObject = function toObject(message, options) {
+        DartCommand.toObject = function toObject(message, options) {
             if (!options)
                 options = {};
             let object = {};
             if (options.defaults) {
                 object.targetId = 0;
                 object.open = false;
+                object.launchConfirm = false;
+            }
+            if (message.targetId != null && message.hasOwnProperty("targetId"))
+                object.targetId = message.targetId;
+            if (message.open != null && message.hasOwnProperty("open"))
+                object.open = message.open;
+            if (message.launchConfirm != null && message.hasOwnProperty("launchConfirm"))
+                object.launchConfirm = message.launchConfirm;
+            return object;
+        };
+
+        /**
+         * Converts this DartCommand to JSON.
+         * @function toJSON
+         * @memberof rm.DartCommand
+         * @instance
+         * @returns {Object.<string,*>} JSON object
+         */
+        DartCommand.prototype.toJSON = function toJSON() {
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+
+        /**
+         * Gets the default type url for DartCommand
+         * @function getTypeUrl
+         * @memberof rm.DartCommand
+         * @static
+         * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+         * @returns {string} The default type url
+         */
+        DartCommand.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+            if (typeUrlPrefix === undefined) {
+                typeUrlPrefix = "type.googleapis.com";
+            }
+            return typeUrlPrefix + "/rm.DartCommand";
+        };
+
+        return DartCommand;
+    })();
+
+    rm.DartSelectTargetStatusSync = (function() {
+
+        /**
+         * Properties of a DartSelectTargetStatusSync.
+         * @memberof rm
+         * @interface IDartSelectTargetStatusSync
+         * @property {number|null} [targetId] DartSelectTargetStatusSync targetId
+         * @property {number|null} [open] DartSelectTargetStatusSync open
+         */
+
+        /**
+         * Constructs a new DartSelectTargetStatusSync.
+         * @memberof rm
+         * @classdesc Represents a DartSelectTargetStatusSync.
+         * @implements IDartSelectTargetStatusSync
+         * @constructor
+         * @param {rm.IDartSelectTargetStatusSync=} [properties] Properties to set
+         */
+        function DartSelectTargetStatusSync(properties) {
+            if (properties)
+                for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+
+        /**
+         * DartSelectTargetStatusSync targetId.
+         * @member {number} targetId
+         * @memberof rm.DartSelectTargetStatusSync
+         * @instance
+         */
+        DartSelectTargetStatusSync.prototype.targetId = 0;
+
+        /**
+         * DartSelectTargetStatusSync open.
+         * @member {number} open
+         * @memberof rm.DartSelectTargetStatusSync
+         * @instance
+         */
+        DartSelectTargetStatusSync.prototype.open = 0;
+
+        /**
+         * Creates a new DartSelectTargetStatusSync instance using the specified properties.
+         * @function create
+         * @memberof rm.DartSelectTargetStatusSync
+         * @static
+         * @param {rm.IDartSelectTargetStatusSync=} [properties] Properties to set
+         * @returns {rm.DartSelectTargetStatusSync} DartSelectTargetStatusSync instance
+         */
+        DartSelectTargetStatusSync.create = function create(properties) {
+            return new DartSelectTargetStatusSync(properties);
+        };
+
+        /**
+         * Encodes the specified DartSelectTargetStatusSync message. Does not implicitly {@link rm.DartSelectTargetStatusSync.verify|verify} messages.
+         * @function encode
+         * @memberof rm.DartSelectTargetStatusSync
+         * @static
+         * @param {rm.IDartSelectTargetStatusSync} message DartSelectTargetStatusSync message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        DartSelectTargetStatusSync.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            if (message.targetId != null && Object.hasOwnProperty.call(message, "targetId"))
+                writer.uint32(/* id 1, wireType 0 =*/8).uint32(message.targetId);
+            if (message.open != null && Object.hasOwnProperty.call(message, "open"))
+                writer.uint32(/* id 2, wireType 0 =*/16).uint32(message.open);
+            return writer;
+        };
+
+        /**
+         * Encodes the specified DartSelectTargetStatusSync message, length delimited. Does not implicitly {@link rm.DartSelectTargetStatusSync.verify|verify} messages.
+         * @function encodeDelimited
+         * @memberof rm.DartSelectTargetStatusSync
+         * @static
+         * @param {rm.IDartSelectTargetStatusSync} message DartSelectTargetStatusSync message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        DartSelectTargetStatusSync.encodeDelimited = function encodeDelimited(message, writer) {
+            return this.encode(message, writer).ldelim();
+        };
+
+        /**
+         * Decodes a DartSelectTargetStatusSync message from the specified reader or buffer.
+         * @function decode
+         * @memberof rm.DartSelectTargetStatusSync
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @param {number} [length] Message length if known beforehand
+         * @returns {rm.DartSelectTargetStatusSync} DartSelectTargetStatusSync
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        DartSelectTargetStatusSync.decode = function decode(reader, length) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.rm.DartSelectTargetStatusSync();
+            while (reader.pos < end) {
+                let tag = reader.uint32();
+                switch (tag >>> 3) {
+                case 1: {
+                        message.targetId = reader.uint32();
+                        break;
+                    }
+                case 2: {
+                        message.open = reader.uint32();
+                        break;
+                    }
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            return message;
+        };
+
+        /**
+         * Decodes a DartSelectTargetStatusSync message from the specified reader or buffer, length delimited.
+         * @function decodeDelimited
+         * @memberof rm.DartSelectTargetStatusSync
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @returns {rm.DartSelectTargetStatusSync} DartSelectTargetStatusSync
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        DartSelectTargetStatusSync.decodeDelimited = function decodeDelimited(reader) {
+            if (!(reader instanceof $Reader))
+                reader = new $Reader(reader);
+            return this.decode(reader, reader.uint32());
+        };
+
+        /**
+         * Verifies a DartSelectTargetStatusSync message.
+         * @function verify
+         * @memberof rm.DartSelectTargetStatusSync
+         * @static
+         * @param {Object.<string,*>} message Plain object to verify
+         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+         */
+        DartSelectTargetStatusSync.verify = function verify(message) {
+            if (typeof message !== "object" || message === null)
+                return "object expected";
+            if (message.targetId != null && message.hasOwnProperty("targetId"))
+                if (!$util.isInteger(message.targetId))
+                    return "targetId: integer expected";
+            if (message.open != null && message.hasOwnProperty("open"))
+                if (!$util.isInteger(message.open))
+                    return "open: integer expected";
+            return null;
+        };
+
+        /**
+         * Creates a DartSelectTargetStatusSync message from a plain object. Also converts values to their respective internal types.
+         * @function fromObject
+         * @memberof rm.DartSelectTargetStatusSync
+         * @static
+         * @param {Object.<string,*>} object Plain object
+         * @returns {rm.DartSelectTargetStatusSync} DartSelectTargetStatusSync
+         */
+        DartSelectTargetStatusSync.fromObject = function fromObject(object) {
+            if (object instanceof $root.rm.DartSelectTargetStatusSync)
+                return object;
+            let message = new $root.rm.DartSelectTargetStatusSync();
+            if (object.targetId != null)
+                message.targetId = object.targetId >>> 0;
+            if (object.open != null)
+                message.open = object.open >>> 0;
+            return message;
+        };
+
+        /**
+         * Creates a plain object from a DartSelectTargetStatusSync message. Also converts values to other types if specified.
+         * @function toObject
+         * @memberof rm.DartSelectTargetStatusSync
+         * @static
+         * @param {rm.DartSelectTargetStatusSync} message DartSelectTargetStatusSync
+         * @param {$protobuf.IConversionOptions} [options] Conversion options
+         * @returns {Object.<string,*>} Plain object
+         */
+        DartSelectTargetStatusSync.toObject = function toObject(message, options) {
+            if (!options)
+                options = {};
+            let object = {};
+            if (options.defaults) {
+                object.targetId = 0;
+                object.open = 0;
             }
             if (message.targetId != null && message.hasOwnProperty("targetId"))
                 object.targetId = message.targetId;
@@ -7828,53 +9550,52 @@ export const rm = $root.rm = (() => {
         };
 
         /**
-         * Converts this DartInfo to JSON.
+         * Converts this DartSelectTargetStatusSync to JSON.
          * @function toJSON
-         * @memberof rm.DartInfo
+         * @memberof rm.DartSelectTargetStatusSync
          * @instance
          * @returns {Object.<string,*>} JSON object
          */
-        DartInfo.prototype.toJSON = function toJSON() {
+        DartSelectTargetStatusSync.prototype.toJSON = function toJSON() {
             return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
         };
 
         /**
-         * Gets the default type url for DartInfo
+         * Gets the default type url for DartSelectTargetStatusSync
          * @function getTypeUrl
-         * @memberof rm.DartInfo
+         * @memberof rm.DartSelectTargetStatusSync
          * @static
          * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
          * @returns {string} The default type url
          */
-        DartInfo.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+        DartSelectTargetStatusSync.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
             if (typeUrlPrefix === undefined) {
                 typeUrlPrefix = "type.googleapis.com";
             }
-            return typeUrlPrefix + "/rm.DartInfo";
+            return typeUrlPrefix + "/rm.DartSelectTargetStatusSync";
         };
 
-        return DartInfo;
+        return DartSelectTargetStatusSync;
     })();
 
-    rm.GuardCtrl = (function () {
+    rm.SentryCtrlCommand = (function() {
 
         /**
-         * Properties of a GuardCtrl.
+         * Properties of a SentryCtrlCommand.
          * @memberof rm
-         * @interface IGuardCtrl
-         * @property {number|null} [commandId] GuardCtrl commandId
-         * @property {number|null} [resultCode] GuardCtrl resultCode
+         * @interface ISentryCtrlCommand
+         * @property {number|null} [commandId] SentryCtrlCommand commandId
          */
 
         /**
-         * Constructs a new GuardCtrl.
+         * Constructs a new SentryCtrlCommand.
          * @memberof rm
-         * @classdesc Represents a GuardCtrl.
-         * @implements IGuardCtrl
+         * @classdesc Represents a SentryCtrlCommand.
+         * @implements ISentryCtrlCommand
          * @constructor
-         * @param {rm.IGuardCtrl=} [properties] Properties to set
+         * @param {rm.ISentryCtrlCommand=} [properties] Properties to set
          */
-        function GuardCtrl(properties) {
+        function SentryCtrlCommand(properties) {
             if (properties)
                 for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
                     if (properties[keys[i]] != null)
@@ -7882,124 +9603,328 @@ export const rm = $root.rm = (() => {
         }
 
         /**
-         * GuardCtrl commandId.
+         * SentryCtrlCommand commandId.
          * @member {number} commandId
-         * @memberof rm.GuardCtrl
+         * @memberof rm.SentryCtrlCommand
          * @instance
          */
-        GuardCtrl.prototype.commandId = 0;
+        SentryCtrlCommand.prototype.commandId = 0;
 
         /**
-         * GuardCtrl resultCode.
-         * @member {number} resultCode
-         * @memberof rm.GuardCtrl
-         * @instance
-         */
-        GuardCtrl.prototype.resultCode = 0;
-
-        /**
-         * Creates a new GuardCtrl instance using the specified properties.
+         * Creates a new SentryCtrlCommand instance using the specified properties.
          * @function create
-         * @memberof rm.GuardCtrl
+         * @memberof rm.SentryCtrlCommand
          * @static
-         * @param {rm.IGuardCtrl=} [properties] Properties to set
-         * @returns {rm.GuardCtrl} GuardCtrl instance
+         * @param {rm.ISentryCtrlCommand=} [properties] Properties to set
+         * @returns {rm.SentryCtrlCommand} SentryCtrlCommand instance
          */
-        GuardCtrl.create = function create(properties) {
-            return new GuardCtrl(properties);
+        SentryCtrlCommand.create = function create(properties) {
+            return new SentryCtrlCommand(properties);
         };
 
         /**
-         * Encodes the specified GuardCtrl message. Does not implicitly {@link rm.GuardCtrl.verify|verify} messages.
+         * Encodes the specified SentryCtrlCommand message. Does not implicitly {@link rm.SentryCtrlCommand.verify|verify} messages.
          * @function encode
-         * @memberof rm.GuardCtrl
+         * @memberof rm.SentryCtrlCommand
          * @static
-         * @param {rm.IGuardCtrl} message GuardCtrl message or plain object to encode
+         * @param {rm.ISentryCtrlCommand} message SentryCtrlCommand message or plain object to encode
          * @param {$protobuf.Writer} [writer] Writer to encode to
          * @returns {$protobuf.Writer} Writer
          */
-        GuardCtrl.encode = function encode(message, writer) {
+        SentryCtrlCommand.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
             if (message.commandId != null && Object.hasOwnProperty.call(message, "commandId"))
-                writer.uint32(/* id 1, wireType 0 =*/8).int32(message.commandId);
-            if (message.resultCode != null && Object.hasOwnProperty.call(message, "resultCode"))
-                writer.uint32(/* id 2, wireType 0 =*/16).int32(message.resultCode);
+                writer.uint32(/* id 1, wireType 0 =*/8).uint32(message.commandId);
             return writer;
         };
 
         /**
-         * Encodes the specified GuardCtrl message, length delimited. Does not implicitly {@link rm.GuardCtrl.verify|verify} messages.
+         * Encodes the specified SentryCtrlCommand message, length delimited. Does not implicitly {@link rm.SentryCtrlCommand.verify|verify} messages.
          * @function encodeDelimited
-         * @memberof rm.GuardCtrl
+         * @memberof rm.SentryCtrlCommand
          * @static
-         * @param {rm.IGuardCtrl} message GuardCtrl message or plain object to encode
+         * @param {rm.ISentryCtrlCommand} message SentryCtrlCommand message or plain object to encode
          * @param {$protobuf.Writer} [writer] Writer to encode to
          * @returns {$protobuf.Writer} Writer
          */
-        GuardCtrl.encodeDelimited = function encodeDelimited(message, writer) {
+        SentryCtrlCommand.encodeDelimited = function encodeDelimited(message, writer) {
             return this.encode(message, writer).ldelim();
         };
 
         /**
-         * Decodes a GuardCtrl message from the specified reader or buffer.
+         * Decodes a SentryCtrlCommand message from the specified reader or buffer.
          * @function decode
-         * @memberof rm.GuardCtrl
+         * @memberof rm.SentryCtrlCommand
          * @static
          * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
          * @param {number} [length] Message length if known beforehand
-         * @returns {rm.GuardCtrl} GuardCtrl
+         * @returns {rm.SentryCtrlCommand} SentryCtrlCommand
          * @throws {Error} If the payload is not a reader or valid buffer
          * @throws {$protobuf.util.ProtocolError} If required fields are missing
          */
-        GuardCtrl.decode = function decode(reader, length) {
+        SentryCtrlCommand.decode = function decode(reader, length) {
             if (!(reader instanceof $Reader))
                 reader = $Reader.create(reader);
-            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.rm.GuardCtrl();
+            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.rm.SentryCtrlCommand();
             while (reader.pos < end) {
                 let tag = reader.uint32();
                 switch (tag >>> 3) {
-                    case 1: {
-                        message.commandId = reader.int32();
+                case 1: {
+                        message.commandId = reader.uint32();
                         break;
                     }
-                    case 2: {
-                        message.resultCode = reader.int32();
-                        break;
-                    }
-                    default:
-                        reader.skipType(tag & 7);
-                        break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
                 }
             }
             return message;
         };
 
         /**
-         * Decodes a GuardCtrl message from the specified reader or buffer, length delimited.
+         * Decodes a SentryCtrlCommand message from the specified reader or buffer, length delimited.
          * @function decodeDelimited
-         * @memberof rm.GuardCtrl
+         * @memberof rm.SentryCtrlCommand
          * @static
          * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-         * @returns {rm.GuardCtrl} GuardCtrl
+         * @returns {rm.SentryCtrlCommand} SentryCtrlCommand
          * @throws {Error} If the payload is not a reader or valid buffer
          * @throws {$protobuf.util.ProtocolError} If required fields are missing
          */
-        GuardCtrl.decodeDelimited = function decodeDelimited(reader) {
+        SentryCtrlCommand.decodeDelimited = function decodeDelimited(reader) {
             if (!(reader instanceof $Reader))
                 reader = new $Reader(reader);
             return this.decode(reader, reader.uint32());
         };
 
         /**
-         * Verifies a GuardCtrl message.
+         * Verifies a SentryCtrlCommand message.
          * @function verify
-         * @memberof rm.GuardCtrl
+         * @memberof rm.SentryCtrlCommand
          * @static
          * @param {Object.<string,*>} message Plain object to verify
          * @returns {string|null} `null` if valid, otherwise the reason why it is not
          */
-        GuardCtrl.verify = function verify(message) {
+        SentryCtrlCommand.verify = function verify(message) {
+            if (typeof message !== "object" || message === null)
+                return "object expected";
+            if (message.commandId != null && message.hasOwnProperty("commandId"))
+                if (!$util.isInteger(message.commandId))
+                    return "commandId: integer expected";
+            return null;
+        };
+
+        /**
+         * Creates a SentryCtrlCommand message from a plain object. Also converts values to their respective internal types.
+         * @function fromObject
+         * @memberof rm.SentryCtrlCommand
+         * @static
+         * @param {Object.<string,*>} object Plain object
+         * @returns {rm.SentryCtrlCommand} SentryCtrlCommand
+         */
+        SentryCtrlCommand.fromObject = function fromObject(object) {
+            if (object instanceof $root.rm.SentryCtrlCommand)
+                return object;
+            let message = new $root.rm.SentryCtrlCommand();
+            if (object.commandId != null)
+                message.commandId = object.commandId >>> 0;
+            return message;
+        };
+
+        /**
+         * Creates a plain object from a SentryCtrlCommand message. Also converts values to other types if specified.
+         * @function toObject
+         * @memberof rm.SentryCtrlCommand
+         * @static
+         * @param {rm.SentryCtrlCommand} message SentryCtrlCommand
+         * @param {$protobuf.IConversionOptions} [options] Conversion options
+         * @returns {Object.<string,*>} Plain object
+         */
+        SentryCtrlCommand.toObject = function toObject(message, options) {
+            if (!options)
+                options = {};
+            let object = {};
+            if (options.defaults)
+                object.commandId = 0;
+            if (message.commandId != null && message.hasOwnProperty("commandId"))
+                object.commandId = message.commandId;
+            return object;
+        };
+
+        /**
+         * Converts this SentryCtrlCommand to JSON.
+         * @function toJSON
+         * @memberof rm.SentryCtrlCommand
+         * @instance
+         * @returns {Object.<string,*>} JSON object
+         */
+        SentryCtrlCommand.prototype.toJSON = function toJSON() {
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+
+        /**
+         * Gets the default type url for SentryCtrlCommand
+         * @function getTypeUrl
+         * @memberof rm.SentryCtrlCommand
+         * @static
+         * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+         * @returns {string} The default type url
+         */
+        SentryCtrlCommand.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+            if (typeUrlPrefix === undefined) {
+                typeUrlPrefix = "type.googleapis.com";
+            }
+            return typeUrlPrefix + "/rm.SentryCtrlCommand";
+        };
+
+        return SentryCtrlCommand;
+    })();
+
+    rm.SentryCtrlResult = (function() {
+
+        /**
+         * Properties of a SentryCtrlResult.
+         * @memberof rm
+         * @interface ISentryCtrlResult
+         * @property {number|null} [commandId] SentryCtrlResult commandId
+         * @property {number|null} [resultCode] SentryCtrlResult resultCode
+         */
+
+        /**
+         * Constructs a new SentryCtrlResult.
+         * @memberof rm
+         * @classdesc Represents a SentryCtrlResult.
+         * @implements ISentryCtrlResult
+         * @constructor
+         * @param {rm.ISentryCtrlResult=} [properties] Properties to set
+         */
+        function SentryCtrlResult(properties) {
+            if (properties)
+                for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+
+        /**
+         * SentryCtrlResult commandId.
+         * @member {number} commandId
+         * @memberof rm.SentryCtrlResult
+         * @instance
+         */
+        SentryCtrlResult.prototype.commandId = 0;
+
+        /**
+         * SentryCtrlResult resultCode.
+         * @member {number} resultCode
+         * @memberof rm.SentryCtrlResult
+         * @instance
+         */
+        SentryCtrlResult.prototype.resultCode = 0;
+
+        /**
+         * Creates a new SentryCtrlResult instance using the specified properties.
+         * @function create
+         * @memberof rm.SentryCtrlResult
+         * @static
+         * @param {rm.ISentryCtrlResult=} [properties] Properties to set
+         * @returns {rm.SentryCtrlResult} SentryCtrlResult instance
+         */
+        SentryCtrlResult.create = function create(properties) {
+            return new SentryCtrlResult(properties);
+        };
+
+        /**
+         * Encodes the specified SentryCtrlResult message. Does not implicitly {@link rm.SentryCtrlResult.verify|verify} messages.
+         * @function encode
+         * @memberof rm.SentryCtrlResult
+         * @static
+         * @param {rm.ISentryCtrlResult} message SentryCtrlResult message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        SentryCtrlResult.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            if (message.commandId != null && Object.hasOwnProperty.call(message, "commandId"))
+                writer.uint32(/* id 1, wireType 0 =*/8).uint32(message.commandId);
+            if (message.resultCode != null && Object.hasOwnProperty.call(message, "resultCode"))
+                writer.uint32(/* id 2, wireType 0 =*/16).uint32(message.resultCode);
+            return writer;
+        };
+
+        /**
+         * Encodes the specified SentryCtrlResult message, length delimited. Does not implicitly {@link rm.SentryCtrlResult.verify|verify} messages.
+         * @function encodeDelimited
+         * @memberof rm.SentryCtrlResult
+         * @static
+         * @param {rm.ISentryCtrlResult} message SentryCtrlResult message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        SentryCtrlResult.encodeDelimited = function encodeDelimited(message, writer) {
+            return this.encode(message, writer).ldelim();
+        };
+
+        /**
+         * Decodes a SentryCtrlResult message from the specified reader or buffer.
+         * @function decode
+         * @memberof rm.SentryCtrlResult
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @param {number} [length] Message length if known beforehand
+         * @returns {rm.SentryCtrlResult} SentryCtrlResult
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        SentryCtrlResult.decode = function decode(reader, length) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.rm.SentryCtrlResult();
+            while (reader.pos < end) {
+                let tag = reader.uint32();
+                switch (tag >>> 3) {
+                case 1: {
+                        message.commandId = reader.uint32();
+                        break;
+                    }
+                case 2: {
+                        message.resultCode = reader.uint32();
+                        break;
+                    }
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            return message;
+        };
+
+        /**
+         * Decodes a SentryCtrlResult message from the specified reader or buffer, length delimited.
+         * @function decodeDelimited
+         * @memberof rm.SentryCtrlResult
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @returns {rm.SentryCtrlResult} SentryCtrlResult
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        SentryCtrlResult.decodeDelimited = function decodeDelimited(reader) {
+            if (!(reader instanceof $Reader))
+                reader = new $Reader(reader);
+            return this.decode(reader, reader.uint32());
+        };
+
+        /**
+         * Verifies a SentryCtrlResult message.
+         * @function verify
+         * @memberof rm.SentryCtrlResult
+         * @static
+         * @param {Object.<string,*>} message Plain object to verify
+         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+         */
+        SentryCtrlResult.verify = function verify(message) {
             if (typeof message !== "object" || message === null)
                 return "object expected";
             if (message.commandId != null && message.hasOwnProperty("commandId"))
@@ -8012,34 +9937,34 @@ export const rm = $root.rm = (() => {
         };
 
         /**
-         * Creates a GuardCtrl message from a plain object. Also converts values to their respective internal types.
+         * Creates a SentryCtrlResult message from a plain object. Also converts values to their respective internal types.
          * @function fromObject
-         * @memberof rm.GuardCtrl
+         * @memberof rm.SentryCtrlResult
          * @static
          * @param {Object.<string,*>} object Plain object
-         * @returns {rm.GuardCtrl} GuardCtrl
+         * @returns {rm.SentryCtrlResult} SentryCtrlResult
          */
-        GuardCtrl.fromObject = function fromObject(object) {
-            if (object instanceof $root.rm.GuardCtrl)
+        SentryCtrlResult.fromObject = function fromObject(object) {
+            if (object instanceof $root.rm.SentryCtrlResult)
                 return object;
-            let message = new $root.rm.GuardCtrl();
+            let message = new $root.rm.SentryCtrlResult();
             if (object.commandId != null)
-                message.commandId = object.commandId | 0;
+                message.commandId = object.commandId >>> 0;
             if (object.resultCode != null)
-                message.resultCode = object.resultCode | 0;
+                message.resultCode = object.resultCode >>> 0;
             return message;
         };
 
         /**
-         * Creates a plain object from a GuardCtrl message. Also converts values to other types if specified.
+         * Creates a plain object from a SentryCtrlResult message. Also converts values to other types if specified.
          * @function toObject
-         * @memberof rm.GuardCtrl
+         * @memberof rm.SentryCtrlResult
          * @static
-         * @param {rm.GuardCtrl} message GuardCtrl
+         * @param {rm.SentryCtrlResult} message SentryCtrlResult
          * @param {$protobuf.IConversionOptions} [options] Conversion options
          * @returns {Object.<string,*>} Plain object
          */
-        GuardCtrl.toObject = function toObject(message, options) {
+        SentryCtrlResult.toObject = function toObject(message, options) {
             if (!options)
                 options = {};
             let object = {};
@@ -8055,55 +9980,52 @@ export const rm = $root.rm = (() => {
         };
 
         /**
-         * Converts this GuardCtrl to JSON.
+         * Converts this SentryCtrlResult to JSON.
          * @function toJSON
-         * @memberof rm.GuardCtrl
+         * @memberof rm.SentryCtrlResult
          * @instance
          * @returns {Object.<string,*>} JSON object
          */
-        GuardCtrl.prototype.toJSON = function toJSON() {
+        SentryCtrlResult.prototype.toJSON = function toJSON() {
             return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
         };
 
         /**
-         * Gets the default type url for GuardCtrl
+         * Gets the default type url for SentryCtrlResult
          * @function getTypeUrl
-         * @memberof rm.GuardCtrl
+         * @memberof rm.SentryCtrlResult
          * @static
          * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
          * @returns {string} The default type url
          */
-        GuardCtrl.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+        SentryCtrlResult.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
             if (typeUrlPrefix === undefined) {
                 typeUrlPrefix = "type.googleapis.com";
             }
-            return typeUrlPrefix + "/rm.GuardCtrl";
+            return typeUrlPrefix + "/rm.SentryCtrlResult";
         };
 
-        return GuardCtrl;
+        return SentryCtrlResult;
     })();
 
-    rm.AirSupport = (function () {
+    rm.AirSupportCommand = (function() {
 
         /**
-         * Properties of an AirSupport.
+         * Properties of an AirSupportCommand.
          * @memberof rm
-         * @interface IAirSupport
-         * @property {number|null} [commandId] AirSupport commandId
-         * @property {number|null} [airsupportStatus] AirSupport airsupportStatus
-         * @property {number|null} [leftTime] AirSupport leftTime
-         * @property {number|null} [costCoins] AirSupport costCoins
+         * @interface IAirSupportCommand
+         * @property {number|null} [commandId] AirSupportCommand commandId
          */
 
         /**
-         * Constructs a new AirSupport.
+         * Constructs a new AirSupportCommand.
          * @memberof rm
-         * @classdesc Represents an AirSupport.
-         * @implements IAirSupport
+         * @classdesc Represents an AirSupportCommand.
+         * @implements IAirSupportCommand
          * @constructor
-         * @param {rm.IAirSupport=} [properties] Properties to set
+         * @param {rm.IAirSupportCommand=} [properties] Properties to set
          */
-        function AirSupport(properties) {
+        function AirSupportCommand(properties) {
             if (properties)
                 for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
                     if (properties[keys[i]] != null)
@@ -8111,157 +10033,375 @@ export const rm = $root.rm = (() => {
         }
 
         /**
-         * AirSupport commandId.
+         * AirSupportCommand commandId.
          * @member {number} commandId
-         * @memberof rm.AirSupport
+         * @memberof rm.AirSupportCommand
          * @instance
          */
-        AirSupport.prototype.commandId = 0;
+        AirSupportCommand.prototype.commandId = 0;
 
         /**
-         * AirSupport airsupportStatus.
-         * @member {number} airsupportStatus
-         * @memberof rm.AirSupport
-         * @instance
-         */
-        AirSupport.prototype.airsupportStatus = 0;
-
-        /**
-         * AirSupport leftTime.
-         * @member {number} leftTime
-         * @memberof rm.AirSupport
-         * @instance
-         */
-        AirSupport.prototype.leftTime = 0;
-
-        /**
-         * AirSupport costCoins.
-         * @member {number} costCoins
-         * @memberof rm.AirSupport
-         * @instance
-         */
-        AirSupport.prototype.costCoins = 0;
-
-        /**
-         * Creates a new AirSupport instance using the specified properties.
+         * Creates a new AirSupportCommand instance using the specified properties.
          * @function create
-         * @memberof rm.AirSupport
+         * @memberof rm.AirSupportCommand
          * @static
-         * @param {rm.IAirSupport=} [properties] Properties to set
-         * @returns {rm.AirSupport} AirSupport instance
+         * @param {rm.IAirSupportCommand=} [properties] Properties to set
+         * @returns {rm.AirSupportCommand} AirSupportCommand instance
          */
-        AirSupport.create = function create(properties) {
-            return new AirSupport(properties);
+        AirSupportCommand.create = function create(properties) {
+            return new AirSupportCommand(properties);
         };
 
         /**
-         * Encodes the specified AirSupport message. Does not implicitly {@link rm.AirSupport.verify|verify} messages.
+         * Encodes the specified AirSupportCommand message. Does not implicitly {@link rm.AirSupportCommand.verify|verify} messages.
          * @function encode
-         * @memberof rm.AirSupport
+         * @memberof rm.AirSupportCommand
          * @static
-         * @param {rm.IAirSupport} message AirSupport message or plain object to encode
+         * @param {rm.IAirSupportCommand} message AirSupportCommand message or plain object to encode
          * @param {$protobuf.Writer} [writer] Writer to encode to
          * @returns {$protobuf.Writer} Writer
          */
-        AirSupport.encode = function encode(message, writer) {
+        AirSupportCommand.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
             if (message.commandId != null && Object.hasOwnProperty.call(message, "commandId"))
-                writer.uint32(/* id 1, wireType 0 =*/8).int32(message.commandId);
-            if (message.airsupportStatus != null && Object.hasOwnProperty.call(message, "airsupportStatus"))
-                writer.uint32(/* id 2, wireType 0 =*/16).int32(message.airsupportStatus);
-            if (message.leftTime != null && Object.hasOwnProperty.call(message, "leftTime"))
-                writer.uint32(/* id 3, wireType 0 =*/24).int32(message.leftTime);
-            if (message.costCoins != null && Object.hasOwnProperty.call(message, "costCoins"))
-                writer.uint32(/* id 4, wireType 0 =*/32).int32(message.costCoins);
+                writer.uint32(/* id 1, wireType 0 =*/8).uint32(message.commandId);
             return writer;
         };
 
         /**
-         * Encodes the specified AirSupport message, length delimited. Does not implicitly {@link rm.AirSupport.verify|verify} messages.
+         * Encodes the specified AirSupportCommand message, length delimited. Does not implicitly {@link rm.AirSupportCommand.verify|verify} messages.
          * @function encodeDelimited
-         * @memberof rm.AirSupport
+         * @memberof rm.AirSupportCommand
          * @static
-         * @param {rm.IAirSupport} message AirSupport message or plain object to encode
+         * @param {rm.IAirSupportCommand} message AirSupportCommand message or plain object to encode
          * @param {$protobuf.Writer} [writer] Writer to encode to
          * @returns {$protobuf.Writer} Writer
          */
-        AirSupport.encodeDelimited = function encodeDelimited(message, writer) {
+        AirSupportCommand.encodeDelimited = function encodeDelimited(message, writer) {
             return this.encode(message, writer).ldelim();
         };
 
         /**
-         * Decodes an AirSupport message from the specified reader or buffer.
+         * Decodes an AirSupportCommand message from the specified reader or buffer.
          * @function decode
-         * @memberof rm.AirSupport
+         * @memberof rm.AirSupportCommand
          * @static
          * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
          * @param {number} [length] Message length if known beforehand
-         * @returns {rm.AirSupport} AirSupport
+         * @returns {rm.AirSupportCommand} AirSupportCommand
          * @throws {Error} If the payload is not a reader or valid buffer
          * @throws {$protobuf.util.ProtocolError} If required fields are missing
          */
-        AirSupport.decode = function decode(reader, length) {
+        AirSupportCommand.decode = function decode(reader, length) {
             if (!(reader instanceof $Reader))
                 reader = $Reader.create(reader);
-            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.rm.AirSupport();
+            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.rm.AirSupportCommand();
             while (reader.pos < end) {
                 let tag = reader.uint32();
                 switch (tag >>> 3) {
-                    case 1: {
-                        message.commandId = reader.int32();
+                case 1: {
+                        message.commandId = reader.uint32();
                         break;
                     }
-                    case 2: {
-                        message.airsupportStatus = reader.int32();
-                        break;
-                    }
-                    case 3: {
-                        message.leftTime = reader.int32();
-                        break;
-                    }
-                    case 4: {
-                        message.costCoins = reader.int32();
-                        break;
-                    }
-                    default:
-                        reader.skipType(tag & 7);
-                        break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
                 }
             }
             return message;
         };
 
         /**
-         * Decodes an AirSupport message from the specified reader or buffer, length delimited.
+         * Decodes an AirSupportCommand message from the specified reader or buffer, length delimited.
          * @function decodeDelimited
-         * @memberof rm.AirSupport
+         * @memberof rm.AirSupportCommand
          * @static
          * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-         * @returns {rm.AirSupport} AirSupport
+         * @returns {rm.AirSupportCommand} AirSupportCommand
          * @throws {Error} If the payload is not a reader or valid buffer
          * @throws {$protobuf.util.ProtocolError} If required fields are missing
          */
-        AirSupport.decodeDelimited = function decodeDelimited(reader) {
+        AirSupportCommand.decodeDelimited = function decodeDelimited(reader) {
             if (!(reader instanceof $Reader))
                 reader = new $Reader(reader);
             return this.decode(reader, reader.uint32());
         };
 
         /**
-         * Verifies an AirSupport message.
+         * Verifies an AirSupportCommand message.
          * @function verify
-         * @memberof rm.AirSupport
+         * @memberof rm.AirSupportCommand
          * @static
          * @param {Object.<string,*>} message Plain object to verify
          * @returns {string|null} `null` if valid, otherwise the reason why it is not
          */
-        AirSupport.verify = function verify(message) {
+        AirSupportCommand.verify = function verify(message) {
             if (typeof message !== "object" || message === null)
                 return "object expected";
             if (message.commandId != null && message.hasOwnProperty("commandId"))
                 if (!$util.isInteger(message.commandId))
                     return "commandId: integer expected";
+            return null;
+        };
+
+        /**
+         * Creates an AirSupportCommand message from a plain object. Also converts values to their respective internal types.
+         * @function fromObject
+         * @memberof rm.AirSupportCommand
+         * @static
+         * @param {Object.<string,*>} object Plain object
+         * @returns {rm.AirSupportCommand} AirSupportCommand
+         */
+        AirSupportCommand.fromObject = function fromObject(object) {
+            if (object instanceof $root.rm.AirSupportCommand)
+                return object;
+            let message = new $root.rm.AirSupportCommand();
+            if (object.commandId != null)
+                message.commandId = object.commandId >>> 0;
+            return message;
+        };
+
+        /**
+         * Creates a plain object from an AirSupportCommand message. Also converts values to other types if specified.
+         * @function toObject
+         * @memberof rm.AirSupportCommand
+         * @static
+         * @param {rm.AirSupportCommand} message AirSupportCommand
+         * @param {$protobuf.IConversionOptions} [options] Conversion options
+         * @returns {Object.<string,*>} Plain object
+         */
+        AirSupportCommand.toObject = function toObject(message, options) {
+            if (!options)
+                options = {};
+            let object = {};
+            if (options.defaults)
+                object.commandId = 0;
+            if (message.commandId != null && message.hasOwnProperty("commandId"))
+                object.commandId = message.commandId;
+            return object;
+        };
+
+        /**
+         * Converts this AirSupportCommand to JSON.
+         * @function toJSON
+         * @memberof rm.AirSupportCommand
+         * @instance
+         * @returns {Object.<string,*>} JSON object
+         */
+        AirSupportCommand.prototype.toJSON = function toJSON() {
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+        };
+
+        /**
+         * Gets the default type url for AirSupportCommand
+         * @function getTypeUrl
+         * @memberof rm.AirSupportCommand
+         * @static
+         * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+         * @returns {string} The default type url
+         */
+        AirSupportCommand.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+            if (typeUrlPrefix === undefined) {
+                typeUrlPrefix = "type.googleapis.com";
+            }
+            return typeUrlPrefix + "/rm.AirSupportCommand";
+        };
+
+        return AirSupportCommand;
+    })();
+
+    rm.AirSupportStatusSync = (function() {
+
+        /**
+         * Properties of an AirSupportStatusSync.
+         * @memberof rm
+         * @interface IAirSupportStatusSync
+         * @property {number|null} [airsupportStatus] AirSupportStatusSync airsupportStatus
+         * @property {number|null} [leftTime] AirSupportStatusSync leftTime
+         * @property {number|null} [costCoins] AirSupportStatusSync costCoins
+         * @property {number|null} [isBeingTargeted] AirSupportStatusSync isBeingTargeted
+         * @property {number|null} [shooterStatus] AirSupportStatusSync shooterStatus
+         */
+
+        /**
+         * Constructs a new AirSupportStatusSync.
+         * @memberof rm
+         * @classdesc Represents an AirSupportStatusSync.
+         * @implements IAirSupportStatusSync
+         * @constructor
+         * @param {rm.IAirSupportStatusSync=} [properties] Properties to set
+         */
+        function AirSupportStatusSync(properties) {
+            if (properties)
+                for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+
+        /**
+         * AirSupportStatusSync airsupportStatus.
+         * @member {number} airsupportStatus
+         * @memberof rm.AirSupportStatusSync
+         * @instance
+         */
+        AirSupportStatusSync.prototype.airsupportStatus = 0;
+
+        /**
+         * AirSupportStatusSync leftTime.
+         * @member {number} leftTime
+         * @memberof rm.AirSupportStatusSync
+         * @instance
+         */
+        AirSupportStatusSync.prototype.leftTime = 0;
+
+        /**
+         * AirSupportStatusSync costCoins.
+         * @member {number} costCoins
+         * @memberof rm.AirSupportStatusSync
+         * @instance
+         */
+        AirSupportStatusSync.prototype.costCoins = 0;
+
+        /**
+         * AirSupportStatusSync isBeingTargeted.
+         * @member {number} isBeingTargeted
+         * @memberof rm.AirSupportStatusSync
+         * @instance
+         */
+        AirSupportStatusSync.prototype.isBeingTargeted = 0;
+
+        /**
+         * AirSupportStatusSync shooterStatus.
+         * @member {number} shooterStatus
+         * @memberof rm.AirSupportStatusSync
+         * @instance
+         */
+        AirSupportStatusSync.prototype.shooterStatus = 0;
+
+        /**
+         * Creates a new AirSupportStatusSync instance using the specified properties.
+         * @function create
+         * @memberof rm.AirSupportStatusSync
+         * @static
+         * @param {rm.IAirSupportStatusSync=} [properties] Properties to set
+         * @returns {rm.AirSupportStatusSync} AirSupportStatusSync instance
+         */
+        AirSupportStatusSync.create = function create(properties) {
+            return new AirSupportStatusSync(properties);
+        };
+
+        /**
+         * Encodes the specified AirSupportStatusSync message. Does not implicitly {@link rm.AirSupportStatusSync.verify|verify} messages.
+         * @function encode
+         * @memberof rm.AirSupportStatusSync
+         * @static
+         * @param {rm.IAirSupportStatusSync} message AirSupportStatusSync message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        AirSupportStatusSync.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            if (message.airsupportStatus != null && Object.hasOwnProperty.call(message, "airsupportStatus"))
+                writer.uint32(/* id 1, wireType 0 =*/8).uint32(message.airsupportStatus);
+            if (message.leftTime != null && Object.hasOwnProperty.call(message, "leftTime"))
+                writer.uint32(/* id 2, wireType 0 =*/16).uint32(message.leftTime);
+            if (message.costCoins != null && Object.hasOwnProperty.call(message, "costCoins"))
+                writer.uint32(/* id 3, wireType 0 =*/24).uint32(message.costCoins);
+            if (message.isBeingTargeted != null && Object.hasOwnProperty.call(message, "isBeingTargeted"))
+                writer.uint32(/* id 4, wireType 0 =*/32).uint32(message.isBeingTargeted);
+            if (message.shooterStatus != null && Object.hasOwnProperty.call(message, "shooterStatus"))
+                writer.uint32(/* id 5, wireType 0 =*/40).uint32(message.shooterStatus);
+            return writer;
+        };
+
+        /**
+         * Encodes the specified AirSupportStatusSync message, length delimited. Does not implicitly {@link rm.AirSupportStatusSync.verify|verify} messages.
+         * @function encodeDelimited
+         * @memberof rm.AirSupportStatusSync
+         * @static
+         * @param {rm.IAirSupportStatusSync} message AirSupportStatusSync message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        AirSupportStatusSync.encodeDelimited = function encodeDelimited(message, writer) {
+            return this.encode(message, writer).ldelim();
+        };
+
+        /**
+         * Decodes an AirSupportStatusSync message from the specified reader or buffer.
+         * @function decode
+         * @memberof rm.AirSupportStatusSync
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @param {number} [length] Message length if known beforehand
+         * @returns {rm.AirSupportStatusSync} AirSupportStatusSync
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        AirSupportStatusSync.decode = function decode(reader, length) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.rm.AirSupportStatusSync();
+            while (reader.pos < end) {
+                let tag = reader.uint32();
+                switch (tag >>> 3) {
+                case 1: {
+                        message.airsupportStatus = reader.uint32();
+                        break;
+                    }
+                case 2: {
+                        message.leftTime = reader.uint32();
+                        break;
+                    }
+                case 3: {
+                        message.costCoins = reader.uint32();
+                        break;
+                    }
+                case 4: {
+                        message.isBeingTargeted = reader.uint32();
+                        break;
+                    }
+                case 5: {
+                        message.shooterStatus = reader.uint32();
+                        break;
+                    }
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            return message;
+        };
+
+        /**
+         * Decodes an AirSupportStatusSync message from the specified reader or buffer, length delimited.
+         * @function decodeDelimited
+         * @memberof rm.AirSupportStatusSync
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @returns {rm.AirSupportStatusSync} AirSupportStatusSync
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        AirSupportStatusSync.decodeDelimited = function decodeDelimited(reader) {
+            if (!(reader instanceof $Reader))
+                reader = new $Reader(reader);
+            return this.decode(reader, reader.uint32());
+        };
+
+        /**
+         * Verifies an AirSupportStatusSync message.
+         * @function verify
+         * @memberof rm.AirSupportStatusSync
+         * @static
+         * @param {Object.<string,*>} message Plain object to verify
+         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+         */
+        AirSupportStatusSync.verify = function verify(message) {
+            if (typeof message !== "object" || message === null)
+                return "object expected";
             if (message.airsupportStatus != null && message.hasOwnProperty("airsupportStatus"))
                 if (!$util.isInteger(message.airsupportStatus))
                     return "airsupportStatus: integer expected";
@@ -8271,104 +10411,101 @@ export const rm = $root.rm = (() => {
             if (message.costCoins != null && message.hasOwnProperty("costCoins"))
                 if (!$util.isInteger(message.costCoins))
                     return "costCoins: integer expected";
+            if (message.isBeingTargeted != null && message.hasOwnProperty("isBeingTargeted"))
+                if (!$util.isInteger(message.isBeingTargeted))
+                    return "isBeingTargeted: integer expected";
+            if (message.shooterStatus != null && message.hasOwnProperty("shooterStatus"))
+                if (!$util.isInteger(message.shooterStatus))
+                    return "shooterStatus: integer expected";
             return null;
         };
 
         /**
-         * Creates an AirSupport message from a plain object. Also converts values to their respective internal types.
+         * Creates an AirSupportStatusSync message from a plain object. Also converts values to their respective internal types.
          * @function fromObject
-         * @memberof rm.AirSupport
+         * @memberof rm.AirSupportStatusSync
          * @static
          * @param {Object.<string,*>} object Plain object
-         * @returns {rm.AirSupport} AirSupport
+         * @returns {rm.AirSupportStatusSync} AirSupportStatusSync
          */
-        AirSupport.fromObject = function fromObject(object) {
-            if (object instanceof $root.rm.AirSupport)
+        AirSupportStatusSync.fromObject = function fromObject(object) {
+            if (object instanceof $root.rm.AirSupportStatusSync)
                 return object;
-            let message = new $root.rm.AirSupport();
-            if (object.commandId != null)
-                message.commandId = object.commandId | 0;
+            let message = new $root.rm.AirSupportStatusSync();
             if (object.airsupportStatus != null)
-                message.airsupportStatus = object.airsupportStatus | 0;
+                message.airsupportStatus = object.airsupportStatus >>> 0;
             if (object.leftTime != null)
-                message.leftTime = object.leftTime | 0;
+                message.leftTime = object.leftTime >>> 0;
             if (object.costCoins != null)
-                message.costCoins = object.costCoins | 0;
+                message.costCoins = object.costCoins >>> 0;
+            if (object.isBeingTargeted != null)
+                message.isBeingTargeted = object.isBeingTargeted >>> 0;
+            if (object.shooterStatus != null)
+                message.shooterStatus = object.shooterStatus >>> 0;
             return message;
         };
 
         /**
-         * Creates a plain object from an AirSupport message. Also converts values to other types if specified.
+         * Creates a plain object from an AirSupportStatusSync message. Also converts values to other types if specified.
          * @function toObject
-         * @memberof rm.AirSupport
+         * @memberof rm.AirSupportStatusSync
          * @static
-         * @param {rm.AirSupport} message AirSupport
+         * @param {rm.AirSupportStatusSync} message AirSupportStatusSync
          * @param {$protobuf.IConversionOptions} [options] Conversion options
          * @returns {Object.<string,*>} Plain object
          */
-        AirSupport.toObject = function toObject(message, options) {
+        AirSupportStatusSync.toObject = function toObject(message, options) {
             if (!options)
                 options = {};
             let object = {};
             if (options.defaults) {
-                object.commandId = 0;
                 object.airsupportStatus = 0;
                 object.leftTime = 0;
                 object.costCoins = 0;
+                object.isBeingTargeted = 0;
+                object.shooterStatus = 0;
             }
-            if (message.commandId != null && message.hasOwnProperty("commandId"))
-                object.commandId = message.commandId;
             if (message.airsupportStatus != null && message.hasOwnProperty("airsupportStatus"))
                 object.airsupportStatus = message.airsupportStatus;
             if (message.leftTime != null && message.hasOwnProperty("leftTime"))
                 object.leftTime = message.leftTime;
             if (message.costCoins != null && message.hasOwnProperty("costCoins"))
                 object.costCoins = message.costCoins;
+            if (message.isBeingTargeted != null && message.hasOwnProperty("isBeingTargeted"))
+                object.isBeingTargeted = message.isBeingTargeted;
+            if (message.shooterStatus != null && message.hasOwnProperty("shooterStatus"))
+                object.shooterStatus = message.shooterStatus;
             return object;
         };
 
         /**
-         * Converts this AirSupport to JSON.
+         * Converts this AirSupportStatusSync to JSON.
          * @function toJSON
-         * @memberof rm.AirSupport
+         * @memberof rm.AirSupportStatusSync
          * @instance
          * @returns {Object.<string,*>} JSON object
          */
-        AirSupport.prototype.toJSON = function toJSON() {
+        AirSupportStatusSync.prototype.toJSON = function toJSON() {
             return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
         };
 
         /**
-         * Gets the default type url for AirSupport
+         * Gets the default type url for AirSupportStatusSync
          * @function getTypeUrl
-         * @memberof rm.AirSupport
+         * @memberof rm.AirSupportStatusSync
          * @static
          * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
          * @returns {string} The default type url
          */
-        AirSupport.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+        AirSupportStatusSync.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
             if (typeUrlPrefix === undefined) {
                 typeUrlPrefix = "type.googleapis.com";
             }
-            return typeUrlPrefix + "/rm.AirSupport";
+            return typeUrlPrefix + "/rm.AirSupportStatusSync";
         };
 
-        return AirSupport;
+        return AirSupportStatusSync;
     })();
-
-    // Aliases for protocol names in documentation
-    rm.RobotPerformanceSelectionCommand = rm.PerformanceSelection;
-    rm.RobotPerformanceSelectionSync = rm.PerformanceSelection;
-    rm.HeroDeployModeEventCommand = rm.HeroDeployMode;
-    rm.DeployModeStatusSync = rm.HeroDeployMode;
-    rm.RuneActivateCommand = rm.RuneStatus;
-    rm.RuneStatusSync = rm.RuneStatus;
-    rm.DartCommand = rm.DartInfo;
-    rm.DartSelectTargetStatusSync = rm.DartInfo;
-    rm.GuardCtrlCommand = rm.GuardCtrl;
-    rm.GuardCtrlResult = rm.GuardCtrl;
-    rm.AirSupportCommand = rm.AirSupport;
-    rm.AirSupportStatusSync = rm.AirSupport;
 
     return rm;
 })();

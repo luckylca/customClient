@@ -1,3 +1,6 @@
+// src/components/hud/AmmoCounter.vue
+// 显示弹量和热量的组件
+
 <template>
     <div class="ammo-counter">
         <div class="ammo-row">

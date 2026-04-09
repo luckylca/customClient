@@ -1,3 +1,6 @@
+// src/components/hud/Minimap.vue
+// 显示小地图的组件
+
 <template>
     <div class="minimap">
         <div class="map-grid"></div>

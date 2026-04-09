@@ -1,3 +1,6 @@
+// src/views/engineer/index.vue
+// 工程视角界面，显示图传和HUD
+
 <template>
     <v-app>
         <v-main class="fill-height">

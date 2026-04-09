@@ -1,3 +1,6 @@
+// src/components/hud/StatusPanel.vue
+// 显示生命值、功率和缓冲能量的组件
+
 <template>
     <div class="status-panel">
         <div class="section">
