@@ -83,7 +83,7 @@
             >
                 <span class="hud-title">{{ widget.title }}</span>
                 <span v-if="settings.showDemoBadge" class="demo-badge">DEMO</span>
-                <div class="hud-header-actions">
+                <div class="hud-header-actions" @pointerdown.stop @mousedown.stop @click.stop>
                     <v-btn
                         icon="mdi-arrow-up-bold"
                         size="x-small"
@@ -111,11 +111,18 @@
             <div class="hud-body">
                 <component :is="widget.component" v-bind="widget.props" />
             </div>
-            <div
-                v-if="props.enableEdit"
-                class="resize-handle"
-                @pointerdown="startResize(widget, $event)"
-            ></div>
+            <div v-if="props.enableEdit && settings.editMode" class="resize-overlay">
+                <button
+                    v-for="handle in resizeHandles"
+                    :key="widget.id + '-' + handle.dir"
+                    type="button"
+                    class="resize-handle"
+                    :class="'resize-' + handle.dir"
+                    :title="handle.title"
+                    :aria-label="handle.title"
+                    @pointerdown.stop="startResize(widget, $event, handle.dir)"
+                />
+            </div>
         </div>
 
         <!-- 右键菜单 -->
@@ -357,13 +364,18 @@
 <script setup lang="ts">
 import { markRaw, onMounted, onUnmounted, reactive, ref, computed, watch, provide, nextTick } from 'vue';
 import HUDTopBar from './HUDTopBar.vue';
-import StatusPanel from './StatusPanel.vue';
+import HealthPanel from './HealthPanel.vue';
+import PowerPanel from './PowerPanel.vue';
+import BufferPanel from './BufferPanel.vue';
+import ExperiencePanel from './ExperiencePanel.vue';
 import AmmoCounter from './AmmoCounter.vue';
 import Minimap from './Minimap.vue';
 import ModuleStatus from './ModuleStatus.vue';
 import EventLog from './EventLog.vue';
 import BuffList from './BuffList.vue';
 import ControlHints from './ControlHints.vue';
+import DataInspectorPanel from './DataInspectorPanel.vue';
+import TeamAssetPanel from './TeamAssetPanel.vue';
 import { useSettingStore } from '@/stores/setting';
 import { useVideoStatsStore } from '@/stores/videoStats';
 import {
@@ -417,11 +429,16 @@ interface DragState {
 
 interface ResizeState {
     id: string;
+    direction: ResizeDirection;
     startX: number;
     startY: number;
+    originX: number;
+    originY: number;
     originW: number;
     originH: number;
 }
+
+type ResizeDirection = 'n' | 's' | 'e' | 'w' | 'ne' | 'nw' | 'se' | 'sw';
 
 type WidgetComponent = typeof HUDTopBar;
 
@@ -469,8 +486,16 @@ const widgetComponentById = (id: string) => {
             return markRaw(ModuleStatus);
         case 'ammo-counter':
             return markRaw(AmmoCounter);
-        case 'status-panel':
-            return markRaw(StatusPanel);
+        case 'health-panel':
+            return markRaw(HealthPanel);
+        case 'power-panel':
+            return markRaw(PowerPanel);
+        case 'buffer-panel':
+            return markRaw(BufferPanel);
+        case 'experience-panel':
+            return markRaw(ExperiencePanel);
+        case 'status-panel': // Fallback for old layouts
+            return markRaw(HealthPanel);
         case 'minimap':
             return markRaw(Minimap);
         case 'event-log':
@@ -479,8 +504,14 @@ const widgetComponentById = (id: string) => {
             return markRaw(BuffList);
         case 'control-hints':
             return markRaw(ControlHints);
+        case 'robot-data-inspector':
+            return markRaw(DataInspectorPanel);
+        case 'global-data-inspector':
+            return markRaw(DataInspectorPanel);
+        case 'team-asset-panel':
+            return markRaw(TeamAssetPanel);
         default:
-            return markRaw(StatusPanel);
+            return markRaw(HealthPanel);
     }
 };
 
@@ -533,15 +564,57 @@ const defaultWidgets = (width = 1920, height = 1080): HudWidget[] => {
             z: 4,
         },
         {
-            id: 'status-panel',
-            title: '本车状态',
-            component: markRaw(StatusPanel),
+            id: 'health-panel',
+            title: '生命值',
+            component: markRaw(HealthPanel),
             x: leftColumnX,
-            y: 640,
+            y: 630,
             w: 360,
-            h: 220,
+            h: 90,
             minW: 280,
-            minH: 160,
+            minH: 80,
+            visible: true,
+            locked: false,
+            z: 4,
+        },
+        {
+            id: 'power-panel',
+            title: '底盘功率',
+            component: markRaw(PowerPanel),
+            x: leftColumnX,
+            y: 730,
+            w: 175,
+            h: 90,
+            minW: 140,
+            minH: 80,
+            visible: true,
+            locked: false,
+            z: 4,
+        },
+        {
+            id: 'buffer-panel',
+            title: '缓冲能量',
+            component: markRaw(BufferPanel),
+            x: leftColumnX + 185,
+            y: 730,
+            w: 175,
+            h: 90,
+            minW: 140,
+            minH: 80,
+            visible: true,
+            locked: false,
+            z: 4,
+        },
+        {
+            id: 'experience-panel',
+            title: '经验与升级',
+            component: markRaw(ExperiencePanel),
+            x: leftColumnX,
+            y: 830,
+            w: 360,
+            h: 100,
+            minW: 280,
+            minH: 80,
             visible: true,
             locked: false,
             z: 4,
@@ -602,10 +675,65 @@ const defaultWidgets = (width = 1920, height = 1080): HudWidget[] => {
             locked: false,
             z: 3,
         },
+        {
+            id: 'robot-data-inspector',
+            title: '机器人数据总览',
+            component: markRaw(DataInspectorPanel),
+            props: { scope: 'robot' },
+            x: Math.max(width - 520 - padding, padding),
+            y: 420,
+            w: 520,
+            h: 280,
+            minW: 320,
+            minH: 180,
+            visible: true,
+            locked: false,
+            z: 3,
+        },
+        {
+            id: 'global-data-inspector',
+            title: '全局数据总览',
+            component: markRaw(DataInspectorPanel),
+            props: { scope: 'global' },
+            x: Math.max(width - 520 - padding, padding),
+            y: 710,
+            w: 520,
+            h: 220,
+            minW: 320,
+            minH: 160,
+            visible: true,
+            locked: false,
+            z: 3,
+        },
+        {
+            id: 'team-asset-panel',
+            title: '队伍公共资产',
+            component: markRaw(TeamAssetPanel),
+            x: Math.max(width - 320 - padding, padding),
+            y: 160,
+            w: 320,
+            h: 220,
+            minW: 260,
+            minH: 180,
+            visible: true,
+            locked: false,
+            z: 4,
+        },
     ];
 };
 
 const widgets = ref<HudWidget[]>(defaultWidgets());
+
+const resizeHandles: Array<{ dir: ResizeDirection; title: string }> = [
+    { dir: 'n', title: '从上边缘调整大小' },
+    { dir: 's', title: '从下边缘调整大小' },
+    { dir: 'e', title: '从右边缘调整大小' },
+    { dir: 'w', title: '从左边缘调整大小' },
+    { dir: 'ne', title: '从右上角调整大小' },
+    { dir: 'nw', title: '从左上角调整大小' },
+    { dir: 'se', title: '从右下角调整大小' },
+    { dir: 'sw', title: '从左下角调整大小' },
+];
 
 const visibleWidgets = computed(() =>
     widgets.value.filter((widget) => widget.visible)
@@ -641,6 +769,8 @@ const loadLayout = () => {
     if (!parsed || !parsed.length) return false;
     const rebuilt = parsed.map((item) => ({
         ...item,
+        // Top bar should be movable in edit mode for rapid layout tuning.
+        locked: item.id === 'top-bar' ? false : item.locked,
         component: widgetComponentById(item.id),
     })) as HudWidget[];
     
@@ -688,13 +818,28 @@ const updateContainerSize = () => {
 const clamp = (value: number, min: number, max: number) =>
     Math.min(Math.max(value, min), max);
 
+const RESIZE_MIN_WIDTH = 120;
+const RESIZE_MIN_HEIGHT = 72;
+
+const getResizeMinSize = (widget: HudWidget) => {
+    const baseMinW = widget.minW || RESIZE_MIN_WIDTH;
+    const baseMinH = widget.minH || RESIZE_MIN_HEIGHT;
+    const minW = Math.max(40, Math.min(baseMinW, RESIZE_MIN_WIDTH, containerSize.width));
+    const minH = Math.max(32, Math.min(baseMinH, RESIZE_MIN_HEIGHT, containerSize.height));
+    return {
+        minW,
+        minH,
+    };
+};
+
 const normalizeLayout = () => {
     // Safety check: Don't normalize if container is too small (e.g. initial load)
     if (containerSize.width < 100 || containerSize.height < 100) return;
 
     widgets.value = widgets.value.map((widget) => {
-        const width = clamp(widget.w, widget.minW, Math.max(widget.minW, containerSize.width - widget.x));
-        const height = clamp(widget.h, widget.minH, Math.max(widget.minH, containerSize.height - widget.y));
+        const { minW, minH } = getResizeMinSize(widget);
+        const width = clamp(widget.w, minW, Math.max(minW, containerSize.width - widget.x));
+        const height = clamp(widget.h, minH, Math.max(minH, containerSize.height - widget.y));
         const x = clamp(widget.x, 0, Math.max(0, containerSize.width - width));
         const y = clamp(widget.y, 0, Math.max(0, containerSize.height - height));
         return { ...widget, w: width, h: height, x, y };
@@ -765,6 +910,9 @@ const resetWidgetSettings = () => {
 const startDrag = (widget: HudWidget, event: PointerEvent) => {
     if (!props.enableEdit || !settings.editMode || widget.locked) return;
     if (event.button !== 0) return;
+    const target = event.target as HTMLElement | null;
+    if (target?.closest('.hud-header-actions')) return;
+
     activeWidgetId.value = widget.id;
     dragState.value = {
         id: widget.id,
@@ -777,14 +925,17 @@ const startDrag = (widget: HudWidget, event: PointerEvent) => {
     event.preventDefault();
 };
 
-const startResize = (widget: HudWidget, event: PointerEvent) => {
+const startResize = (widget: HudWidget, event: PointerEvent, direction: ResizeDirection) => {
     if (!props.enableEdit || !settings.editMode || widget.locked) return;
     if (event.button !== 0) return;
     activeWidgetId.value = widget.id;
     resizeState.value = {
         id: widget.id,
+        direction,
         startX: event.clientX,
         startY: event.clientY,
+        originX: widget.x,
+        originY: widget.y,
         originW: widget.w,
         originH: widget.h,
     };
@@ -810,10 +961,66 @@ const handlePointerMove = (event: PointerEvent) => {
             if (!widget) return;
             const dx = event.clientX - resizeState.value.startX;
             const dy = event.clientY - resizeState.value.startY;
-            const nextW = snapValue(resizeState.value.originW + dx);
-            const nextH = snapValue(resizeState.value.originH + dy);
-            widget.w = clamp(nextW, widget.minW, containerSize.width - widget.x);
-            widget.h = clamp(nextH, widget.minH, containerSize.height - widget.y);
+            const direction = resizeState.value.direction;
+
+            const originLeft = resizeState.value.originX;
+            const originTop = resizeState.value.originY;
+            const originRight = resizeState.value.originX + resizeState.value.originW;
+            const originBottom = resizeState.value.originY + resizeState.value.originH;
+
+            let left = originLeft;
+            let top = originTop;
+            let right = originRight;
+            let bottom = originBottom;
+
+            if (direction.includes('w')) left = snapValue(originLeft + dx);
+            if (direction.includes('e')) right = snapValue(originRight + dx);
+            if (direction.includes('n')) top = snapValue(originTop + dy);
+            if (direction.includes('s')) bottom = snapValue(originBottom + dy);
+
+            left = clamp(left, 0, containerSize.width);
+            right = clamp(right, 0, containerSize.width);
+            top = clamp(top, 0, containerSize.height);
+            bottom = clamp(bottom, 0, containerSize.height);
+
+            const { minW, minH } = getResizeMinSize(widget);
+            if (right - left < minW) {
+                if (direction.includes('w') && !direction.includes('e')) {
+                    left = right - minW;
+                } else {
+                    right = left + minW;
+                }
+            }
+
+            if (bottom - top < minH) {
+                if (direction.includes('n') && !direction.includes('s')) {
+                    top = bottom - minH;
+                } else {
+                    bottom = top + minH;
+                }
+            }
+
+            if (left < 0) {
+                left = 0;
+                right = Math.max(right, minW);
+            }
+            if (top < 0) {
+                top = 0;
+                bottom = Math.max(bottom, minH);
+            }
+            if (right > containerSize.width) {
+                right = containerSize.width;
+                left = Math.min(left, right - minW);
+            }
+            if (bottom > containerSize.height) {
+                bottom = containerSize.height;
+                top = Math.min(top, bottom - minH);
+            }
+
+            widget.x = left;
+            widget.y = top;
+            widget.w = Math.max(minW, right - left);
+            widget.h = Math.max(minH, bottom - top);
         }
     });
 };
@@ -839,10 +1046,17 @@ const toggleLock = (id: string) => {
 };
 
 const bringToFront = (id: string) => {
-    const widget = widgets.value.find((item) => item.id === id);
-    if (!widget) return;
-    const maxZ = Math.max(...widgets.value.map((item) => item.z));
-    widget.z = maxZ + 1;
+    const index = widgets.value.findIndex((item) => item.id === id);
+    if (index < 0) return;
+
+    const [target] = widgets.value.splice(index, 1);
+    widgets.value.push(target);
+
+    widgets.value.forEach((item, order) => {
+        item.z = order + 1;
+    });
+
+    activeWidgetId.value = id;
 };
 
 const resetLayout = () => {
@@ -1068,26 +1282,95 @@ onUnmounted(() => {
 .hud-body
     flex: 1
     min-height: 0
-    padding: 20px 24px
+    height: 100%
+    width: 100%
+    overflow: hidden
+    display: flex
+    flex-direction: column
+    align-items: stretch
+    > *
+        flex: 1
+        width: 100%
+        height: 100%
+    padding: 5%
     position: relative
     z-index: 2
 
+.resize-overlay
+    position: absolute
+    inset: 0
+    pointer-events: none
+    z-index: 6
+
 .resize-handle
     position: absolute
-    right: 4px
-    bottom: 4px
-    width: 14px
-    height: 14px
-    background: rgba(255, 255, 255, 0.2)
-    border-radius: 4px
-    cursor: se-resize
+    border: none
+    background: transparent
+    padding: 0
+    margin: 0
+    opacity: 0
+    pointer-events: none
+    transition: opacity 0.18s ease
+
+.hud-layer.editing .hud-widget:not(.locked):hover .resize-handle,
+.hud-layer.editing .hud-widget.active:not(.locked) .resize-handle
+    opacity: 1
     pointer-events: auto
 
-    .hud-layer.editing &
-        display: block
+.resize-n,
+.resize-s
+    left: 12px
+    right: 12px
+    height: 10px
+    cursor: ns-resize
 
-    .hud-layer:not(.editing) &
-        display: none
+.resize-e,
+.resize-w
+    top: 12px
+    bottom: 12px
+    width: 10px
+    cursor: ew-resize
+
+.resize-n
+    top: 0
+
+.resize-s
+    bottom: 0
+
+.resize-e
+    right: 0
+
+.resize-w
+    left: 0
+
+.resize-ne,
+.resize-nw,
+.resize-se,
+.resize-sw
+    width: 14px
+    height: 14px
+    border-radius: 4px
+    background: rgba(255, 255, 255, 0.26)
+
+.resize-ne
+    top: 0
+    right: 0
+    cursor: nesw-resize
+
+.resize-nw
+    top: 0
+    left: 0
+    cursor: nwse-resize
+
+.resize-se
+    right: 0
+    bottom: 0
+    cursor: nwse-resize
+
+.resize-sw
+    left: 0
+    bottom: 0
+    cursor: nesw-resize
 
 .hud-settings
     background: #FFFFFF
@@ -1249,7 +1532,7 @@ onUnmounted(() => {
     position: absolute
     inset: 0
     background-image: linear-gradient(rgba(0, 255, 255, 0.55) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 255, 255, 0.55) 1px, transparent 1px)
-    background-size: calc(var(--hud-grid) * 5) calc(var(--hud-grid) * 5)
+            locked: false,
 
 .hud-crosshair
     position: absolute

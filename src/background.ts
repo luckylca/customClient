@@ -14,6 +14,14 @@ app.whenReady().then(() => {
             webSecurity: false,
         },
     })
+    win.webContents.on('did-fail-load', (_event, code, desc, url) => {
+        console.error('[Main] 页面加载失败:', { code, desc, url });
+    });
+
+    win.webContents.on('render-process-gone', (_event, details) => {
+        console.error('[Main] 渲染进程异常退出:', details);
+    });
+
     win.removeMenu()
     const videoHandler = new VideoHandler(win);
 
@@ -29,10 +37,15 @@ app.whenReady().then(() => {
     // Store mqttService reference if needed for IPC later
     (global as any).mqttService = mqttService;
 
-    if (process.argv[2]) {
-        win.loadURL(process.argv[2])
-    }
-    else {
+    const devUrlFromArgv = process.argv[2];
+    const devUrlFromEnv = process.env.VITE_DEV_SERVER_URL;
+    const devUrl = devUrlFromArgv || devUrlFromEnv;
+
+    if (devUrl) {
+        console.log('[Main] 加载开发地址:', devUrl);
+        win.loadURL(devUrl)
+    } else {
+        console.log('[Main] 加载本地文件: index.html');
         win.loadFile('index.html')
     }
 })

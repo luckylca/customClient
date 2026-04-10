@@ -34,6 +34,20 @@
                                 进入 HUD 编辑
                             </v-btn>
                         </v-card>
+
+                        <v-card class="entry-card" elevation="6">
+                            <div class="entry-title">按键绑定（功能热键）</div>
+                            <div class="entry-subtitle">设置各辅助脚本与功能的快捷键，提升操作效率。</div>
+                            <v-btn
+                                color="primary"
+                                variant="tonal"
+                                prepend-icon="mdi-keyboard"
+                                @click="enterKeyBinding"
+                            >
+                                进入按键绑定
+                            </v-btn>
+                        </v-card>
+
                         <v-expansion-panels variant="accordion">
                             <v-expansion-panel>
                                 <v-expansion-panel-title>通用设置</v-expansion-panel-title>
@@ -53,14 +67,15 @@
                                     <v-switch v-model="appSettings.showCrosshair" label="显示准星" inset />
                                     <v-switch v-model="appSettings.showFps" label="显示帧率" inset />
                                     <v-switch v-model="appSettings.showNotifications" label="提示通知" inset />
+                                    <v-divider class="my-3" />
+                                    <v-slider v-model="appSettings.mouseSensitivity" :min="0.1" :max="5.0" :step="0.1" label="鼠标灵敏度" />
                                 </v-expansion-panel-text>
                         </v-expansion-panel>
                             <v-expansion-panel>
-                                <v-expansion-panel-title>图传与音效</v-expansion-panel-title>
+                                <v-expansion-panel-title>图传设置</v-expansion-panel-title>
                                 <v-expansion-panel-text>
                                     <v-switch v-model="appSettings.autoReconnectVideo" label="图传断开自动重连" inset />
                                     <v-switch v-model="appSettings.lowLatencyMode" label="低延迟优先" inset />
-                                    <v-slider v-model="appSettings.masterVolume" :min="0" :max="100" :step="1" label="主音量" />
                             </v-expansion-panel-text>
                         </v-expansion-panel>
                     </v-expansion-panels>
@@ -233,6 +248,10 @@ const goBack = () => {
 const enterHudEdit = () => {
     hudSnapshot.value = exportHudConfig();
     mode.value = 'hud';
+};
+
+const enterKeyBinding = () => {
+    router.push({ name: 'key-binding', query: route.query });
 };
 
 const requestExitHud = () => {

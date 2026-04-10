@@ -1,4 +1,5 @@
 const { ipcRenderer } = (window as any).require ? (window as any).require('electron') : { ipcRenderer: null };
+import { useSettingStore } from '../stores/setting';
 
 export class InputHandler {
     private mouseX: number = 0;
@@ -13,12 +14,18 @@ export class InputHandler {
     // In a real scenario, you'd map standard keys to the specific bits required by the protocol.
     // For now, we'll try to map some common keys.
     private keysPressed = new Set<string>();
+    private settingStore: ReturnType<typeof useSettingStore> | null = null;
 
     private intervalId: ReturnType<typeof setInterval> | null = null;
     private readonly FREQUENCY_HZ = 75;
     private readonly INTERVAL_MS = 1000 / this.FREQUENCY_HZ;
 
     constructor() {
+        try {
+            this.settingStore = useSettingStore();
+        } catch (e) {
+            console.warn("InputHandler could not initialize settingStore");
+        }
         this.initListeners();
         this.startSending();
     }
@@ -30,8 +37,9 @@ export class InputHandler {
             // but often in these comps it might be delta or absolute position suitable for control.
             // Requirement says: "mouse x axis moving speed".
             // We correspond movementX/Y to speed for now.
-            this.mouseX = e.movementX;
-            this.mouseY = e.movementY;
+            const sensitivity = this.settingStore?.appSettings.mouseSensitivity ?? 1.0;
+            this.mouseX = e.movementX * sensitivity;
+            this.mouseY = e.movementY * sensitivity;
         });
 
         window.addEventListener('mousedown', (e) => {
@@ -51,6 +59,12 @@ export class InputHandler {
         });
 
         window.addEventListener('keydown', (e) => {
+            if (this.settingStore && !e.repeat) {
+                const binding = this.settingStore.keyBindings.find(b => b.key === e.code);
+                if (binding) {
+                    this.settingStore.triggerScript(binding.scriptId);
+                }
+            }
             this.keysPressed.add(e.code);
             this.updateKeyboardValue();
         });

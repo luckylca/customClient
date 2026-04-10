@@ -13,8 +13,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted, computed } from 'vue';
+import { ref, onMounted, onUnmounted, computed, watch } from 'vue';
 import { useVideoStatsStore } from '@/stores/videoStats';
+import { useSettingStore } from '@/stores/setting';
 
 // 定义属性：允许外部控制画布大小
 const props = defineProps({
@@ -32,7 +33,11 @@ let streamTimer: any = null;
 let resizeObserver: ResizeObserver | null = null;
 let handleResize: (() => void) | null = null;
 let handleVideoFrame: ((event: any, buffer: Buffer) => void) | null = null;
+let canvasCtx: CanvasRenderingContext2D | null = null;
+let decoderResetCooldown = 0;
 const videoStatsStore = useVideoStatsStore();
+const settingStore = useSettingStore();
+const appSettings = computed(() => settingStore.appSettings);
 
 const renderSize = ref({ width: props.width, height: props.height });
 
@@ -91,17 +96,40 @@ const initDecoder = (ctx: CanvasRenderingContext2D) => {
             frame.close(); // 释放显存
             isStreaming.value = true;
 
-            // 心跳检测，3秒没帧显示占位符
+            // 心跳检测，3秒没帧显示占位符；可按设置自动重建解码器。
             clearTimeout(streamTimer);
-            streamTimer = setTimeout(() => isStreaming.value = false, 3000);
+            streamTimer = setTimeout(() => {
+                isStreaming.value = false;
+                if (appSettings.value.autoReconnectVideo) {
+                    resetDecoder('stream-timeout');
+                }
+            }, 3000);
         },
         error: (e) => console.error('VideoDecoder 错误:', e),
     });
 
     decoder.configure({
         codec: 'hev1.1.6.L120.90', // RoboMaster 采用 HEVC 编码 
-        optimizeForLatency: true    // 极致低延迟模式
+        optimizeForLatency: !!appSettings.value.lowLatencyMode,
     });
+};
+
+const resetDecoder = (reason: string) => {
+    if (!canvasCtx) return;
+    const now = Date.now();
+    if (now - decoderResetCooldown < 1000) return;
+    decoderResetCooldown = now;
+
+    try {
+        if (decoder && decoder.state !== 'closed') {
+            decoder.close();
+        }
+    } catch (error) {
+        console.warn('关闭旧解码器失败:', error);
+    }
+
+    initDecoder(canvasCtx);
+    console.info(`VideoDecoder 已重建: ${reason}`);
 };
 
 onMounted(() => {
@@ -109,6 +137,7 @@ onMounted(() => {
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
+    canvasCtx = ctx;
 
     const updateCanvasSize = () => {
         const targetWidth = props.autoSize && containerRef.value
@@ -161,11 +190,21 @@ onMounted(() => {
                 }));
             } catch (err) {
                 console.warn('解码失败，尝试重置解码器:', err);
+                if (appSettings.value.autoReconnectVideo) {
+                    resetDecoder('decode-error');
+                }
             }
         }
     };
     ipcRenderer.on('video-frame', handleVideoFrame);
 });
+
+watch(
+    () => appSettings.value.lowLatencyMode,
+    () => {
+        resetDecoder('low-latency-mode-changed');
+    }
+);
 
 onUnmounted(() => {
     if (handleVideoFrame) {
@@ -175,6 +214,7 @@ onUnmounted(() => {
     if (decoder && decoder.state !== 'closed') {
         decoder.close();
     }
+    canvasCtx = null;
     videoStatsStore.stopDecodeFpsSampling();
     clearTimeout(streamTimer);
     if (resizeObserver) {

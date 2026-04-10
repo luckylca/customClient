@@ -4,10 +4,12 @@ import { onMounted, onUnmounted } from 'vue';
 import { InputHandler } from './services/InputHandler';
 import { useGlobalStore } from './stores/globalData';
 import { useRobotStore } from './stores/robotData';
+import { useSettingStore } from './stores/setting';
 
 let inputHandler: InputHandler | null = null;
 const globalStore = useGlobalStore();
 const robotStore = useRobotStore();
+const settingStore = useSettingStore();
 const { ipcRenderer } = (window as any).require ? (window as any).require('electron') : { ipcRenderer: null };
 
 const handleMqttMessage = (_event: any, payload: { topic: string; data: unknown }) => {
@@ -36,6 +38,20 @@ onUnmounted(() => {
 <template>
   <v-app>
     <RouterView />
+    
+    <!-- 全局快捷键状态提示 -->
+    <v-snackbar
+      v-model="settingStore.scriptNotification.show"
+      :timeout="2000"
+      color="primary"
+      location="top"
+      rounded="pill"
+      elevation="24"
+    >
+      <div class="d-flex align-center justify-center font-weight-medium">
+        {{ settingStore.scriptNotification.text }}
+      </div>
+    </v-snackbar>
   </v-app>
 </template>
 

@@ -8,7 +8,13 @@ export interface AppSettings {
     showNotifications: boolean;
     autoReconnectVideo: boolean;
     lowLatencyMode: boolean;
-    masterVolume: number;
+    mouseSensitivity: number;
+}
+
+export interface KeyBinding {
+    key: string;
+    keyName: string;
+    scriptId: string;
 }
 
 const defaultAppSettings = (): AppSettings => ({
@@ -18,13 +24,16 @@ const defaultAppSettings = (): AppSettings => ({
     showNotifications: true,
     autoReconnectVideo: true,
     lowLatencyMode: true,
-    masterVolume: 70,
+    mouseSensitivity: 1.0,
 });
 
 const APP_SETTINGS_KEY = 'rm-app-settings';
+const KEY_BINDINGS_KEY = 'rm-key-bindings';
 
 export const useSettingStore = defineStore('setting', () => {
     const appSettings = ref<AppSettings>(defaultAppSettings());
+    const keyBindings = ref<KeyBinding[]>([]);
+    const scriptNotification = ref({ show: false, text: '' });
 
     const loadAppSettings = () => {
         if (typeof window === 'undefined') return;
@@ -38,6 +47,18 @@ export const useSettingStore = defineStore('setting', () => {
             };
         } catch (error) {
             console.warn('App settings load failed:', error);
+        }
+    };
+
+    const loadKeyBindings = () => {
+        if (typeof window === 'undefined') return;
+        try {
+            const raw = localStorage.getItem(KEY_BINDINGS_KEY);
+            if (raw) {
+                keyBindings.value = JSON.parse(raw);
+            }
+        } catch (error) {
+            console.warn('Key bindings load failed:', error);
         }
     };
 
@@ -57,12 +78,38 @@ export const useSettingStore = defineStore('setting', () => {
         appSettings.value = defaultAppSettings();
     };
 
+    const saveKeyBindings = () => {
+        if (typeof window === 'undefined') return;
+        localStorage.setItem(KEY_BINDINGS_KEY, JSON.stringify(keyBindings.value));
+    };
+
+    const triggerScript = (scriptId: string) => {
+        let text = '';
+        if (scriptId === 'aim_assist') {
+            text = '🎯 状态：辅助自瞄触发';
+            // TODO: execute actual logic
+        } else if (scriptId === 'auto_buy') {
+            text = '💎 状态：自动买单触发';
+            // TODO: execute actual logic
+        } else {
+            text = `未知脚本: ${scriptId}`;
+        }
+        
+        scriptNotification.value.text = text;
+        scriptNotification.value.show = true;
+    };
+
     loadAppSettings();
+    loadKeyBindings();
     watch(appSettings, saveAppSettings, { deep: true });
+    watch(keyBindings, saveKeyBindings, { deep: true });
 
     return {
         appSettings,
+        keyBindings,
+        scriptNotification,
         updateAppSettings,
         resetAppSettings,
+        triggerScript
     };
 })

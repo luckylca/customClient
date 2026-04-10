@@ -80,7 +80,8 @@ export class MqttService {
             'GameStatus', 'GlobalUnitStatus', 'GlobalLogisticsStatus', 'GlobalSpecialMechanism',
             'Event', 'RobotInjuryStat', 'RobotRespawnStatus', 'RobotStaticStatus',
             'RobotDynamicStatus', 'RobotModuleStatus', 'RobotPosition', 'Buff',
-            'PenaltyInfo', 'RobotPathPlanInfo', 'RaderInfoToClient', 'CustomByteBlock',
+            'PenaltyInfo', 'RobotPathPlanInfo', 'MapClickInfoNotify', 'RadarInfoToClient', 'CustomByteBlock',
+            'AssemblyCommand',
             'TechCoreMotionStateSync', 'RobotPerformanceSelectionSync', 'DeployModeStatusSync',
             'RuneStatusSync', 'SentinelStatusSync', 'DartSelectTargetStatusSync',
             'GuardCtrlResult', 'AirSupportStatusSync'

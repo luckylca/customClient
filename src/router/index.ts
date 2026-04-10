@@ -6,6 +6,7 @@ import Hero from '../views/hero/index.vue'
 import InfantryFirst from '../views/infantryFirst/index.vue'
 import InfantrySecond from '../views/infantrySecond/index.vue'
 import Setting from '../views/setting/index.vue'
+import KeyBinding from '../views/setting/KeyBinding.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -49,6 +50,11 @@ const router = createRouter({
       path: '/setting',
       name: 'setting',
       component: Setting,
+    },
+    {
+      path: '/setting/key-binding',
+      name: 'key-binding',
+      component: KeyBinding,
     }
   ],
 })
