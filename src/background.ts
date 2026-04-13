@@ -49,7 +49,7 @@ app.whenReady().then(() => {
         console.log('[Main] 加载本地文件: index.html');
         win.loadFile('index.html')
     }
-
+    win.webContents.openDevTools()
     win.on('closed', () => {
         videoHandler.close();
         mqttService.disconnect();
@@ -117,14 +117,14 @@ ipcMain.on('send-remote-control', (event, data) => {
             const now = Date.now();
             if (now - lastControlLogTime > 3000) {
                 lastControlLogTime = now;
-                // console.log(
-                //     `[Main] control stats rx=${controlRxCount}, active=${controlActiveCount}, published=${controlPublishedCount}, connected=${mqttService.isConnected()} topic=${CONTROL_TOPIC}`,
-                // );
-                // if (isActive) {
-                //     console.log(
-                //         `[Main] control sample keyboardValue=${controlData.keyboardValue}, mouse=(${controlData.mouseX},${controlData.mouseY},${controlData.mouseZ}), buttons=(${controlData.leftButtonDown ? 1 : 0}${controlData.rightButtonDown ? 1 : 0}${controlData.midButtonDown ? 1 : 0})`,
-                //     );
-                // }
+                console.log(
+                    `[Main] control stats rx=${controlRxCount}, active=${controlActiveCount}, published=${controlPublishedCount}, connected=${mqttService.isConnected()} topic=${CONTROL_TOPIC}`,
+                );
+                if (isActive) {
+                    console.log(
+                        `[Main] control sample keyboardValue=${controlData.keyboardValue}, mouse=(${controlData.mouseX},${controlData.mouseY},${controlData.mouseZ}), buttons=(${controlData.leftButtonDown ? 1 : 0}${controlData.rightButtonDown ? 1 : 0}${controlData.midButtonDown ? 1 : 0})`,
+                    );
+                }
             }
         }
     }

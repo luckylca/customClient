@@ -377,6 +377,7 @@ import ControlHints from './ControlHints.vue';
 import InputTelemetryPanel from './InputTelemetryPanel.vue';
 import DataInspectorPanel from './DataInspectorPanel.vue';
 import TeamAssetPanel from './TeamAssetPanel.vue';
+import CustomVideoTransmissionPanel from './CustomVideoTransmissionPanel.vue';
 import { useSettingStore } from '@/stores/setting';
 import { useVideoStatsStore } from '@/stores/videoStats';
 import {
@@ -513,6 +514,8 @@ const widgetComponentById = (id: string) => {
             return markRaw(DataInspectorPanel);
         case 'team-asset-panel':
             return markRaw(TeamAssetPanel);
+        case 'custom-video-transmission':
+            return markRaw(CustomVideoTransmissionPanel);
         default:
             return markRaw(HealthPanel);
     }
@@ -735,6 +738,20 @@ const defaultWidgets = (width = 1920, height = 1080): HudWidget[] => {
             visible: true,
             locked: false,
             z: 4,
+        },
+        {
+            id: 'custom-video-transmission',
+            title: '自定义图传',
+            component: markRaw(CustomVideoTransmissionPanel),
+            x: Math.max((width - 660) / 2, padding),
+            y: Math.max(height - 520, 120),
+            w: 660,
+            h: 340,
+            minW: 420,
+            minH: 220,
+            visible: true,
+            locked: false,
+            z: 5,
         },
     ];
 };

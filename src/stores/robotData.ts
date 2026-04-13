@@ -1,6 +1,63 @@
 import { ref, computed } from 'vue'
 import { defineStore } from 'pinia'
 import type { RobotInjuryStat,RobotRespawnStatus,RobotStaticStatus,RobotDynamicStatus,RobotModuleStatus,RobotPosition,Buff,PenaltyInfo,RobotPathPlanInfo,MapClickInfoNotify,RadarInfoToClient,CustomByteBlock,AssemblyCommand,TechCoreMotionStateSync,PerformanceSelection,HeroDeployMode,RuneStatus,SentinelStatusSync,DartInfo,GuardCtrl,AirSupport } from '../types/rmType'
+
+const decodeProtoBytes = (value: unknown): Uint8Array | undefined => {
+    if (!value) return undefined
+    if (value instanceof Uint8Array) return value
+    if (Array.isArray(value)) {
+        const allByte = value.every((item) => typeof item === 'number' && item >= 0 && item <= 255)
+        return allByte ? new Uint8Array(value as number[]) : undefined
+    }
+    if (typeof value === 'string') {
+        try {
+            const bin = atob(value)
+            const out = new Uint8Array(bin.length)
+            for (let i = 0; i < bin.length; i += 1) {
+                out[i] = bin.charCodeAt(i)
+            }
+            return out
+        } catch {
+            return undefined
+        }
+    }
+    if (typeof value === 'object' && value !== null) {
+        const maybeBuffer = value as { type?: string; data?: unknown }
+        if (maybeBuffer.type === 'Buffer' && Array.isArray(maybeBuffer.data)) {
+            const allByte = maybeBuffer.data.every((item) => typeof item === 'number' && item >= 0 && item <= 255)
+            if (allByte) {
+                return new Uint8Array(maybeBuffer.data as number[])
+            }
+        }
+    }
+    return undefined
+}
+
+const toHexPreview = (bytes: Uint8Array, maxLen = 20): string => {
+    if (!bytes.length) return '-'
+    const clipped = bytes.subarray(0, maxLen)
+    const parts = Array.from(clipped).map((value) => value.toString(16).padStart(2, '0').toUpperCase())
+    return bytes.length > maxLen ? `${parts.join(' ')} ...` : parts.join(' ')
+}
+
+const toHexLines = (bytes: Uint8Array, bytesPerLine = 16, maxLines = 3): string => {
+    if (!bytes.length) return '-'
+    const maxLen = Math.min(bytes.length, bytesPerLine * maxLines)
+    const lines: string[] = []
+    for (let offset = 0; offset < maxLen; offset += bytesPerLine) {
+        const row = bytes.subarray(offset, Math.min(offset + bytesPerLine, maxLen))
+        const hex = Array.from(row).map((value) => value.toString(16).padStart(2, '0').toUpperCase()).join(' ')
+        lines.push(hex)
+    }
+    if (bytes.length > maxLen) {
+        lines.push('...')
+    }
+    return lines.join('\n')
+}
+
+const CUSTOM_BYTE_BLOCK_LOG_INTERVAL_MS = 500
+let lastCustomByteBlockLogAt = 0
+
 interface RobotData {
     color: string
     type: string
@@ -16,7 +73,11 @@ interface RobotData {
     RobotPathPlanInfoData?: RobotPathPlanInfo
     MapClickInfoNotifyData?: MapClickInfoNotify
     RadarInfoToClientData?: RadarInfoToClient
-    CustomByteBlockData?: CustomByteBlock
+    CustomByteBlockData: CustomByteBlock
+    CustomByteBlockRawLength: number
+    CustomByteBlockUpdateCount: number
+    CustomByteBlockPreviewHex: string
+    CustomByteBlockLastUpdatedAt: string
     AssemblyCommandData?: AssemblyCommand
     TechCoreMotionStateSyncData?: TechCoreMotionStateSync
     PerformanceSelectionData?: PerformanceSelection
@@ -28,7 +89,16 @@ interface RobotData {
     AirSupportData?: AirSupport
 }
 export const useRobotStore = defineStore('robot', () => {
-    const robot = ref<RobotData>({ color: '', type: '', id: '' })
+    const robot = ref<RobotData>({
+        color: '',
+        type: '',
+        id: '',
+        CustomByteBlockData: { data: new Uint8Array(0) },
+        CustomByteBlockRawLength: 0,
+        CustomByteBlockUpdateCount: 0,
+        CustomByteBlockPreviewHex: '-',
+        CustomByteBlockLastUpdatedAt: '-',
+    })
     const normalizeRobotPayload = (topic: string, data: unknown): unknown => {
         if (!data || typeof data !== 'object' || Array.isArray(data)) return data
         const src = data as Record<string, unknown>
@@ -119,6 +189,11 @@ export const useRobotStore = defineStore('robot', () => {
             normalizeCamel('buffLeftTime', 'buff_left_time')
         }
 
+        if (topic === 'CustomByteBlock') {
+            const bytes = decodeProtoBytes(out.data)
+            if (bytes) out.data = bytes
+        }
+
         return out
     }
     const initRobot = (color: string, type: string) => {
@@ -165,6 +240,7 @@ export const useRobotStore = defineStore('robot', () => {
                 break
             case 'RobotStaticStatus':
                 robot.value.RobotStaticStatusData = normalized as RobotStaticStatus
+                console.log(`[RobotStore] Updated RobotStaticStatus: ${JSON.stringify(robot.value.RobotStaticStatusData)}`)
                 break
             case 'RobotDynamicStatus':
                 robot.value.RobotDynamicStatusData = normalized as RobotDynamicStatus
@@ -194,6 +270,21 @@ export const useRobotStore = defineStore('robot', () => {
                 break
             case 'CustomByteBlock':
                 robot.value.CustomByteBlockData = normalized as CustomByteBlock
+                {
+                    const bytes = decodeProtoBytes((normalized as CustomByteBlock)?.data)
+                    robot.value.CustomByteBlockUpdateCount += 1
+                    robot.value.CustomByteBlockRawLength = bytes?.length || 0
+                    robot.value.CustomByteBlockPreviewHex = bytes ? toHexPreview(bytes) : '-'
+                    robot.value.CustomByteBlockLastUpdatedAt = new Date().toLocaleTimeString()
+
+                    const now = Date.now()
+                    if (now - lastCustomByteBlockLogAt >= CUSTOM_BYTE_BLOCK_LOG_INTERVAL_MS) {
+                        lastCustomByteBlockLogAt = now
+                        console.log(
+                            `[RobotStore] CustomByteBlock length=${robot.value.CustomByteBlockRawLength} update=${robot.value.CustomByteBlockUpdateCount}\n${bytes ? toHexLines(bytes, 16, 4) : '-'}`
+                        )
+                    }
+                }
                 break
             case 'AssemblyCommand':
                 robot.value.AssemblyCommandData = normalized as AssemblyCommand

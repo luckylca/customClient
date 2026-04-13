@@ -12,6 +12,16 @@ export class MqttService {
     private clientIdCandidates: string[] = [];
     private candidateIndex = 0;
     private shouldReconnect = true;
+    private bindLocalAddress = true;
+    private readonly debugTopics: string[] = (
+        process.env.MQTT_DEBUG_TOPICS || 'CustomByteBlock,RobotStaticStatus'
+    )
+        .split(',')
+        .map((item) => item.trim())
+        .filter(Boolean);
+    private readonly debugTopicSet = new Set(this.debugTopics);
+    private readonly debugTopicLogIntervalMs = 500;
+    private lastDebugLogAtByTopic: Record<string, number> = {};
 
     constructor(onMessageCallback?: (topic: string, data: unknown) => void) {
         console.log('Initializing MQTT Service...');
@@ -24,6 +34,7 @@ export class MqttService {
         this.clientIdCandidates = this.buildClientIdCandidates(clientId);
         this.candidateIndex = 0;
         this.shouldReconnect = true;
+        this.bindLocalAddress = true;
         this.connectWithCurrentCandidate();
     }
 
@@ -31,20 +42,22 @@ export class MqttService {
         const candidateClientId = this.clientIdCandidates[this.candidateIndex];
         const connectUrl = `mqtt://${this.host}:${this.port}`;
         console.log(
-            `[MQTT] Connecting to ${connectUrl} with clientId=${candidateClientId || 'mqttjs-default'}, local=${this.localAddress}, auth=${this.username ? 'username-password' : 'none'}`,
+            `[MQTT] Connecting to ${connectUrl} with clientId=${candidateClientId || 'mqttjs-default'}, local=${this.bindLocalAddress ? this.localAddress : '(auto)'}, auth=${this.username ? 'username-password' : 'none'}`,
         );
 
         const connectOptions: mqtt.IClientOptions = {
             clean: true,
             protocolVersion: 4,
-            connectTimeout: 4000,
+            connectTimeout: 10000,
             reconnectPeriod: this.shouldReconnect ? 1000 : 0,
             ...(candidateClientId ? { clientId: candidateClientId } : {}),
             ...(this.username ? { username: this.username } : {}),
             ...(this.password ? { password: this.password } : {}),
         };
 
-        (connectOptions as any).localAddress = this.localAddress;
+        if (this.bindLocalAddress) {
+            (connectOptions as any).localAddress = this.localAddress;
+        }
         this.client = mqtt.connect(connectUrl, connectOptions as any);
 
         this.client.on('connect', () => {
@@ -58,6 +71,15 @@ export class MqttService {
                 console.error(
                     `[MQTT] Local address ${this.localAddress} is unavailable. Please configure your NIC to 192.168.12.2 or set MQTT_LOCAL_ADDRESS.`,
                 );
+                return;
+            }
+            if (this.isConnackTimeout(error) && this.bindLocalAddress) {
+                console.warn(
+                    `[MQTT] connack timeout with localAddress=${this.localAddress}, retrying with auto-selected local interface.`,
+                );
+                this.bindLocalAddress = false;
+                this.disconnect();
+                this.connectWithCurrentCandidate();
                 return;
             }
             if (this.isIdentifierRejected(error)) {
@@ -74,6 +96,11 @@ export class MqttService {
                 return;
             }
             console.error('MQTT connection error:', error);
+            if (this.isConnackTimeout(error)) {
+                console.error(
+                    `[MQTT] connack timeout diagnostics: check broker ${this.host}:${this.port} reachability, ACL/clientId policy, and that robot is in the same subnet.`,
+                );
+            }
         });
 
         this.client.on('message', (topic, payload) => {
@@ -84,6 +111,12 @@ export class MqttService {
     private isIdentifierRejected(error: unknown): boolean {
         const anyErr = error as any;
         return anyErr?.code === 2 || anyErr?.reasonCode === 2;
+    }
+
+    private isConnackTimeout(error: unknown): boolean {
+        const anyErr = error as any;
+        const msg = String(anyErr?.message || '').toLowerCase();
+        return msg.includes('connack timeout');
     }
 
     private tryNextClientIdCandidate(): boolean {
@@ -219,8 +252,77 @@ export class MqttService {
                 console.error('Subscription error:', err);
             } else {
                 console.log(`Subscribed to ${topics.length} topics`);
+                if (this.debugTopics.length > 0) {
+                    console.log(`[MQTT][DEBUG] enabled topics: ${this.debugTopics.join(', ')}`);
+                }
             }
         });
+    }
+
+    private shouldLogDebugTopic(topic: string): boolean {
+        return this.debugTopicSet.has(topic);
+    }
+
+    private decodeDebugBytes(value: unknown): Uint8Array | null {
+        if (!value) return null;
+        if (value instanceof Uint8Array) return value;
+        if (typeof value === 'string') {
+            try {
+                return new Uint8Array(Buffer.from(value, 'base64'));
+            } catch {
+                return null;
+            }
+        }
+        if (Array.isArray(value)) {
+            const allByte = value.every((item) => typeof item === 'number' && item >= 0 && item <= 255);
+            return allByte ? new Uint8Array(value as number[]) : null;
+        }
+        if (typeof value === 'object' && value !== null) {
+            const maybeBuffer = value as { type?: string; data?: unknown };
+            if (maybeBuffer.type === 'Buffer' && Array.isArray(maybeBuffer.data)) {
+                const allByte = maybeBuffer.data.every((item) => typeof item === 'number' && item >= 0 && item <= 255);
+                return allByte ? new Uint8Array(maybeBuffer.data as number[]) : null;
+            }
+        }
+        return null;
+    }
+
+    private hexPreview(bytes: Uint8Array, maxLen = 64): string {
+        if (!bytes.length) return '-';
+        const clipped = bytes.subarray(0, Math.min(maxLen, bytes.length));
+        const hex = Array.from(clipped)
+            .map((value) => value.toString(16).padStart(2, '0').toUpperCase())
+            .join(' ');
+        return bytes.length > maxLen ? `${hex} ...` : hex;
+    }
+
+    private logDebugTopic(topic: string, data: unknown): void {
+        if (!this.shouldLogDebugTopic(topic)) return;
+
+        const now = Date.now();
+        const last = this.lastDebugLogAtByTopic[topic] || 0;
+        if (now - last < this.debugTopicLogIntervalMs) return;
+        this.lastDebugLogAtByTopic[topic] = now;
+
+        if (topic === 'CustomByteBlock') {
+            const bytes = this.decodeDebugBytes((data as any)?.data);
+            if (!bytes) {
+                console.log(`[MQTT][DEBUG] topic=${topic} payload has no decodable bytes`);
+                return;
+            }
+            const header = bytes.length > 0 ? `0x${bytes[0].toString(16).padStart(2, '0').toUpperCase()}` : '-';
+            const sequence = bytes.length > 1 ? bytes[1] : '-';
+            console.log(
+                `[MQTT][DEBUG] topic=${topic} len=${bytes.length} header=${header} seq=${sequence}\n${this.hexPreview(bytes, 64)}`,
+            );
+            return;
+        }
+
+        try {
+            console.log(`[MQTT][DEBUG] topic=${topic} data=${JSON.stringify(data)}`);
+        } catch {
+            console.log(`[MQTT][DEBUG] topic=${topic} data=[unserializable]`);
+        }
     }
 
     private handleMessage(topic: string, payload: Buffer): void {
@@ -236,6 +338,7 @@ export class MqttService {
                     enums: String,
                     bytes: String,
                 });
+                this.logDebugTopic(topic, object);
                 if (this.onMessageCallback) {
                     this.onMessageCallback(topic, object);
                 }
