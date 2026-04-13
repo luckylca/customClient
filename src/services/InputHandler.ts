@@ -1,5 +1,6 @@
 const { ipcRenderer } = (window as any).require ? (window as any).require('electron') : { ipcRenderer: null };
 import { useSettingStore } from '../stores/setting';
+import { useInputTelemetryStore } from '../stores/inputTelemetry';
 
 export class InputHandler {
     private mouseX: number = 0;
@@ -15,6 +16,7 @@ export class InputHandler {
     // For now, we'll try to map some common keys.
     private keysPressed = new Set<string>();
     private settingStore: ReturnType<typeof useSettingStore> | null = null;
+    private telemetryStore: ReturnType<typeof useInputTelemetryStore> | null = null;
 
     private intervalId: ReturnType<typeof setInterval> | null = null;
     private readonly FREQUENCY_HZ = 75;
@@ -23,6 +25,7 @@ export class InputHandler {
     constructor() {
         try {
             this.settingStore = useSettingStore();
+            this.telemetryStore = useInputTelemetryStore();
         } catch (e) {
             console.warn("InputHandler could not initialize settingStore");
         }
@@ -31,7 +34,7 @@ export class InputHandler {
     }
 
     private initListeners() {
-        window.addEventListener('mousemove', (e) => {
+        const onMouseMove = (e: MouseEvent) => {
             // Normalize or map coordinates as needed. 
             // The protocol asks for "mouse moving speed" or similar, 
             // but often in these comps it might be delta or absolute position suitable for control.
@@ -40,25 +43,33 @@ export class InputHandler {
             const sensitivity = this.settingStore?.appSettings.mouseSensitivity ?? 1.0;
             this.mouseX = e.movementX * sensitivity;
             this.mouseY = e.movementY * sensitivity;
-        });
+        };
+        window.addEventListener('mousemove', onMouseMove);
+        document.addEventListener('mousemove', onMouseMove);
 
-        window.addEventListener('mousedown', (e) => {
+        const onMouseDown = (e: MouseEvent) => {
             if (e.button === 0) this.leftButtonDown = true;
             if (e.button === 2) this.rightButtonDown = true;
             if (e.button === 1) this.midButtonDown = true;
-        });
+        };
+        window.addEventListener('mousedown', onMouseDown);
+        document.addEventListener('mousedown', onMouseDown);
 
-        window.addEventListener('mouseup', (e) => {
+        const onMouseUp = (e: MouseEvent) => {
             if (e.button === 0) this.leftButtonDown = false;
             if (e.button === 2) this.rightButtonDown = false;
             if (e.button === 1) this.midButtonDown = false;
-        });
+        };
+        window.addEventListener('mouseup', onMouseUp);
+        document.addEventListener('mouseup', onMouseUp);
+
+        document.addEventListener('contextmenu', (e) => e.preventDefault());
 
         window.addEventListener('wheel', (e) => {
             this.mouseZ = e.deltaY;
         });
 
-        window.addEventListener('keydown', (e) => {
+        const onKeyDown = (e: KeyboardEvent) => {
             if (this.settingStore && !e.repeat) {
                 const binding = this.settingStore.keyBindings.find(b => b.key === e.code);
                 if (binding) {
@@ -67,11 +78,23 @@ export class InputHandler {
             }
             this.keysPressed.add(e.code);
             this.updateKeyboardValue();
-        });
+        };
+        window.addEventListener('keydown', onKeyDown);
+        document.addEventListener('keydown', onKeyDown);
 
-        window.addEventListener('keyup', (e) => {
+        const onKeyUp = (e: KeyboardEvent) => {
             this.keysPressed.delete(e.code);
             this.updateKeyboardValue();
+        };
+        window.addEventListener('keyup', onKeyUp);
+        document.addEventListener('keyup', onKeyUp);
+
+        window.addEventListener('blur', () => {
+            this.keysPressed.clear();
+            this.updateKeyboardValue();
+            this.leftButtonDown = false;
+            this.rightButtonDown = false;
+            this.midButtonDown = false;
         });
 
         // Reset speed each frame/tick? 
@@ -89,8 +112,8 @@ export class InputHandler {
         if (this.keysPressed.has('KeyS')) val |= 1 << 1;
         if (this.keysPressed.has('KeyA')) val |= 1 << 2;
         if (this.keysPressed.has('KeyD')) val |= 1 << 3;
-        if (this.keysPressed.has('ShiftLeft')) val |= 1 << 4;
-        if (this.keysPressed.has('ControlLeft')) val |= 1 << 5;
+        if (this.keysPressed.has('ShiftLeft') || this.keysPressed.has('ShiftRight')) val |= 1 << 4;
+        if (this.keysPressed.has('ControlLeft') || this.keysPressed.has('ControlRight')) val |= 1 << 5;
         if (this.keysPressed.has('KeyQ')) val |= 1 << 6;
         if (this.keysPressed.has('KeyE')) val |= 1 << 7;
         if (this.keysPressed.has('KeyR')) val |= 1 << 8;
@@ -102,6 +125,10 @@ export class InputHandler {
         if (this.keysPressed.has('KeyV')) val |= 1 << 14;
         if (this.keysPressed.has('KeyB')) val |= 1 << 15;
         this.keyboardValue = val;
+        this.telemetryStore?.patch({
+            keyboardValue: this.keyboardValue,
+            keysPressed: Array.from(this.keysPressed),
+        });
     }
 
     private readonly emptyData = new Uint8Array();
@@ -124,6 +151,8 @@ export class InputHandler {
                 ipcRenderer.send('send-remote-control', data);
             }
 
+            this.telemetryStore?.patch(data);
+
             // Reset deltas after sending (since they represent speed/movement since last frame)
             this.mouseX = 0;
             this.mouseY = 0;
@@ -137,5 +166,6 @@ export class InputHandler {
             clearInterval(this.intervalId);
             this.intervalId = null;
         }
+        this.telemetryStore?.reset();
     }
 }

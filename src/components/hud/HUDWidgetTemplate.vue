@@ -53,6 +53,15 @@ const { global: globalData } = useGlobalStore();
 const demoMode = inject('hudDemoMode', computed(() => false));
 const demoTick = useHudDemoTicker();
 
+const dynamic = computed(() => (robot.RobotDynamicStatusData || {}) as Record<string, unknown>);
+const statics = computed(() => (robot.RobotStaticStatusData || {}) as Record<string, unknown>);
+const gameStatus = computed(() => (globalData.GameStatusData || {}) as Record<string, unknown>);
+
+const pickNumber = (obj: Record<string, unknown>, key: string, fallback = 0): number => {
+    const value = obj[key];
+    return typeof value === 'number' ? value : fallback;
+};
+
 // 背景模式默认继承 HUDContainer；仅在模板组件内需要独立背景时再覆盖。
 const resolvedBackgroundMode = computed(() => props.backgroundMode);
 const surfaceStyle = computed(() => ({
@@ -61,24 +70,24 @@ const surfaceStyle = computed(() => ({
 }));
 
 // Example: use robot dynamic + global status with demo fallback.
-const hasData = computed(() => !!robot.RobotDynamicStatusData || !!globalData.GameStatusData?.stage_countdown_sec);
+const hasData = computed(() => !!robot.RobotDynamicStatusData || pickNumber(gameStatus.value, 'stageCountdownSec', 0) > 0);
 const useDemo = computed(() => demoMode.value || !hasData.value);
 
 const mainValue = computed(() => {
     if (useDemo.value) return Math.floor(75 + 20 * Math.sin(demoTick.value / 2000));
-    return robot.RobotDynamicStatusData?.current_chassis_energy ?? 0;
+    return pickNumber(dynamic.value, 'currentChassisEnergy', 0);
 });
 
 const subValue = computed(() => {
     if (useDemo.value) return '/ 100';
-    const max = robot.RobotStaticStatusData?.max_chassis_energy ?? 100;
+    const max = pickNumber(statics.value, 'maxChassisEnergy', 100);
     return `/ ${max}`;
 });
 
 const progressPercent = computed(() => {
     if (useDemo.value) return Math.floor(50 + 30 * Math.sin(demoTick.value / 2600));
-    const current = robot.RobotDynamicStatusData?.current_chassis_energy ?? 0;
-    const max = robot.RobotStaticStatusData?.max_chassis_energy ?? 100;
+    const current = pickNumber(dynamic.value, 'currentChassisEnergy', 0);
+    const max = pickNumber(statics.value, 'maxChassisEnergy', 100);
     return max > 0 ? Math.min(100, (current / max) * 100) : 0;
 });
 
@@ -96,7 +105,7 @@ const metaLeft = computed(() => {
 
 const metaRight = computed(() => {
     if (useDemo.value) return '数据占位';
-    return `阶段 ${globalData.GameStatusData?.current_stage ?? 0}`;
+    return `阶段 ${pickNumber(gameStatus.value, 'currentStage', 0)}`;
 });
 </script>
 

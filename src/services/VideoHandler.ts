@@ -15,20 +15,53 @@ export class VideoHandler {
     private server = dgram.createSocket('udp4');
     private frameBuffer = new Map<number, FrameCache>();
     private win: BrowserWindow | null = null;
+    private readonly bindAddress: string;
+    private readonly port: number;
+
+    private packetCount = 0;
+    private completeFrameCount = 0;
+    private droppedFrameCount = 0;
+    private lastPacketTime = 0;
+    private hasLoggedFirstPacket = false;
+    private statsTimer: NodeJS.Timeout | null = null;
+    private gcTimer: NodeJS.Timeout | null = null;
 
     // 配置常量
-    private readonly PORT = 3334;
     private readonly GC_INTERVAL = 2000; // 每2秒清理一次过期帧
     private readonly FRAME_TIMEOUT = 1000; // 超过1秒未组装完成的帧视为过期
 
     constructor(window: BrowserWindow) {
         this.win = window;
+        this.port = this.resolvePort();
+        this.bindAddress = process.env.VIDEO_UDP_BIND || '0.0.0.0';
         this.initUDP();
         this.startGarbageCollector(); // 启动垃圾回收
+        this.startStatsReporter();
+    }
+
+    private resolvePort(): number {
+        const rawPort = process.env.VIDEO_UDP_PORT;
+        if (!rawPort) return 3334;
+
+        const parsed = Number(rawPort);
+        if (!Number.isInteger(parsed) || parsed <= 0 || parsed > 65535) {
+            console.warn(`[VideoHandler] Invalid VIDEO_UDP_PORT="${rawPort}", fallback to 3334`);
+            return 3334;
+        }
+
+        return parsed;
     }
 
     private initUDP() {
-        this.server.on('message', (msg) => {
+        this.server.on('message', (msg, rinfo) => {
+            this.packetCount += 1;
+            this.lastPacketTime = Date.now();
+
+            if (!this.hasLoggedFirstPacket) {
+                this.hasLoggedFirstPacket = true;
+                // console.log(`[VideoHandler] First packet from ${rinfo.address}:${rinfo.port}, size=${msg.length}`);
+            }
+
             if (msg.length < 8) {
                 // console.warn(`[VideoHandler] Invalid packet length: ${msg.length}`);
                 return;
@@ -84,10 +117,10 @@ export class VideoHandler {
 
         this.server.on('listening', () => {
             const address = this.server.address();
-            console.log(`[VideoHandler] UDP Listening on ${address.address}:${address.port}`);
+            // console.log(`[VideoHandler] UDP Listening on ${address.address}:${address.port}`);
         });
 
-        this.server.bind(this.PORT, '0.0.0.0');
+        this.server.bind(this.port, this.bindAddress);
     }
 
     /**
@@ -102,14 +135,23 @@ export class VideoHandler {
             // 双重检查：确保过滤后的数据确实存在
             if (validSlices.length > 0) {
                 const completeFrame = Buffer.concat(validSlices);
+                if (completeFrame.length < frame.totalSize) {
+                    this.droppedFrameCount += 1;
+                    console.warn(
+                        `[VideoHandler] Incomplete frame #${frameSeq}: got=${completeFrame.length}, expected=${frame.totalSize}`,
+                    );
+                    return;
+                }
 
                 // 发送给渲染进程
                 if (this.win && !this.win.isDestroyed()) {
                     // 使用 send 而不是 sendSync，避免阻塞主进程
                     this.win.webContents.send('video-frame', completeFrame);
+                    this.completeFrameCount += 1;
                 }
             }
         } catch (error) {
+            this.droppedFrameCount += 1;
             console.error(`[VideoHandler] Assembly failed for frame ${frameSeq}:`, error);
         } finally {
             // 无论成功失败，只要触发了组装逻辑，就应该清理内存
@@ -121,16 +163,29 @@ export class VideoHandler {
      * 垃圾回收机制：清理因丢包导致永远无法完成组装的帧
      */
     private startGarbageCollector() {
-        setInterval(() => {
+        this.gcTimer = setInterval(() => {
             const now = Date.now();
             // 遍历 Map，使用 for...of 提高性能
             for (const [seq, frame] of this.frameBuffer) {
                 if (now - frame.lastUpdateTime > this.FRAME_TIMEOUT) {
                     // console.log(`[VideoHandler] Dropping stale frame #${seq} (Incomplete)`);
+                    this.droppedFrameCount += 1;
                     this.frameBuffer.delete(seq);
                 }
             }
         }, this.GC_INTERVAL);
+    }
+
+    private startStatsReporter() {
+        this.statsTimer = setInterval(() => {
+            const now = Date.now();
+            const inactiveMs = this.lastPacketTime === 0 ? -1 : now - this.lastPacketTime;
+            const inactiveDesc = inactiveMs < 0 ? 'never-received' : `${inactiveMs}ms`;
+
+            // console.log(
+            //     `[VideoHandler] Stats packets=${this.packetCount}, completed=${this.completeFrameCount}, dropped=${this.droppedFrameCount}, buffering=${this.frameBuffer.size}, inactive=${inactiveDesc}`,
+            // );
+        }, 5000);
     }
 
     public close() {
@@ -138,6 +193,15 @@ export class VideoHandler {
             this.server.close();
         } catch (e) {
             // 忽略关闭时的错误
+        }
+
+        if (this.gcTimer) {
+            clearInterval(this.gcTimer);
+            this.gcTimer = null;
+        }
+        if (this.statsTimer) {
+            clearInterval(this.statsTimer);
+            this.statsTimer = null;
         }
     }
 }

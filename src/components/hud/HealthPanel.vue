@@ -36,13 +36,29 @@ const demoTick = useHudDemoTicker();
 
 const hasData = computed(() => !!robot.RobotDynamicStatusData);
 const useDemo = computed(() => demoMode.value || !hasData.value);
+console.log(robot.RobotDynamicStatusData);
+const dynamic = computed(() => (robot.RobotDynamicStatusData || {}) as Record<string, unknown>);
+const statics = computed(() => (robot.RobotStaticStatusData || {}) as Record<string, unknown>);
+const injury = computed(() => (robot.RobotInjuryStatData || {}) as Record<string, unknown>);
+const respawn = computed(() => (robot.RobotRespawnStatusData || {}) as Record<string, unknown>);
+const penalty = computed(() => (robot.PenaltyInfoData || {}) as Record<string, unknown>);
+
+const pickNumber = (obj: Record<string, unknown>, camel: string, snake: string, fallback = 0): number => {
+    const value = obj[camel] ?? obj[snake];
+    return typeof value === 'number' ? value : fallback;
+};
+
+const pickBoolean = (obj: Record<string, unknown>, camel: string, snake: string, fallback = false): boolean => {
+    const value = obj[camel] ?? obj[snake];
+    return typeof value === 'boolean' ? value : fallback;
+};
 
 const currentHealth = computed(() =>
     useDemo.value
         ? Math.max(0, Math.floor(3200 + 600 * Math.sin(demoTick.value / 6000)))
-        : robot.RobotDynamicStatusData?.current_health ?? 0
+    : pickNumber(dynamic.value, 'currentHealth', 'current_health', 0)
 );
-const maxHealth = computed(() => robot.RobotStaticStatusData?.max_health ?? 4000);
+const maxHealth = computed(() => pickNumber(statics.value, 'maxHealth', 'max_health', 4000));
 
 const healthPercent = computed(() =>
     maxHealth.value ? Math.min(100, (currentHealth.value / maxHealth.value) * 100) : 0
@@ -56,22 +72,22 @@ const healthColor = computed(() => {
 
 const aliveStateText = computed(() => {
     if (useDemo.value) return '存活';
-    const state = robot.RobotStaticStatusData?.alive_state ?? 0;
+    const state = pickNumber(statics.value, 'aliveState', 'alive_state', 0);
     if (state === 1) return '存活';
     if (state === 2) return '战亡';
     return '未知';
 });
 
 const totalDamage = computed(() =>
-    useDemo.value ? Math.floor(120 + 40 * Math.abs(Math.sin(demoTick.value / 2800))) : robot.RobotInjuryStatData?.total_damage ?? 0
+    useDemo.value ? Math.floor(120 + 40 * Math.abs(Math.sin(demoTick.value / 2800))) : pickNumber(injury.value, 'totalDamage', 'total_damage', 0)
 );
 
 const respawnStateText = computed(() => {
     if (useDemo.value) return '未触发';
-    const pending = robot.RobotRespawnStatusData?.is_pending_respawn;
+    const pending = pickBoolean(respawn.value, 'isPendingRespawn', 'is_pending_respawn', false);
     if (pending) {
-        const current = robot.RobotRespawnStatusData?.current_respawn_progress ?? 0;
-        const total = robot.RobotRespawnStatusData?.total_respawn_progress ?? 0;
+        const current = pickNumber(respawn.value, 'currentRespawnProgress', 'current_respawn_progress', 0);
+        const total = pickNumber(respawn.value, 'totalRespawnProgress', 'total_respawn_progress', 0);
         return `读条 ${current}/${total}`;
     }
     return '正常';
@@ -79,7 +95,7 @@ const respawnStateText = computed(() => {
 
 const penaltyType = computed(() => {
     if (useDemo.value) return '无';
-    const code = robot.PenaltyInfoData?.penalty_type;
+    const code = pickNumber(penalty.value, 'penaltyType', 'penalty_type', 0);
     if (!code) return '无';
     return `类型 ${code}`;
 });

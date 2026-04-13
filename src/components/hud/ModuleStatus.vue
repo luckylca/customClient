@@ -22,18 +22,22 @@ const demoMode = inject('hudDemoMode', computed(() => false));
 const demoTick = useHudDemoTicker();
 
 const modules = computed(() => {
-    const data = robot.RobotModuleStatusData;
+    const data = (robot.RobotModuleStatusData || {}) as Record<string, unknown>;
+    const pickNumber = (key: string, fallback = 0): number => {
+        const value = data[key];
+        return typeof value === 'number' ? value : fallback;
+    };
     const demoPulse = Math.floor((demoTick.value / 4000) % 3);
     return [
-        { key: 'main_controller', label: '主控', status: demoMode.value ? 1 : data?.main_controller ?? 0 },
-        { key: 'video_transmission', label: '图传', status: demoMode.value ? 1 : data?.video_transmission ?? 0 },
-        { key: 'power_manager', label: '电源', status: demoMode.value ? 1 : data?.power_manager ?? 0 },
-        { key: 'rfid', label: 'RFID', status: demoMode.value ? 1 : data?.rfid ?? 0 },
-        { key: 'uwb', label: 'UWB', status: demoMode.value ? 1 : data?.uwb ?? 0 },
-        { key: 'armor', label: '装甲', status: demoMode.value ? 1 : data?.armor ?? 0 },
-        { key: 'small_shooter', label: '17mm', status: demoMode.value ? 1 : data?.small_shooter ?? 0 },
-        { key: 'big_shooter', label: '42mm', status: demoMode.value ? 1 : data?.big_shooter ?? 0 },
-        { key: 'capacitor', label: '电容', status: demoMode.value ? (demoPulse === 2 ? 2 : 1) : data?.capacitor ?? 0 },
+        { key: 'mainController', label: '主控', status: demoMode.value ? 1 : pickNumber('mainController', 0) },
+        { key: 'videoTransmission', label: '图传', status: demoMode.value ? 1 : pickNumber('videoTransmission', 0) },
+        { key: 'powerManager', label: '电源', status: demoMode.value ? 1 : pickNumber('powerManager', 0) },
+        { key: 'rfid', label: 'RFID', status: demoMode.value ? 1 : pickNumber('rfid', 0) },
+        { key: 'uwb', label: 'UWB', status: demoMode.value ? 1 : pickNumber('uwb', 0) },
+        { key: 'armor', label: '装甲', status: demoMode.value ? 1 : pickNumber('armor', 0) },
+        { key: 'smallShooter', label: '17mm', status: demoMode.value ? 1 : pickNumber('smallShooter', 0) },
+        { key: 'bigShooter', label: '42mm', status: demoMode.value ? 1 : pickNumber('bigShooter', 0) },
+        { key: 'capacitor', label: '电容', status: demoMode.value ? (demoPulse === 2 ? 2 : 1) : pickNumber('capacitor', 0) },
     ];
 });
 

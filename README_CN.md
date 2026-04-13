@@ -45,7 +45,7 @@ npm run build
    - 端口: `3333`
    - 协议: MQTT over TCP
    - 数据格式: Protobuf v3 序列化二进制流
-   - Topic: 对应消息类型名称 (如 `RemoteControl`, `GameStatus`)
+    - Topic: 对应消息类型名称 (如 `KeyboardMouseControl`, `GameStatus`)
 
 2. **UDP (图传)**:
    - 监听端口: `3334`
@@ -107,7 +107,7 @@ npm run build
 ### 高频指令 (> 5Hz)
 | 指令名称 | 频率 | 说明 |
 | :--- | :--- | :--- |
-| **RemoteControl** | **75Hz** | 传输鼠标键盘输入和自定义数据 |
+| **KeyboardMouseControl** | **75Hz** | 传输鼠标键盘输入和自定义数据 |
 | **CustomByteBlock** | **50Hz** | 机器人自定义上传数据流 |
 | **RobotDynamicStatus** | **10Hz** | 机器人实时数据 |
 
@@ -144,10 +144,10 @@ import { onMounted, onUnmounted } from 'vue';
 const INTERVAL_75HZ = 1000 / 75; // ~13.33ms
 const INTERVAL_1HZ = 1000;
 
-let remoteControlTimer: NodeJS.Timer | null = null;
+let keyboardMouseControlTimer: NodeJS.Timer | null = null;
 let statusTimer: NodeJS.Timer | null = null;
 
-const sendRemoteControl = () => {
+const sendKeyboardMouseControl = () => {
     // 1. 获取当前输入状态 (鼠标/键盘)
     const payload = {
         mouse_x: currentMouseX,
@@ -157,7 +157,7 @@ const sendRemoteControl = () => {
     
     // 2. 发送给主进程 (通过 IPC)
     window.electron.ipcRenderer.send('mqtt-publish', {
-        topic: 'RemoteControl',
+        topic: 'KeyboardMouseControl',
         data: payload
     });
 };
@@ -172,13 +172,13 @@ const sendHeartbeat = () => {
 
 onMounted(() => {
     // 启动定时器
-    remoteControlTimer = setInterval(sendRemoteControl, INTERVAL_75HZ);
+    keyboardMouseControlTimer = setInterval(sendKeyboardMouseControl, INTERVAL_75HZ);
     statusTimer = setInterval(sendHeartbeat, INTERVAL_1HZ);
 });
 
 onUnmounted(() => {
     // 清除定时器
-    if (remoteControlTimer) clearInterval(remoteControlTimer);
+    if (keyboardMouseControlTimer) clearInterval(keyboardMouseControlTimer);
     if (statusTimer) clearInterval(statusTimer);
 });
 ```

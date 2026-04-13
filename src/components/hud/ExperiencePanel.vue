@@ -36,15 +36,27 @@ const demoTick = useHudDemoTicker();
 const hasData = computed(() => !!robot.RobotDynamicStatusData);
 const useDemo = computed(() => demoMode.value || !hasData.value);
 
+const dynamic = computed(() => (robot.RobotDynamicStatusData || {}) as Record<string, unknown>);
+
+const pickNumber = (key: string, fallback = 0): number => {
+    const value = dynamic.value[key];
+    return typeof value === 'number' ? value : fallback;
+};
+
+const pickBoolean = (key: string, fallback = false): boolean => {
+    const value = dynamic.value[key];
+    return typeof value === 'boolean' ? value : fallback;
+};
+
 const currentExp = computed(() =>
     useDemo.value
         ? Math.floor((demoTick.value / 100) % 500)
-        : robot.RobotDynamicStatusData?.current_experience ?? 0
+        : pickNumber('currentExperience', 0)
 );
 const expToUpgrade = computed(() => 
     useDemo.value
         ? 500 - currentExp.value
-        : robot.RobotDynamicStatusData?.experience_for_upgrade ?? 100
+        : pickNumber('experienceForUpgrade', 100)
 );
 
 const maxExp = computed(() => currentExp.value + expToUpgrade.value);
@@ -57,13 +69,13 @@ const level = computed(() => robot.RobotStaticStatusData?.level ?? 1);
 
 const outOfCombat = computed(() => {
     if (useDemo.value) return '否';
-    const active = robot.RobotDynamicStatusData?.is_out_of_combat;
-    const left = robot.RobotDynamicStatusData?.out_of_combat_countdown ?? 0;
+    const active = pickBoolean('isOutOfCombat', false);
+    const left = pickNumber('outOfCombatCountdown', 0);
     return active ? `${left}s` : '否';
 });
 
-const canRemoteHeal = computed(() => (robot.RobotDynamicStatusData?.can_remote_heal ? '是' : '否'));
-const canRemoteAmmo = computed(() => (robot.RobotDynamicStatusData?.can_remote_ammo ? '是' : '否'));
+const canRemoteHeal = computed(() => (pickBoolean('canRemoteHeal', false) ? '是' : '否'));
+const canRemoteAmmo = computed(() => (pickBoolean('canRemoteAmmo', false) ? '是' : '否'));
 </script>
 
 <style scoped lang="sass">

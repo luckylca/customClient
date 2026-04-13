@@ -48,9 +48,9 @@ const buffs = computed(() => {
         ];
     }
     return (robot.BuffData ?? []).map((buff, index) => ({
-        id: `${buff.robot_id}-${index}`,
-        label: buffLabel(buff.buff_type ?? 0),
-        left: buff.buff_left_time ?? 0,
+        id: `${buff.robotId ?? 'unknown'}-${index}`,
+        label: buffLabel(buff.buffType ?? 0),
+        left: buff.buffLeftTime ?? 0,
     }));
 });
 </script>

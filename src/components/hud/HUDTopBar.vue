@@ -19,8 +19,8 @@
                 <span class="value blue">{{ blueScore }}</span>
             </div>
         </div>
-        <div class="status-pill" :class="{ paused: globalData.GameStatusData?.is_paused }">
-            {{ globalData.GameStatusData?.is_paused ? '暂停中' : '运行中' }}
+        <div class="status-pill" :class="{ paused: isPaused }">
+            {{ isPaused ? '暂停中' : '运行中' }}
         </div>
         <div class="robot-pill">
             {{ robot.type || '步兵' }} / {{ robot.id || '--' }}
@@ -39,12 +39,23 @@ const { robot } = useRobotStore();
 const demoMode = inject('hudDemoMode', computed(() => false));
 const demoTick = useHudDemoTicker();
 
-const useDemo = computed(() => demoMode.value || !globalData.GameStatusData?.stage_countdown_sec);
+const gameStatus = computed(() => (globalData.GameStatusData || {}) as Record<string, unknown>);
+const pickNumber = (key: string, fallback = 0): number => {
+    const value = gameStatus.value[key];
+    return typeof value === 'number' ? value : fallback;
+};
+const pickBoolean = (key: string, fallback = false): boolean => {
+    const value = gameStatus.value[key];
+    return typeof value === 'boolean' ? value : fallback;
+};
+
+const useDemo = computed(() => demoMode.value || !pickNumber('stageCountdownSec', 0));
+const isPaused = computed(() => pickBoolean('isPaused', false));
 
 const stageLabel = computed(() => {
     const stage = useDemo.value
         ? 4
-        : globalData.GameStatusData?.current_stage ?? 0;
+        : pickNumber('currentStage', 0);
     switch (stage) {
         case 1:
             return '准备阶段';
@@ -64,7 +75,7 @@ const stageLabel = computed(() => {
 const countdown = computed(() => {
     const seconds = useDemo.value
         ? 120 - Math.floor((demoTick.value / 1000) % 120)
-        : globalData.GameStatusData?.stage_countdown_sec ?? 0;
+        : pickNumber('stageCountdownSec', 0);
     const min = Math.floor(seconds / 60)
         .toString()
         .padStart(2, '0');
@@ -80,13 +91,13 @@ const teamClass = computed(() => (robot.color === 'red' ? 'team-red' : robot.col
 const redScore = computed(() =>
     useDemo.value
         ? Math.floor(20 + 10 * Math.sin(demoTick.value / 5000))
-        : globalData.GameStatusData?.red_score ?? 0
+    : pickNumber('redScore', 0)
 );
 
 const blueScore = computed(() =>
     useDemo.value
         ? Math.floor(18 + 12 * Math.cos(demoTick.value / 5200))
-        : globalData.GameStatusData?.blue_score ?? 0
+    : pickNumber('blueScore', 0)
 );
 </script>
 

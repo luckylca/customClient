@@ -43,26 +43,34 @@ const demoTick = useHudDemoTicker();
 const hasData = computed(() => !!robot.RobotDynamicStatusData);
 const useDemo = computed(() => demoMode.value || !hasData.value);
 
+const dynamic = computed(() => (robot.RobotDynamicStatusData || {}) as Record<string, unknown>);
+const statics = computed(() => (robot.RobotStaticStatusData || {}) as Record<string, unknown>);
+
+const pickNumber = (obj: Record<string, unknown>, camel: string, snake: string, fallback = 0): number => {
+    const value = obj[camel] ?? obj[snake];
+    return typeof value === 'number' ? value : fallback;
+};
+
 const remainingAmmo = computed(() =>
     useDemo.value
         ? Math.max(0, Math.floor(420 + 80 * Math.sin(demoTick.value / 3800)))
-        : robot.RobotDynamicStatusData?.remaining_ammo ?? 0
+        : pickNumber(dynamic.value, 'remainingAmmo', 'remaining_ammo', 0)
 );
 const totalFired = computed(() =>
     useDemo.value
         ? Math.max(0, Math.floor(1200 + 200 * Math.cos(demoTick.value / 5200)))
-        : robot.RobotDynamicStatusData?.total_projectiles_fired ?? 0
+        : pickNumber(dynamic.value, 'totalProjectilesFired', 'total_projectiles_fired', 0)
 );
 const currentHeat = computed(() =>
     useDemo.value
         ? Math.max(0, Math.floor(60 + 50 * Math.sin(demoTick.value / 2600)))
-        : robot.RobotDynamicStatusData?.current_heat ?? 0
+        : pickNumber(dynamic.value, 'currentHeat', 'current_heat', 0)
 );
-const maxHeat = computed(() => robot.RobotStaticStatusData?.max_heat ?? 160);
+const maxHeat = computed(() => pickNumber(statics.value, 'maxHeat', 'max_heat', 160));
 const fireRate = computed(() =>
     useDemo.value
         ? Math.max(0, 8 + 4 * Math.abs(Math.sin(demoTick.value / 2000)))
-        : robot.RobotDynamicStatusData?.last_projectile_fire_rate ?? 0
+        : pickNumber(dynamic.value, 'lastProjectileFireRate', 'last_projectile_fire_rate', 0)
 );
 
 const ammoPercent = computed(() => {

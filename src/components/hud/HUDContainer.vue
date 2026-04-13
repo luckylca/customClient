@@ -374,6 +374,7 @@ import ModuleStatus from './ModuleStatus.vue';
 import EventLog from './EventLog.vue';
 import BuffList from './BuffList.vue';
 import ControlHints from './ControlHints.vue';
+import InputTelemetryPanel from './InputTelemetryPanel.vue';
 import DataInspectorPanel from './DataInspectorPanel.vue';
 import TeamAssetPanel from './TeamAssetPanel.vue';
 import { useSettingStore } from '@/stores/setting';
@@ -504,6 +505,8 @@ const widgetComponentById = (id: string) => {
             return markRaw(BuffList);
         case 'control-hints':
             return markRaw(ControlHints);
+        case 'input-telemetry':
+            return markRaw(InputTelemetryPanel);
         case 'robot-data-inspector':
             return markRaw(DataInspectorPanel);
         case 'global-data-inspector':
@@ -676,6 +679,20 @@ const defaultWidgets = (width = 1920, height = 1080): HudWidget[] => {
             z: 3,
         },
         {
+            id: 'input-telemetry',
+            title: '键鼠输入状态',
+            component: markRaw(InputTelemetryPanel),
+            x: Math.max((width - 380) / 2, padding),
+            y: Math.max(height - 340, 120),
+            w: 380,
+            h: 120,
+            minW: 300,
+            minH: 100,
+            visible: true,
+            locked: false,
+            z: 4,
+        },
+        {
             id: 'robot-data-inspector',
             title: '机器人数据总览',
             component: markRaw(DataInspectorPanel),
@@ -773,11 +790,18 @@ const loadLayout = () => {
         locked: item.id === 'top-bar' ? false : item.locked,
         component: widgetComponentById(item.id),
     })) as HudWidget[];
+
+    const missingDefaults = defaultWidgets(containerSize.width, containerSize.height)
+        .filter((item) => !rebuilt.some((saved) => saved.id === item.id));
+    const merged = [...rebuilt, ...missingDefaults];
+    merged.forEach((item, index) => {
+        item.z = index + 1;
+    });
     
     // Safety Guard: Check Validity
-    if (!isLayoutValid(rebuilt)) return false;
+    if (!isLayoutValid(merged)) return false;
 
-    widgets.value = rebuilt;
+    widgets.value = merged;
     return true;
 };
 

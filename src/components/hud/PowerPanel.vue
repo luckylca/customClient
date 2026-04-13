@@ -36,12 +36,20 @@ const demoTick = useHudDemoTicker();
 const hasData = computed(() => !!robot.RobotDynamicStatusData);
 const useDemo = computed(() => demoMode.value || !hasData.value);
 
+const dynamic = computed(() => (robot.RobotDynamicStatusData || {}) as Record<string, unknown>);
+const statics = computed(() => (robot.RobotStaticStatusData || {}) as Record<string, unknown>);
+
+const pickNumber = (obj: Record<string, unknown>, camel: string, snake: string, fallback = 0): number => {
+    const value = obj[camel] ?? obj[snake];
+    return typeof value === 'number' ? value : fallback;
+};
+
 const currentPower = computed(() =>
     useDemo.value
         ? Math.max(0, Math.floor(80 + 15 * Math.sin(demoTick.value / 3500)))
-        : robot.RobotDynamicStatusData?.current_chassis_energy ?? 0
+    : pickNumber(dynamic.value, 'currentChassisEnergy', 'current_chassis_energy', 0)
 );
-const maxPower = computed(() => robot.RobotStaticStatusData?.max_chassis_energy ?? 100);
+const maxPower = computed(() => pickNumber(statics.value, 'maxChassisEnergy', 'max_chassis_energy', 100));
 
 const powerPercent = computed(() =>
     maxPower.value ? Math.min(100, (currentPower.value / maxPower.value) * 100) : 0
@@ -50,18 +58,18 @@ const powerPercent = computed(() =>
 const currentBuffer = computed(() =>
     useDemo.value
         ? Math.floor(40 + 12 * Math.abs(Math.sin(demoTick.value / 3000)))
-        : robot.RobotDynamicStatusData?.current_buffer_energy ?? 0
+    : pickNumber(dynamic.value, 'currentBufferEnergy', 'current_buffer_energy', 0)
 );
 
 const currentHeat = computed(() =>
     useDemo.value
         ? Math.floor(60 + 20 * Math.abs(Math.cos(demoTick.value / 2500)))
-        : robot.RobotDynamicStatusData?.current_heat ?? 0
+    : pickNumber(dynamic.value, 'currentHeat', 'current_heat', 0)
 );
 
-const maxHeat = computed(() => robot.RobotStaticStatusData?.max_heat ?? 0);
-const heatCooldownRate = computed(() => robot.RobotStaticStatusData?.heat_cooldown_rate ?? 0);
-const maxPowerSystem = computed(() => robot.RobotStaticStatusData?.max_power ?? 0);
+const maxHeat = computed(() => pickNumber(statics.value, 'maxHeat', 'max_heat', 0));
+const heatCooldownRate = computed(() => pickNumber(statics.value, 'heatCooldownRate', 'heat_cooldown_rate', 0));
+const maxPowerSystem = computed(() => pickNumber(statics.value, 'maxPower', 'max_power', 0));
 </script>
 
 <style scoped lang="sass">

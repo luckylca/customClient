@@ -125,7 +125,10 @@ function finishSet() {
             // alert(`您选择了${selectedItem.value}机甲`)
             robotStore.initRobot(selectedColor.value, selectedItem.value)
             ipcRenderer.send('app-toggle-fullscreen')
-            ipcRenderer.send('start-mqtt-service')
+            ipcRenderer.send('start-mqtt-service', {
+                clientId: robotStore.robot.id,
+                robotId: robotStore.robot.id,
+            })
             switch(selectedItem.value) {
                 case '步兵1':
                     router.push('/infantry1')

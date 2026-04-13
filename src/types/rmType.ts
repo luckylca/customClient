@@ -71,7 +71,7 @@ export interface GlobalSpecialMechanism {
 // 2.2.7 Event - 用途：全局事件通知
 // 事件ID涵盖击杀(1)、前哨站摧毁(2)、能量机关激活(3,4)、狙击伤害(5,6)、呼叫支援(7,8)、飞镖命中(9)等
 export interface Event {
-    event_id?: number; // 事件编号
+    eventId?: number; // 事件编号
     param?: string; // 事件参数(含义随 event_id变化)
 }
 
@@ -162,11 +162,11 @@ export interface RobotPosition {
 // 2.2.14 Buff - 用途：Buff效果信息
 // buff类型枚举：1:攻击, 2:防御/易伤, 3:热量冷却, 4:底盘功率, 5:回血, 6:可兑换发弹量, 7:地形跨越
 export interface Buff {
-    robot_id?: number; // 机器人 ID
-    buff_type?: number; // Buff 类型
-    buff_level?: number; // Buff增益值(百分比或直接值)
-    buff_max_time?: number; // Buff 最大剩余时间
-    buff_left_time?: number; // Buff 剩余时间
+    robotId?: number; // 机器人 ID
+    buffType?: number; // Buff 类型
+    buffLevel?: number; // Buff增益值(百分比或直接值)
+    buffMaxTime?: number; // Buff 最大剩余时间
+    buffLeftTime?: number; // Buff 剩余时间
 }
 
 // 2.2.15 PenaltyInfo - 用途：判罚信息同步

@@ -54,7 +54,7 @@ watch(
             log.value.push({
                 id: `${Date.now()}-${Math.random()}`,
                 time: formatTime(new Date()),
-                text: `事件 ${item.event_id} - ${item.param ?? '无参数'}`,
+                text: `事件 ${item.eventId} - ${item.param ?? '无参数'}`,
             });
         });
         if (log.value.length > 50) {

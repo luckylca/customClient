@@ -28,12 +28,20 @@ const demoTick = useHudDemoTicker();
 const hasData = computed(() => !!robot.RobotDynamicStatusData);
 const useDemo = computed(() => demoMode.value || !hasData.value);
 
+const dynamic = computed(() => (robot.RobotDynamicStatusData || {}) as Record<string, unknown>);
+const statics = computed(() => (robot.RobotStaticStatusData || {}) as Record<string, unknown>);
+
+const pickNumber = (obj: Record<string, unknown>, camel: string, snake: string, fallback = 0): number => {
+    const value = obj[camel] ?? obj[snake];
+    return typeof value === 'number' ? value : fallback;
+};
+
 const currentBuffer = computed(() =>
     useDemo.value
         ? Math.max(0, Math.floor(40 + 12 * Math.cos(demoTick.value / 4200)))
-        : robot.RobotDynamicStatusData?.current_buffer_energy ?? 0
+    : pickNumber(dynamic.value, 'currentBufferEnergy', 'current_buffer_energy', 0)
 );
-const maxBuffer = computed(() => robot.RobotStaticStatusData?.max_buffer_energy ?? 60);
+const maxBuffer = computed(() => pickNumber(statics.value, 'maxBufferEnergy', 'max_buffer_energy', 60));
 
 const bufferPercent = computed(() =>
     maxBuffer.value ? Math.min(100, (currentBuffer.value / maxBuffer.value) * 100) : 0
