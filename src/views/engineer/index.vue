@@ -5,7 +5,7 @@
     <v-app>
         <v-main class="fill-height hud-main">
             <v-theme-provider theme="dark">
-                <div class="container">
+                <div ref="lockTarget" class="container" @mousedown="handleBattleViewMouseDown">
                     <imageTransmit class="video-layer" />
                     <HUDContainer :minimal="true" />
                 </div>
@@ -16,26 +16,12 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue';
 import escMenu from '@/components/escMenu.vue';
 import imageTransmit from '@/components/imageTransmission.vue';
 import HUDContainer from '@/components/hud/HUDContainer.vue';
-const overlay = ref(false);
+import { useCombatOverlay } from '@/composables/useCombatOverlay';
 
-const handleGlobalEsc = (event: KeyboardEvent) => {
-    if (event.key === 'Escape' || event.key === 'Esc') {
-        console.log('全局监听：用户按下了 Esc');
-        overlay.value = !overlay.value;
-    }
-};
-
-onMounted(() => {
-    window.addEventListener('keydown', handleGlobalEsc);
-});
-
-onUnmounted(() => {
-    window.removeEventListener('keydown', handleGlobalEsc);
-});
+const { overlay, lockTarget, handleBattleViewMouseDown } = useCombatOverlay();
 </script>
 
 <style scoped lang="sass">

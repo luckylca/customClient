@@ -63,7 +63,19 @@ const robotEntries = computed<TopicEntry[]>(() => [
     { key: 'RobotPathPlanInfo', label: '轨迹规划', value: robot.RobotPathPlanInfoData },
     { key: 'MapClickInfoNotify', label: '地图标记', value: robot.MapClickInfoNotifyData },
     { key: 'RadarInfoToClient', label: '雷达信息', value: robot.RadarInfoToClientData },
-    { key: 'CustomByteBlock', label: '自定义字节流', value: robot.CustomByteBlockData },
+    {
+        key: 'CustomByteBlock',
+        label: '自定义字节流',
+        value:
+            robot.CustomByteBlockUpdateCount > 0
+                ? {
+                      updates: robot.CustomByteBlockUpdateCount,
+                      length: robot.CustomByteBlockRawLength,
+                      preview: robot.CustomByteBlockPreviewHex,
+                      updatedAt: robot.CustomByteBlockLastUpdatedAt,
+                  }
+                : null,
+    },
     { key: 'AssemblyCommand', label: '装配指令', value: robot.AssemblyCommandData },
     { key: 'TechCoreMotionStateSync', label: '科技核心', value: robot.TechCoreMotionStateSyncData },
     { key: 'PerformanceSelection', label: '性能体系', value: robot.PerformanceSelectionData },

@@ -21,6 +21,7 @@ export class InputHandler {
     private intervalId: ReturnType<typeof setInterval> | null = null;
     private readonly FREQUENCY_HZ = 75;
     private readonly INTERVAL_MS = 1000 / this.FREQUENCY_HZ;
+    private overlayActive: boolean = false;
 
     constructor() {
         try {
@@ -33,8 +34,20 @@ export class InputHandler {
         this.startSending();
     }
 
+    private resetControlState() {
+        this.mouseX = 0;
+        this.mouseY = 0;
+        this.mouseZ = 0;
+        this.leftButtonDown = false;
+        this.rightButtonDown = false;
+        this.midButtonDown = false;
+        this.keysPressed.clear();
+        this.updateKeyboardValue();
+    }
+
     private initListeners() {
         const onMouseMove = (e: MouseEvent) => {
+            if (this.overlayActive) return;
             // Normalize or map coordinates as needed. 
             // The protocol asks for "mouse moving speed" or similar, 
             // but often in these comps it might be delta or absolute position suitable for control.
@@ -48,6 +61,7 @@ export class InputHandler {
         document.addEventListener('mousemove', onMouseMove);
 
         const onMouseDown = (e: MouseEvent) => {
+            if (this.overlayActive) return;
             if (e.button === 0) this.leftButtonDown = true;
             if (e.button === 2) this.rightButtonDown = true;
             if (e.button === 1) this.midButtonDown = true;
@@ -56,6 +70,7 @@ export class InputHandler {
         document.addEventListener('mousedown', onMouseDown);
 
         const onMouseUp = (e: MouseEvent) => {
+            if (this.overlayActive) return;
             if (e.button === 0) this.leftButtonDown = false;
             if (e.button === 2) this.rightButtonDown = false;
             if (e.button === 1) this.midButtonDown = false;
@@ -66,10 +81,12 @@ export class InputHandler {
         document.addEventListener('contextmenu', (e) => e.preventDefault());
 
         window.addEventListener('wheel', (e) => {
+            if (this.overlayActive) return;
             this.mouseZ = e.deltaY;
         });
 
         const onKeyDown = (e: KeyboardEvent) => {
+            if (this.overlayActive) return;
             if (this.settingStore && !e.repeat) {
                 const binding = this.settingStore.keyBindings.find(b => b.key === e.code);
                 if (binding) {
@@ -83,6 +100,7 @@ export class InputHandler {
         document.addEventListener('keydown', onKeyDown);
 
         const onKeyUp = (e: KeyboardEvent) => {
+            if (this.overlayActive) return;
             this.keysPressed.delete(e.code);
             this.updateKeyboardValue();
         };
@@ -90,11 +108,15 @@ export class InputHandler {
         document.addEventListener('keyup', onKeyUp);
 
         window.addEventListener('blur', () => {
-            this.keysPressed.clear();
-            this.updateKeyboardValue();
-            this.leftButtonDown = false;
-            this.rightButtonDown = false;
-            this.midButtonDown = false;
+            this.resetControlState();
+        });
+
+        window.addEventListener('combat-overlay-active', (event: Event) => {
+            const customEvent = event as CustomEvent<{ active?: boolean }>;
+            this.overlayActive = !!customEvent.detail?.active;
+            if (this.overlayActive) {
+                this.resetControlState();
+            }
         });
 
         // Reset speed each frame/tick? 

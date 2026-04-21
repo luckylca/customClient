@@ -30,9 +30,15 @@ app.whenReady().then(() => {
     // Initialize MQTT Service
 
     const mqttService = new MqttService((topic, data) => {
-        if (win && !win.isDestroyed()) {
-            win.webContents.send('mqtt-message', { topic, data });
+        if (!win || win.isDestroyed()) return;
+
+        if (topic === 'CustomByteBlock') {
+            const streamData = (data as { data?: Uint8Array })?.data ?? data;
+            win.webContents.send('custom-byte-block-stream', streamData);
+            return;
         }
+
+        win.webContents.send('mqtt-message', { topic, data });
     });
 
     // Store mqttService reference if needed for IPC later
@@ -49,7 +55,7 @@ app.whenReady().then(() => {
         console.log('[Main] 加载本地文件: index.html');
         win.loadFile('index.html')
     }
-    win.webContents.openDevTools()
+    // win.webContents.openDevTools()
     win.on('closed', () => {
         videoHandler.close();
         mqttService.disconnect();

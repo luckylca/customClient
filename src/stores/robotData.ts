@@ -1,4 +1,4 @@
-import { ref, computed } from 'vue'
+import { ref } from 'vue'
 import { defineStore } from 'pinia'
 import type { RobotInjuryStat,RobotRespawnStatus,RobotStaticStatus,RobotDynamicStatus,RobotModuleStatus,RobotPosition,Buff,PenaltyInfo,RobotPathPlanInfo,MapClickInfoNotify,RadarInfoToClient,CustomByteBlock,AssemblyCommand,TechCoreMotionStateSync,PerformanceSelection,HeroDeployMode,RuneStatus,SentinelStatusSync,DartInfo,GuardCtrl,AirSupport } from '../types/rmType'
 
@@ -56,7 +56,12 @@ const toHexLines = (bytes: Uint8Array, bytesPerLine = 16, maxLines = 3): string 
 }
 
 const CUSTOM_BYTE_BLOCK_LOG_INTERVAL_MS = 500
+const CUSTOM_BYTE_BLOCK_STORE_FLUSH_INTERVAL_MS = 200
 let lastCustomByteBlockLogAt = 0
+let customByteBlockPendingUpdateCount = 0
+let customByteBlockPendingBytes: Uint8Array | null = null
+let customByteBlockFlushTimer: ReturnType<typeof setTimeout> | null = null
+let lastCustomByteBlockStoreFlushAt = 0
 
 interface RobotData {
     color: string
@@ -99,6 +104,53 @@ export const useRobotStore = defineStore('robot', () => {
         CustomByteBlockPreviewHex: '-',
         CustomByteBlockLastUpdatedAt: '-',
     })
+
+    const flushCustomByteBlockStats = (force = false) => {
+        if (customByteBlockPendingUpdateCount <= 0) return
+
+        const now = Date.now()
+        if (!force && now - lastCustomByteBlockStoreFlushAt < CUSTOM_BYTE_BLOCK_STORE_FLUSH_INTERVAL_MS) {
+            return
+        }
+
+        robot.value.CustomByteBlockUpdateCount += customByteBlockPendingUpdateCount
+        robot.value.CustomByteBlockRawLength = customByteBlockPendingBytes?.length || 0
+        robot.value.CustomByteBlockPreviewHex = customByteBlockPendingBytes ? toHexPreview(customByteBlockPendingBytes) : '-'
+        robot.value.CustomByteBlockLastUpdatedAt = new Date(now).toLocaleTimeString()
+
+        if (now - lastCustomByteBlockLogAt >= CUSTOM_BYTE_BLOCK_LOG_INTERVAL_MS) {
+            lastCustomByteBlockLogAt = now
+            console.log(
+                `[RobotStore] CustomByteBlock length=${robot.value.CustomByteBlockRawLength} update=${robot.value.CustomByteBlockUpdateCount}\n${customByteBlockPendingBytes ? toHexLines(customByteBlockPendingBytes, 16, 4) : '-'}`
+            )
+        }
+
+        customByteBlockPendingUpdateCount = 0
+        customByteBlockPendingBytes = null
+        lastCustomByteBlockStoreFlushAt = now
+    }
+
+    const scheduleCustomByteBlockFlush = () => {
+        if (customByteBlockFlushTimer) return
+        customByteBlockFlushTimer = setTimeout(() => {
+            customByteBlockFlushTimer = null
+            flushCustomByteBlockStats(true)
+        }, CUSTOM_BYTE_BLOCK_STORE_FLUSH_INTERVAL_MS)
+    }
+
+    const updateCustomByteBlockStats = (rawData: unknown) => {
+        const bytes = decodeProtoBytes(rawData)
+        if (!bytes) return
+
+        customByteBlockPendingUpdateCount += 1
+        customByteBlockPendingBytes = bytes
+        flushCustomByteBlockStats(false)
+
+        if (customByteBlockPendingUpdateCount > 0) {
+            scheduleCustomByteBlockFlush()
+        }
+    }
+
     const normalizeRobotPayload = (topic: string, data: unknown): unknown => {
         if (!data || typeof data !== 'object' || Array.isArray(data)) return data
         const src = data as Record<string, unknown>
@@ -269,22 +321,7 @@ export const useRobotStore = defineStore('robot', () => {
                 robot.value.RadarInfoToClientData = normalized as RadarInfoToClient
                 break
             case 'CustomByteBlock':
-                robot.value.CustomByteBlockData = normalized as CustomByteBlock
-                {
-                    const bytes = decodeProtoBytes((normalized as CustomByteBlock)?.data)
-                    robot.value.CustomByteBlockUpdateCount += 1
-                    robot.value.CustomByteBlockRawLength = bytes?.length || 0
-                    robot.value.CustomByteBlockPreviewHex = bytes ? toHexPreview(bytes) : '-'
-                    robot.value.CustomByteBlockLastUpdatedAt = new Date().toLocaleTimeString()
-
-                    const now = Date.now()
-                    if (now - lastCustomByteBlockLogAt >= CUSTOM_BYTE_BLOCK_LOG_INTERVAL_MS) {
-                        lastCustomByteBlockLogAt = now
-                        console.log(
-                            `[RobotStore] CustomByteBlock length=${robot.value.CustomByteBlockRawLength} update=${robot.value.CustomByteBlockUpdateCount}\n${bytes ? toHexLines(bytes, 16, 4) : '-'}`
-                        )
-                    }
-                }
+                updateCustomByteBlockStats((normalized as CustomByteBlock)?.data)
                 break
             case 'AssemblyCommand':
                 robot.value.AssemblyCommandData = normalized as AssemblyCommand
@@ -315,5 +352,5 @@ export const useRobotStore = defineStore('robot', () => {
                 break
         }
     }
-    return { robot, initRobot, setRobotMessage }
+    return { robot, initRobot, setRobotMessage, updateCustomByteBlockStats }
 })

@@ -4,6 +4,7 @@ import * as rm from '../proto/rm_pb';
 export class MqttService {
     private client: mqtt.MqttClient | null = null;
     private readonly host: string = '192.168.12.1';
+    // private readonly host: string = '127.0.0.1';
     private readonly port: number = 3333;
     private readonly localAddress: string = process.env.MQTT_LOCAL_ADDRESS || '192.168.12.2';
     private readonly username: string | undefined = process.env.MQTT_USERNAME || undefined;
@@ -14,7 +15,7 @@ export class MqttService {
     private shouldReconnect = true;
     private bindLocalAddress = true;
     private readonly debugTopics: string[] = (
-        process.env.MQTT_DEBUG_TOPICS || 'CustomByteBlock,RobotStaticStatus'
+        process.env.MQTT_DEBUG_TOPICS || 'CustomByteBlock'
     )
         .split(',')
         .map((item) => item.trim())
@@ -296,6 +297,23 @@ export class MqttService {
         return bytes.length > maxLen ? `${hex} ...` : hex;
     }
 
+    private toUint8Array(value: unknown): Uint8Array | null {
+        if (!value) return null;
+        if (value instanceof Uint8Array) return value;
+        if (Array.isArray(value)) {
+            const allByte = value.every((item) => typeof item === 'number' && item >= 0 && item <= 255);
+            return allByte ? new Uint8Array(value as number[]) : null;
+        }
+        if (typeof value === 'object' && value !== null) {
+            const maybeBuffer = value as { type?: string; data?: unknown };
+            if (maybeBuffer.type === 'Buffer' && Array.isArray(maybeBuffer.data)) {
+                const allByte = maybeBuffer.data.every((item) => typeof item === 'number' && item >= 0 && item <= 255);
+                return allByte ? new Uint8Array(maybeBuffer.data as number[]) : null;
+            }
+        }
+        return null;
+    }
+
     private logDebugTopic(topic: string, data: unknown): void {
         if (!this.shouldLogDebugTopic(topic)) return;
 
@@ -333,10 +351,21 @@ export class MqttService {
 
             if (messageType) {
                 const message = messageType.decode(payload);
+
+                if (topic === 'CustomByteBlock') {
+                    const bytes = this.toUint8Array((message as any)?.data);
+                    const object = { data: bytes ?? new Uint8Array(0) };
+                    this.logDebugTopic(topic, object);
+                    if (this.onMessageCallback) {
+                        this.onMessageCallback(topic, object);
+                    }
+                    return;
+                }
+
                 const object = messageType.toObject(message, {
                     longs: Number,
                     enums: String,
-                    bytes: String,
+                    bytes: Array,
                 });
                 this.logDebugTopic(topic, object);
                 if (this.onMessageCallback) {
