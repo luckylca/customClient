@@ -281,6 +281,31 @@ export const useRobotStore = defineStore('robot', () => {
         }
         
     }
+
+    const applyLocalAmmoDelta = (delta: number): number => {
+        if (!Number.isFinite(delta) || delta === 0) {
+            const dynamic = robot.value.RobotDynamicStatusData as Record<string, unknown> | undefined
+            const current = dynamic?.remainingAmmo ?? dynamic?.remaining_ammo
+            return typeof current === 'number' ? current : 0
+        }
+
+        const currentDynamic = (robot.value.RobotDynamicStatusData || {}) as Record<string, unknown>
+        const rawCurrent = currentDynamic.remainingAmmo ?? currentDynamic.remaining_ammo
+        const currentAmmo = typeof rawCurrent === 'number' ? rawCurrent : 0
+        const nextAmmo = Math.max(0, currentAmmo + Math.trunc(delta))
+
+        const nextDynamic: Record<string, unknown> = {
+            ...currentDynamic,
+            remainingAmmo: nextAmmo,
+        }
+        if ('remaining_ammo' in currentDynamic) {
+            nextDynamic.remaining_ammo = nextAmmo
+        }
+
+        robot.value.RobotDynamicStatusData = nextDynamic as RobotDynamicStatus
+        return nextAmmo
+    }
+
     const setRobotMessage = (topic: string, data: unknown) => {
         const normalized = normalizeRobotPayload(topic, data)
         switch (topic) {
@@ -352,5 +377,5 @@ export const useRobotStore = defineStore('robot', () => {
                 break
         }
     }
-    return { robot, initRobot, setRobotMessage, updateCustomByteBlockStats }
+    return { robot, initRobot, setRobotMessage, updateCustomByteBlockStats, applyLocalAmmoDelta }
 })

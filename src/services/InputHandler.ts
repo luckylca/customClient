@@ -2,8 +2,6 @@ const { ipcRenderer } = (window as any).require ? (window as any).require('elect
 import { useSettingStore } from '../stores/setting';
 import { useInputTelemetryStore } from '../stores/inputTelemetry';
 
-let activeInputHandler: InputHandler | null = null;
-
 export class InputHandler {
     private mouseX: number = 0;
     private mouseY: number = 0;
@@ -24,74 +22,10 @@ export class InputHandler {
     private readonly FREQUENCY_HZ = 75;
     private readonly INTERVAL_MS = 1000 / this.FREQUENCY_HZ;
     private overlayActive: boolean = false;
-    private listenersAttached: boolean = false;
-
-    private readonly onMouseMove = (e: MouseEvent) => {
-        if (this.overlayActive) return;
-        const sensitivity = this.settingStore?.appSettings.mouseSensitivity ?? 1.0;
-        this.mouseX = e.movementX * sensitivity;
-        this.mouseY = e.movementY * sensitivity;
-    };
-
-    private readonly onMouseDown = (e: MouseEvent) => {
-        if (this.overlayActive) return;
-        if (e.button === 0) this.leftButtonDown = true;
-        if (e.button === 2) this.rightButtonDown = true;
-        if (e.button === 1) this.midButtonDown = true;
-    };
-
-    private readonly onMouseUp = (e: MouseEvent) => {
-        if (this.overlayActive) return;
-        if (e.button === 0) this.leftButtonDown = false;
-        if (e.button === 2) this.rightButtonDown = false;
-        if (e.button === 1) this.midButtonDown = false;
-    };
-
-    private readonly onWheel = (e: WheelEvent) => {
-        if (this.overlayActive) return;
-        this.mouseZ = e.deltaY;
-    };
-
-    private readonly onKeyDown = (e: KeyboardEvent) => {
-        if (this.overlayActive) return;
-        if (this.settingStore && !e.repeat) {
-            const binding = this.settingStore.keyBindings.find(b => b.key === e.code);
-            if (binding) {
-                this.settingStore.triggerScript(binding.scriptId);
-            }
-        }
-        this.keysPressed.add(e.code);
-        this.updateKeyboardValue();
-    };
-
-    private readonly onKeyUp = (e: KeyboardEvent) => {
-        if (this.overlayActive) return;
-        this.keysPressed.delete(e.code);
-        this.updateKeyboardValue();
-    };
-
-    private readonly onBlur = () => {
-        this.resetControlState();
-    };
-
-    private readonly onContextMenu = (e: MouseEvent) => {
-        e.preventDefault();
-    };
-
-    private readonly onOverlayActive = (event: Event) => {
-        const customEvent = event as CustomEvent<{ active?: boolean }>;
-        this.overlayActive = !!customEvent.detail?.active;
-        if (this.overlayActive) {
-            this.resetControlState();
-        }
-    };
+    private removeListenerFns: Array<() => void> = [];
+    private listenersInitialized: boolean = false;
 
     constructor() {
-        if (activeInputHandler && activeInputHandler !== this) {
-            activeInputHandler.destroy();
-        }
-        activeInputHandler = this;
-
         try {
             this.settingStore = useSettingStore();
             this.telemetryStore = useInputTelemetryStore();
@@ -100,6 +34,18 @@ export class InputHandler {
         }
         this.initListeners();
         this.startSending();
+    }
+
+    private addManagedListener(
+        target: Window | Document,
+        type: string,
+        listener: (event: any) => void,
+        options?: AddEventListenerOptions | boolean,
+    ) {
+        target.addEventListener(type, listener as EventListener, options);
+        this.removeListenerFns.push(() => {
+            target.removeEventListener(type, listener as EventListener, options);
+        });
     }
 
     private resetControlState() {
@@ -114,47 +60,86 @@ export class InputHandler {
     }
 
     private initListeners() {
-        if (this.listenersAttached) return;
-        this.listenersAttached = true;
+        if (this.listenersInitialized) return;
+        this.listenersInitialized = true;
 
-        window.addEventListener('mousemove', this.onMouseMove);
-        document.addEventListener('mousemove', this.onMouseMove);
+        const onMouseMove = (e: MouseEvent) => {
+            if (this.overlayActive) return;
+            // Normalize or map coordinates as needed. 
+            // The protocol asks for "mouse moving speed" or similar, 
+            // but often in these comps it might be delta or absolute position suitable for control.
+            // Requirement says: "mouse x axis moving speed".
+            // We correspond movementX/Y to speed for now.
+            const sensitivity = this.settingStore?.appSettings.mouseSensitivity ?? 1.0;
+            this.mouseX = e.movementX * sensitivity;
+            this.mouseY = e.movementY * sensitivity;
+        };
+        this.addManagedListener(window, 'mousemove', onMouseMove);
+        this.addManagedListener(document, 'mousemove', onMouseMove);
 
-        window.addEventListener('mousedown', this.onMouseDown);
-        document.addEventListener('mousedown', this.onMouseDown);
+        const onMouseDown = (e: MouseEvent) => {
+            if (this.overlayActive) return;
+            if (e.button === 0) this.leftButtonDown = true;
+            if (e.button === 2) this.rightButtonDown = true;
+            if (e.button === 1) this.midButtonDown = true;
+        };
+        this.addManagedListener(window, 'mousedown', onMouseDown);
+        this.addManagedListener(document, 'mousedown', onMouseDown);
 
-        window.addEventListener('mouseup', this.onMouseUp);
-        document.addEventListener('mouseup', this.onMouseUp);
+        const onMouseUp = (e: MouseEvent) => {
+            if (this.overlayActive) return;
+            if (e.button === 0) this.leftButtonDown = false;
+            if (e.button === 2) this.rightButtonDown = false;
+            if (e.button === 1) this.midButtonDown = false;
+        };
+        this.addManagedListener(window, 'mouseup', onMouseUp);
+        this.addManagedListener(document, 'mouseup', onMouseUp);
 
-        document.addEventListener('contextmenu', this.onContextMenu);
+        this.addManagedListener(document, 'contextmenu', (e: Event) => {
+            e.preventDefault();
+        });
 
-        window.addEventListener('wheel', this.onWheel);
-        window.addEventListener('keydown', this.onKeyDown);
-        window.addEventListener('keyup', this.onKeyUp);
-        window.addEventListener('blur', this.onBlur);
-        window.addEventListener('combat-overlay-active', this.onOverlayActive);
-    }
+        this.addManagedListener(window, 'wheel', (e: Event) => {
+            if (this.overlayActive) return;
+            this.mouseZ = (e as WheelEvent).deltaY;
+        });
 
-    private removeListeners() {
-        if (!this.listenersAttached) return;
-        this.listenersAttached = false;
+        const onKeyDown = (e: KeyboardEvent) => {
+            if (this.overlayActive) return;
+            const alreadyPressed = this.keysPressed.has(e.code);
+            if (this.settingStore && !e.repeat && !alreadyPressed) {
+                const binding = this.settingStore.keyBindings.find(b => b.key === e.code);
+                if (binding) {
+                    this.settingStore.triggerScript(binding.scriptId);
+                }
+            }
+            this.keysPressed.add(e.code);
+            this.updateKeyboardValue();
+        };
+        this.addManagedListener(window, 'keydown', onKeyDown);
 
-        window.removeEventListener('mousemove', this.onMouseMove);
-        document.removeEventListener('mousemove', this.onMouseMove);
+        const onKeyUp = (e: KeyboardEvent) => {
+            if (this.overlayActive) return;
+            this.keysPressed.delete(e.code);
+            this.updateKeyboardValue();
+        };
+        this.addManagedListener(window, 'keyup', onKeyUp);
 
-        window.removeEventListener('mousedown', this.onMouseDown);
-        document.removeEventListener('mousedown', this.onMouseDown);
+        this.addManagedListener(window, 'blur', () => {
+            this.resetControlState();
+        });
 
-        window.removeEventListener('mouseup', this.onMouseUp);
-        document.removeEventListener('mouseup', this.onMouseUp);
+        this.addManagedListener(window, 'combat-overlay-active', (event: Event) => {
+            const customEvent = event as CustomEvent<{ active?: boolean }>;
+            this.overlayActive = !!customEvent.detail?.active;
+            if (this.overlayActive) {
+                this.resetControlState();
+            }
+        });
 
-        document.removeEventListener('contextmenu', this.onContextMenu);
-
-        window.removeEventListener('wheel', this.onWheel);
-        window.removeEventListener('keydown', this.onKeyDown);
-        window.removeEventListener('keyup', this.onKeyUp);
-        window.removeEventListener('blur', this.onBlur);
-        window.removeEventListener('combat-overlay-active', this.onOverlayActive);
+        // Reset speed each frame/tick? 
+        // If it's speed, it should potentially decay or be reset after read.
+        // For simplicity, we send the value captured since last tick, then reset.
     }
 
     private updateKeyboardValue() {
@@ -217,14 +202,15 @@ export class InputHandler {
     }
 
     public destroy() {
-        this.removeListeners();
         if (this.intervalId) {
             clearInterval(this.intervalId);
             this.intervalId = null;
         }
-        if (activeInputHandler === this) {
-            activeInputHandler = null;
+        for (const remove of this.removeListenerFns) {
+            remove();
         }
+        this.removeListenerFns = [];
+        this.listenersInitialized = false;
         this.telemetryStore?.reset();
     }
 }

@@ -48,6 +48,8 @@ export const useSettingStore = defineStore('setting', () => {
 
     const MAX_SCRIPT_NOTIFICATIONS = 6;
     const SCRIPT_NOTIFICATION_LIFETIME_MS = 2400;
+    const SCRIPT_TRIGGER_DEBOUNCE_MS = 220;
+    const scriptLastTriggeredAt: Record<string, number> = {};
 
     const loadAppSettings = () => {
         if (typeof window === 'undefined') return;
@@ -126,6 +128,13 @@ export const useSettingStore = defineStore('setting', () => {
     };
 
     const triggerScript = (scriptId: string) => {
+        const now = Date.now();
+        const lastAt = scriptLastTriggeredAt[scriptId] || 0;
+        if (now - lastAt < SCRIPT_TRIGGER_DEBOUNCE_MS) {
+            return;
+        }
+        scriptLastTriggeredAt[scriptId] = now;
+
         const dynamic = robotStore.robot.RobotDynamicStatusData as Record<string, unknown> | undefined;
         const ammoRaw = dynamic?.remainingAmmo ?? dynamic?.remaining_ammo;
         const ammoText = typeof ammoRaw === 'number' ? String(ammoRaw) : '未知';
@@ -135,9 +144,12 @@ export const useSettingStore = defineStore('setting', () => {
             // TODO: execute actual logic
         } else if (scriptId === 'auto_buy_43mm_5' || scriptId === 'auto_buy_42mm_5') {
             const sent = AutoBuy42mm5();
-            text = sent
-                ? `自动购买 42mm 5发子弹指令已发送（当前子弹：${ammoText}）`
-                  : `自动购买 42mm 5发子弹发送失败（当前子弹：${ammoText}）`;
+            if (sent) {
+                const nextAmmo = robotStore.applyLocalAmmoDelta(5);
+                text = `自动购买 42mm 5发子弹指令已发送（当前子弹：${nextAmmo}）`;
+            } else {
+                text = `自动购买 42mm 5发子弹发送失败（当前子弹：${ammoText}）`;
+            }
         } else {
             text = `未知脚本: ${scriptId}`;
         }
