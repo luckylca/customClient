@@ -9,7 +9,7 @@
                     color="info"
                     @click="props.onClick"
                     prepend-icon="$prev"
-                    style="position: fixed; bottom: 160px; left: 160px;"
+                    class="wizard-nav-btn wizard-nav-prev"
                     width="100"
                     height="70"
                 >
@@ -21,7 +21,7 @@
                     color="info"
                     @click="handleNext(props)"
                     append-icon="$next"
-                    style="position: fixed; bottom: 160px; right: 160px;"
+                    class="wizard-nav-btn wizard-nav-next"
                     width="100"
                     height="70"
                 >
@@ -57,20 +57,18 @@
                         max-width="600"
                     >
                     </v-combobox>
-                    <Teleport to="body">
-                        <v-btn
-                            v-if="selectedItem"
-                            color="info"
-                            @click="finishSet"
-                            append-icon="mdi-check"
-                            width="100"
-                            height="70"
-                            :loading="loading"
-                            style="position: fixed; bottom: 160px; right: 160px; z-index: 1000;"
-                        >
-                            确认
-                        </v-btn>
-                    </Teleport>
+                    <v-btn
+                        v-if="selectedItem"
+                        color="info"
+                        @click="finishSet"
+                        append-icon="mdi-check"
+                        width="100"
+                        height="70"
+                        :loading="loading"
+                        class="wizard-confirm-btn"
+                    >
+                        确认
+                    </v-btn>
                 </v-card>
             </v-window-item>
         </v-window>
@@ -365,4 +363,21 @@ $shadow-lg: 0 8px 40px rgba(0, 0, 0, 0.15)
             background: $bg-surface-variant !important
             border-color: $border
             transform: scale(1.1)
+
+.wizard-nav-btn
+    position: fixed !important
+    bottom: calc(50% - 300px + 24px) !important
+    z-index: 30 !important
+
+.wizard-nav-prev
+    left: calc(50% - 500px + 24px) !important
+
+.wizard-nav-next
+    right: calc(50% - 500px + 24px) !important
+
+.wizard-confirm-btn
+    position: absolute !important
+    right: 24px
+    bottom: 24px
+    z-index: 30
 </style>
