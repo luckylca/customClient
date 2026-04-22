@@ -154,7 +154,7 @@ const settingStore = useSettingStore();
 
 const availableScripts = [
     { id: 'aim_assist', name: '辅助自瞄' },
-    { id: 'auto_buy', name: '自动买单' }
+    { id: 'auto_buy_43mm_5', name: '42mm 5发' }
 ];
 
 const keyBindings = computed(() => settingStore.keyBindings);

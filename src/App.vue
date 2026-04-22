@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { RouterLink, RouterView } from 'vue-router'
+import { computed } from 'vue';
+import { RouterView } from 'vue-router'
 import { onMounted, onUnmounted } from 'vue';
 import { InputHandler } from './services/InputHandler';
 import { customByteBlockStream } from './services/CustomByteBlockStream';
@@ -11,6 +12,8 @@ let inputHandler: InputHandler | null = null;
 const globalStore = useGlobalStore();
 const robotStore = useRobotStore();
 const settingStore = useSettingStore();
+const MAX_VISIBLE_STACK = 5;
+const scriptCloudItems = computed(() => [...settingStore.scriptNotifications].reverse().slice(0, MAX_VISIBLE_STACK));
 const { ipcRenderer } = (window as any).require ? (window as any).require('electron') : { ipcRenderer: null };
 
 const toByteArray = (input: unknown): Uint8Array | null => {
@@ -75,20 +78,28 @@ onUnmounted(() => {
 <template>
   <v-app>
     <RouterView />
-    
-    <!-- 全局快捷键状态提示 -->
-    <v-snackbar
-      v-model="settingStore.scriptNotification.show"
-      :timeout="2000"
-      color="primary"
-      location="top"
-      rounded="pill"
-      elevation="24"
-    >
-      <div class="d-flex align-center justify-center font-weight-medium">
-        {{ settingStore.scriptNotification.text }}
-      </div>
-    </v-snackbar>
+
+    <div v-if="settingStore.appSettings.showNotifications" class="script-toast-stack">
+      <TransitionGroup name="notify-stack" tag="div">
+        <div
+          v-for="(item, index) in scriptCloudItems"
+          :key="item.id"
+          class="script-toast-item"
+          :style="{
+            '--stack-y': `${index * 12}px`,
+            '--stack-scale': `${Math.max(0.95, 1 - index * 0.012)}`,
+            '--stack-opacity': `${Math.max(0.58, 1 - index * 0.1)}`,
+            '--z': `${2147483000 - index}`
+          }"
+        >
+          <div class="script-toast-bubble">
+            <div class="d-flex align-center justify-center font-weight-medium">
+              {{ item.text }}
+            </div>
+          </div>
+        </div>
+      </TransitionGroup>
+    </div>
   </v-app>
 </template>
 
@@ -135,6 +146,51 @@ nav a:first-of-type {
   border: 0;
 }
 
+.script-toast-stack {
+  position: fixed;
+  left: 50%;
+  top: 20px;
+  z-index: 2147483000;
+  pointer-events: none;
+}
+
+.script-toast-item {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: var(--z);
+  transform: translate(-50%, var(--stack-y)) scale(var(--stack-scale));
+  opacity: var(--stack-opacity);
+  transition: transform 220ms cubic-bezier(0.22, 1, 0.36, 1), opacity 220ms ease;
+  will-change: transform, opacity;
+}
+
+.script-toast-bubble {
+  min-width: 220px;
+  max-width: 560px;
+  padding: 10px 16px;
+  border-radius: 999px;
+  color: rgb(var(--v-theme-on-primary));
+  background: rgb(var(--v-theme-primary));
+  box-shadow: 0 11px 15px -7px rgba(0, 0, 0, 0.2), 0 24px 38px 3px rgba(0, 0, 0, 0.14), 0 9px 46px 8px rgba(0, 0, 0, 0.12);
+  white-space: nowrap;
+}
+
+.notify-stack-enter-active,
+.notify-stack-leave-active {
+  transition: opacity 220ms ease, transform 220ms ease;
+}
+
+.notify-stack-enter-from,
+.notify-stack-leave-to {
+  opacity: 0;
+  transform: translate(-50%, calc(var(--stack-y) - 14px)) scale(calc(var(--stack-scale) + 0.02));
+}
+
+.notify-stack-move {
+  transition: transform 260ms cubic-bezier(0.22, 1, 0.36, 1), opacity 220ms ease;
+}
+
 @media (min-width: 1024px) {
   header {
     display: flex;
@@ -159,6 +215,18 @@ nav a:first-of-type {
 
     padding: 1rem 0;
     margin-top: 1rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .script-toast-stack {
+    top: 14px;
+  }
+
+  .script-toast-bubble {
+    min-width: 180px;
+    max-width: 340px;
+    padding: 8px 12px;
   }
 }
 </style>

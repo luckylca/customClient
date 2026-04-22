@@ -4,6 +4,8 @@ import { VideoHandler } from './services/VideoHandler';
 import { MqttService } from './services/MqttService';
 const CONTROL_TOPIC = process.env.MQTT_CONTROL_TOPIC || 'KeyboardMouseControl';
 const CONTROL_QOS: 0 = 0;
+const COMMON_COMMAND_TOPIC = process.env.MQTT_COMMON_COMMAND_TOPIC || 'CommonCommand';
+const COMMON_COMMAND_QOS: 0 = 0;
 
 app.whenReady().then(() => {
     const win = new BrowserWindow({
@@ -134,4 +136,29 @@ ipcMain.on('send-remote-control', (event, data) => {
             }
         }
     }
+});
+
+ipcMain.on('send-common-command', (_event, payload?: { cmdType?: number; param?: number }) => {
+    const mqttService = (global as any).mqttService as MqttService;
+    if (!mqttService || !canSentMqtt || !mqttService.isConnected()) {
+        console.warn('[Main] skip CommonCommand publish: mqtt not ready');
+        return;
+    }
+
+    const rawCmdType = Number(payload?.cmdType ?? 0);
+    const rawParam = Number(payload?.param ?? 0);
+    if (!Number.isFinite(rawCmdType) || rawCmdType <= 0) {
+        console.warn('[Main] invalid CommonCommand cmdType:', payload?.cmdType);
+        return;
+    }
+
+    const commandData = {
+        cmdType: Math.trunc(rawCmdType),
+        param: Math.max(0, Math.trunc(rawParam)),
+    };
+
+    mqttService.publish(COMMON_COMMAND_TOPIC, commandData, rm.rm.CommonCommand, COMMON_COMMAND_QOS);
+    console.log(
+        `[Main] publish CommonCommand cmdType=${commandData.cmdType} param=${commandData.param} topic=${COMMON_COMMAND_TOPIC}`,
+    );
 });
