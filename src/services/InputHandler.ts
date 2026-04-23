@@ -1,6 +1,8 @@
 const { ipcRenderer } = (window as any).require ? (window as any).require('electron') : { ipcRenderer: null };
 import { useSettingStore } from '../stores/setting';
 import { useInputTelemetryStore } from '../stores/inputTelemetry';
+import { useRobotStore } from '../stores/robotData';
+
 
 export class InputHandler {
     private mouseX: number = 0;
@@ -17,6 +19,7 @@ export class InputHandler {
     private keysPressed = new Set<string>();
     private settingStore: ReturnType<typeof useSettingStore> | null = null;
     private telemetryStore: ReturnType<typeof useInputTelemetryStore> | null = null;
+    private robotStore: ReturnType<typeof useRobotStore> | null = null;
 
     private intervalId: ReturnType<typeof setInterval> | null = null;
     private readonly FREQUENCY_HZ = 75;
@@ -29,8 +32,9 @@ export class InputHandler {
         try {
             this.settingStore = useSettingStore();
             this.telemetryStore = useInputTelemetryStore();
+            this.robotStore = useRobotStore();
         } catch (e) {
-            console.warn("InputHandler could not initialize settingStore");
+            console.warn("InputHandler could not initialize stores");
         }
         this.initListeners();
         this.startSending();
@@ -189,6 +193,13 @@ export class InputHandler {
             // Send to main process
             if (ipcRenderer) {
                 ipcRenderer.send('send-remote-control', data);
+                
+                // Construct CustomControl data
+                // Frame header 0xA3, followed by HeroDeployMode status (1 for deploy, 0 for not)
+                // This struct can be expanded in the future
+                const deployModeStatus = this.robotStore?.robot?.HeroDeployModeData?.status === 1 ? 1 : 0;
+                const customData = new Uint8Array([0xA3, deployModeStatus]);
+                ipcRenderer.send('send-custom-control', customData);
             }
 
             this.telemetryStore?.patch(data);

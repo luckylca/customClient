@@ -306,6 +306,16 @@ export const useRobotStore = defineStore('robot', () => {
         return nextAmmo
     }
 
+    const applyLocalHeroDeployModeStatus = (status: number): number => {
+        const normalizedStatus = status === 1 ? 1 : 0
+        const current = (robot.value.HeroDeployModeData || {}) as Record<string, unknown>
+        robot.value.HeroDeployModeData = {
+            ...current,
+            status: normalizedStatus,
+        } as HeroDeployMode
+        return normalizedStatus
+    }
+
     const setRobotMessage = (topic: string, data: unknown) => {
         const normalized = normalizeRobotPayload(topic, data)
         switch (topic) {
@@ -377,5 +387,5 @@ export const useRobotStore = defineStore('robot', () => {
                 break
         }
     }
-    return { robot, initRobot, setRobotMessage, updateCustomByteBlockStats, applyLocalAmmoDelta }
+    return { robot, initRobot, setRobotMessage, updateCustomByteBlockStats, applyLocalAmmoDelta, applyLocalHeroDeployModeStatus }
 })

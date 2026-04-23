@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref, watch } from 'vue'
-import { AutoBuy42mm5 } from '@/services/AutoTaskServices';
+import { AutoBuy42mm5, ToggleHeroDeployMode, AutoBuy17mm20 } from '@/services/AutoTaskServices';
 import { useRobotStore } from '@/stores/robotData';
 
 export interface AppSettings {
@@ -150,7 +150,26 @@ export const useSettingStore = defineStore('setting', () => {
             } else {
                 text = `自动购买 42mm 5发子弹发送失败（当前子弹：${ammoText}）`;
             }
-        } else {
+        } else if (scriptId === 'Hero_Deploy_Mode_Change') {
+            const heroMode = robotStore.robot.HeroDeployModeData as Record<string, unknown> | undefined;
+            const statusRaw = heroMode?.status;
+            const currentStatus = typeof statusRaw === 'number' ? statusRaw : 0;
+            const { sent, nextMode } = ToggleHeroDeployMode(currentStatus);
+            const nextStatus = sent ? robotStore.applyLocalHeroDeployModeStatus(nextMode) : currentStatus;
+            const modeText = nextStatus === 1 ? '已进入部署模式' : '已退出部署模式';
+            text = sent
+                ? `英雄部署模式切换指令已发送（${modeText}）`
+                : `英雄部署模式切换发送失败（当前模式：${currentStatus === 1 ? '部署中' : '未部署'}）`;
+        } else if (scriptId === 'auto_buy_17mm_20') {
+            const sent = AutoBuy17mm20();
+            if (sent) {
+                const nextAmmo = robotStore.applyLocalAmmoDelta(20);
+                text = `自动购买 17mm 20发子弹指令已发送（当前子弹：${nextAmmo}）`;
+            } else {
+                text = `自动购买 17mm 20发子弹发送失败（当前子弹：${ammoText}）`;
+            }
+        }
+        else {
             text = `未知脚本: ${scriptId}`;
         }
 

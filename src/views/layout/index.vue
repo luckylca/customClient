@@ -3,7 +3,9 @@
 
 <template>
     <div class="layout-container">
-        <v-window show-arrows>
+        <!-- 背景图片，可通过 bgOpacity 调整透明度 -->
+        <div class="background-image" :style="{ backgroundImage: `url(${bgImage})`, opacity: bgOpacity }"></div>
+        <v-window show-arrows style="z-index: 1;">
             <template v-slot:prev="{ props }">
                 <v-btn
                     color="info"
@@ -79,8 +81,10 @@
 import { ref } from 'vue'
 import { useRobotStore } from '@/stores/robotData'
 import { useRouter } from 'vue-router';
+import bgImage from '@/assets/background.png'
 const { ipcRenderer } = window.require('electron');
 
+const bgOpacity = ref(0.6) // 可在此处调整背景图片的透明度 (0.0 - 1.0)
 const items = ref(['步兵1', '步兵2','步兵3','无人机', '英雄', '工程'])
 const router = useRouter();
 const loading = ref(false)
@@ -236,6 +240,18 @@ $shadow-lg: 0 8px 40px rgba(0, 0, 0, 0.15)
         border-radius: 50%
         pointer-events: none
 
+.background-image
+    position: absolute
+    top: 0
+    left: 0
+    width: 100vw
+    height: 100vh
+    background-size: cover
+    background-position: center
+    background-repeat: no-repeat
+    z-index: 0
+    pointer-events: none
+
 // Base Card Container
 .baseCard
     width: 1000px !important
@@ -244,9 +260,11 @@ $shadow-lg: 0 8px 40px rgba(0, 0, 0, 0.15)
     padding: 64px
     justify-content: space-around
     align-items: center
-    background: $bg-surface !important
+    background: rgba(255, 255, 255, 0.5) !important
+    backdrop-filter: blur(10px)
+    -webkit-backdrop-filter: blur(10px)
     border-radius: 32px !important
-    border: 1px solid $border-light
+    border: 1px solid rgba(255, 255, 255, 0.6)
     box-shadow: $shadow-lg
     animation: slideInUp 0.5s ease-out 0.1s both
     position: relative
@@ -254,16 +272,18 @@ $shadow-lg: 0 8px 40px rgba(0, 0, 0, 0.15)
 
 // Team Selection Cards
 :deep(.v-card:not(.baseCard))
-    background: $bg-surface !important
+    background: rgba(255, 255, 255, 0.6) !important
+    backdrop-filter: blur(5px)
+    -webkit-backdrop-filter: blur(5px)
     border-radius: 24px !important
-    border: 2px solid $border-light
+    border: 2px solid rgba(255, 255, 255, 0.5)
     transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1)
     cursor: pointer
     overflow: visible
 
     &:hover
         transform: translateY(-8px)
-        background: $bg-surface !important
+        background: rgba(255, 255, 255, 0.8) !important
         border-color: $accent-light
         box-shadow: $shadow-md
 

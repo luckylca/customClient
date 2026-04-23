@@ -6,6 +6,11 @@ const CONTROL_TOPIC = process.env.MQTT_CONTROL_TOPIC || 'KeyboardMouseControl';
 const CONTROL_QOS: 0 = 0;
 const COMMON_COMMAND_TOPIC = process.env.MQTT_COMMON_COMMAND_TOPIC || 'CommonCommand';
 const COMMON_COMMAND_QOS: 0 = 0;
+const HERO_DEPLOY_MODE_TOPIC = process.env.MQTT_HERO_DEPLOY_MODE_TOPIC || 'HeroDeployModeEventCommand';
+const HERO_DEPLOY_MODE_QOS: 0 = 0;
+const CUSTOM_CONTROL_TOPIC = process.env.MQTT_CUSTOM_CONTROL_TOPIC || 'CustomControl';
+const CUSTOM_CONTROL_QOS: 0 = 0;
+
 
 app.whenReady().then(() => {
     const win = new BrowserWindow({
@@ -161,4 +166,38 @@ ipcMain.on('send-common-command', (_event, payload?: { cmdType?: number; param?:
     console.log(
         `[Main] publish CommonCommand cmdType=${commandData.cmdType} param=${commandData.param} topic=${COMMON_COMMAND_TOPIC}`,
     );
+});
+
+ipcMain.on('send-hero-deploy-mode', (_event, payload?: { mode?: number }) => {
+    const mqttService = (global as any).mqttService as MqttService;
+    if (!mqttService || !canSentMqtt || !mqttService.isConnected()) {
+        console.warn('[Main] skip HeroDeployModeEventCommand publish: mqtt not ready');
+        return;
+    }
+
+    const rawMode = Number(payload?.mode ?? 0);
+    if (!Number.isFinite(rawMode)) {
+        console.warn('[Main] invalid HeroDeployModeEventCommand mode:', payload?.mode);
+        return;
+    }
+
+    const commandData = {
+        mode: rawMode === 1 ? 1 : 0,
+    };
+
+    mqttService.publish(HERO_DEPLOY_MODE_TOPIC, commandData, rm.rm.HeroDeployModeEventCommand, HERO_DEPLOY_MODE_QOS);
+    console.log(
+        `[Main] publish HeroDeployModeEventCommand mode=${commandData.mode} topic=${HERO_DEPLOY_MODE_TOPIC}`,
+    );
+});
+
+ipcMain.on('send-custom-control', (_event, payload: Uint8Array) => {
+    const mqttService = (global as any).mqttService as MqttService;
+    if (!mqttService || !canSentMqtt || !mqttService.isConnected()) {
+        return;
+    }
+    const commandData = {
+        data: payload
+    };
+    mqttService.publish(CUSTOM_CONTROL_TOPIC, commandData, rm.rm.CustomControl, CUSTOM_CONTROL_QOS);
 });

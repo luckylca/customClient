@@ -378,6 +378,7 @@ import InputTelemetryPanel from './InputTelemetryPanel.vue';
 import DataInspectorPanel from './DataInspectorPanel.vue';
 import TeamAssetPanel from './TeamAssetPanel.vue';
 import CustomVideoTransmissionPanel from './CustomVideoTransmissionPanel.vue';
+import AllUnitStatusPanel from './AllUnitStatusPanel.vue';
 import { useSettingStore } from '@/stores/setting';
 import { useVideoStatsStore } from '@/stores/videoStats';
 import {
@@ -516,6 +517,8 @@ const widgetComponentById = (id: string) => {
             return markRaw(TeamAssetPanel);
         case 'custom-video-transmission':
             return markRaw(CustomVideoTransmissionPanel);
+        case 'all-unit-status':
+            return markRaw(AllUnitStatusPanel);
         default:
             return markRaw(HealthPanel);
     }
@@ -753,6 +756,20 @@ const defaultWidgets = (width = 1920, height = 1080): HudWidget[] => {
             locked: false,
             z: 5,
         },
+        {
+            id: 'all-unit-status',
+            title: '全场血量监控',
+            component: markRaw(AllUnitStatusPanel),
+            x: Math.max((width - 1000) / 2, padding),
+            y: 120,
+            w: 1000,
+            h: 140,
+            minW: 800,
+            minH: 120,
+            visible: true,
+            locked: false,
+            z: 4,
+        },
     ];
 };
 
@@ -813,6 +830,12 @@ const loadLayout = () => {
     const merged = [...rebuilt, ...missingDefaults];
     merged.forEach((item, index) => {
         item.z = index + 1;
+        if (item.id === 'all-unit-status') {
+            item.x = 0;
+            item.w = containerSize.width;
+            item.minW = containerSize.width;
+            item.locked = true;
+        }
     });
     
     // Safety Guard: Check Validity
@@ -878,6 +901,12 @@ const normalizeLayout = () => {
     if (containerSize.width < 100 || containerSize.height < 100) return;
 
     widgets.value = widgets.value.map((widget) => {
+        if (widget.id === 'all-unit-status') {
+            widget.x = 0;
+            widget.w = containerSize.width;
+            widget.minW = containerSize.width;
+            widget.locked = true;
+        }
         const { minW, minH } = getResizeMinSize(widget);
         const width = clamp(widget.w, minW, Math.max(minW, containerSize.width - widget.x));
         const height = clamp(widget.h, minH, Math.max(minH, containerSize.height - widget.y));
