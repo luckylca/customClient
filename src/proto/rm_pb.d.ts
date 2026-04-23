@@ -785,10 +785,16 @@ export namespace rm {
         constructor(properties?: rm.IEvent);
 
         /** Event eventId. */
-        public eventId: number;
+        public eventId?: (number|null);
 
         /** Event param. */
-        public param: string;
+        public param?: (string|null);
+
+        /** Event _eventId. */
+        public _eventId?: "eventId";
+
+        /** Event _param. */
+        public _param?: "param";
 
         /**
          * Creates a new Event instance using the specified properties.
@@ -1912,13 +1918,22 @@ export namespace rm {
         constructor(properties?: rm.IPenaltyInfo);
 
         /** PenaltyInfo penaltyType. */
-        public penaltyType: number;
+        public penaltyType?: (number|null);
 
         /** PenaltyInfo penaltyEffectSec. */
-        public penaltyEffectSec: number;
+        public penaltyEffectSec?: (number|null);
 
         /** PenaltyInfo totalPenaltyNum. */
-        public totalPenaltyNum: number;
+        public totalPenaltyNum?: (number|null);
+
+        /** PenaltyInfo _penaltyType. */
+        public _penaltyType?: "penaltyType";
+
+        /** PenaltyInfo _penaltyEffectSec. */
+        public _penaltyEffectSec?: "penaltyEffectSec";
+
+        /** PenaltyInfo _totalPenaltyNum. */
+        public _totalPenaltyNum?: "totalPenaltyNum";
 
         /**
          * Creates a new PenaltyInfo instance using the specified properties.
@@ -2832,13 +2847,22 @@ export namespace rm {
         constructor(properties?: rm.IRobotPerformanceSelectionCommand);
 
         /** RobotPerformanceSelectionCommand shooter. */
-        public shooter: number;
+        public shooter?: (number|null);
 
         /** RobotPerformanceSelectionCommand chassis. */
-        public chassis: number;
+        public chassis?: (number|null);
 
         /** RobotPerformanceSelectionCommand sentryControl. */
-        public sentryControl: number;
+        public sentryControl?: (number|null);
+
+        /** RobotPerformanceSelectionCommand _shooter. */
+        public _shooter?: "shooter";
+
+        /** RobotPerformanceSelectionCommand _chassis. */
+        public _chassis?: "chassis";
+
+        /** RobotPerformanceSelectionCommand _sentryControl. */
+        public _sentryControl?: "sentryControl";
 
         /**
          * Creates a new RobotPerformanceSelectionCommand instance using the specified properties.

@@ -1,6 +1,5 @@
 /*eslint-disable block-scoped-var, id-length, no-control-regex, no-magic-numbers, no-prototype-builtins, no-redeclare, no-shadow, no-var, sort-vars*/
-import $protobufModule from "protobufjs/minimal";
-const $protobuf = $protobufModule && $protobufModule.default ? $protobufModule.default : $protobufModule;
+import $protobuf from "protobufjs/minimal.js";
 
 // Common aliases
 const $Reader = $protobuf.Reader, $Writer = $protobuf.Writer, $util = $protobuf.util;
@@ -2078,19 +2077,44 @@ export const rm = $root.rm = (() => {
 
         /**
          * Event eventId.
-         * @member {number} eventId
+         * @member {number|null|undefined} eventId
          * @memberof rm.Event
          * @instance
          */
-        Event.prototype.eventId = 0;
+        Event.prototype.eventId = null;
 
         /**
          * Event param.
-         * @member {string} param
+         * @member {string|null|undefined} param
          * @memberof rm.Event
          * @instance
          */
-        Event.prototype.param = "";
+        Event.prototype.param = null;
+
+        // OneOf field names bound to virtual getters and setters
+        let $oneOfFields;
+
+        /**
+         * Event _eventId.
+         * @member {"eventId"|undefined} _eventId
+         * @memberof rm.Event
+         * @instance
+         */
+        Object.defineProperty(Event.prototype, "_eventId", {
+            get: $util.oneOfGetter($oneOfFields = ["eventId"]),
+            set: $util.oneOfSetter($oneOfFields)
+        });
+
+        /**
+         * Event _param.
+         * @member {"param"|undefined} _param
+         * @memberof rm.Event
+         * @instance
+         */
+        Object.defineProperty(Event.prototype, "_param", {
+            get: $util.oneOfGetter($oneOfFields = ["param"]),
+            set: $util.oneOfSetter($oneOfFields)
+        });
 
         /**
          * Creates a new Event instance using the specified properties.
@@ -2197,12 +2221,17 @@ export const rm = $root.rm = (() => {
         Event.verify = function verify(message) {
             if (typeof message !== "object" || message === null)
                 return "object expected";
-            if (message.eventId != null && message.hasOwnProperty("eventId"))
+            let properties = {};
+            if (message.eventId != null && message.hasOwnProperty("eventId")) {
+                properties._eventId = 1;
                 if (!$util.isInteger(message.eventId))
                     return "eventId: integer expected";
-            if (message.param != null && message.hasOwnProperty("param"))
+            }
+            if (message.param != null && message.hasOwnProperty("param")) {
+                properties._param = 1;
                 if (!$util.isString(message.param))
                     return "param: string expected";
+            }
             return null;
         };
 
@@ -2238,14 +2267,16 @@ export const rm = $root.rm = (() => {
             if (!options)
                 options = {};
             let object = {};
-            if (options.defaults) {
-                object.eventId = 0;
-                object.param = "";
-            }
-            if (message.eventId != null && message.hasOwnProperty("eventId"))
+            if (message.eventId != null && message.hasOwnProperty("eventId")) {
                 object.eventId = message.eventId;
-            if (message.param != null && message.hasOwnProperty("param"))
+                if (options.oneofs)
+                    object._eventId = "eventId";
+            }
+            if (message.param != null && message.hasOwnProperty("param")) {
                 object.param = message.param;
+                if (options.oneofs)
+                    object._param = "param";
+            }
             return object;
         };
 
@@ -5045,27 +5076,63 @@ export const rm = $root.rm = (() => {
 
         /**
          * PenaltyInfo penaltyType.
-         * @member {number} penaltyType
+         * @member {number|null|undefined} penaltyType
          * @memberof rm.PenaltyInfo
          * @instance
          */
-        PenaltyInfo.prototype.penaltyType = 0;
+        PenaltyInfo.prototype.penaltyType = null;
 
         /**
          * PenaltyInfo penaltyEffectSec.
-         * @member {number} penaltyEffectSec
+         * @member {number|null|undefined} penaltyEffectSec
          * @memberof rm.PenaltyInfo
          * @instance
          */
-        PenaltyInfo.prototype.penaltyEffectSec = 0;
+        PenaltyInfo.prototype.penaltyEffectSec = null;
 
         /**
          * PenaltyInfo totalPenaltyNum.
-         * @member {number} totalPenaltyNum
+         * @member {number|null|undefined} totalPenaltyNum
          * @memberof rm.PenaltyInfo
          * @instance
          */
-        PenaltyInfo.prototype.totalPenaltyNum = 0;
+        PenaltyInfo.prototype.totalPenaltyNum = null;
+
+        // OneOf field names bound to virtual getters and setters
+        let $oneOfFields;
+
+        /**
+         * PenaltyInfo _penaltyType.
+         * @member {"penaltyType"|undefined} _penaltyType
+         * @memberof rm.PenaltyInfo
+         * @instance
+         */
+        Object.defineProperty(PenaltyInfo.prototype, "_penaltyType", {
+            get: $util.oneOfGetter($oneOfFields = ["penaltyType"]),
+            set: $util.oneOfSetter($oneOfFields)
+        });
+
+        /**
+         * PenaltyInfo _penaltyEffectSec.
+         * @member {"penaltyEffectSec"|undefined} _penaltyEffectSec
+         * @memberof rm.PenaltyInfo
+         * @instance
+         */
+        Object.defineProperty(PenaltyInfo.prototype, "_penaltyEffectSec", {
+            get: $util.oneOfGetter($oneOfFields = ["penaltyEffectSec"]),
+            set: $util.oneOfSetter($oneOfFields)
+        });
+
+        /**
+         * PenaltyInfo _totalPenaltyNum.
+         * @member {"totalPenaltyNum"|undefined} _totalPenaltyNum
+         * @memberof rm.PenaltyInfo
+         * @instance
+         */
+        Object.defineProperty(PenaltyInfo.prototype, "_totalPenaltyNum", {
+            get: $util.oneOfGetter($oneOfFields = ["totalPenaltyNum"]),
+            set: $util.oneOfSetter($oneOfFields)
+        });
 
         /**
          * Creates a new PenaltyInfo instance using the specified properties.
@@ -5178,15 +5245,22 @@ export const rm = $root.rm = (() => {
         PenaltyInfo.verify = function verify(message) {
             if (typeof message !== "object" || message === null)
                 return "object expected";
-            if (message.penaltyType != null && message.hasOwnProperty("penaltyType"))
+            let properties = {};
+            if (message.penaltyType != null && message.hasOwnProperty("penaltyType")) {
+                properties._penaltyType = 1;
                 if (!$util.isInteger(message.penaltyType))
                     return "penaltyType: integer expected";
-            if (message.penaltyEffectSec != null && message.hasOwnProperty("penaltyEffectSec"))
+            }
+            if (message.penaltyEffectSec != null && message.hasOwnProperty("penaltyEffectSec")) {
+                properties._penaltyEffectSec = 1;
                 if (!$util.isInteger(message.penaltyEffectSec))
                     return "penaltyEffectSec: integer expected";
-            if (message.totalPenaltyNum != null && message.hasOwnProperty("totalPenaltyNum"))
+            }
+            if (message.totalPenaltyNum != null && message.hasOwnProperty("totalPenaltyNum")) {
+                properties._totalPenaltyNum = 1;
                 if (!$util.isInteger(message.totalPenaltyNum))
                     return "totalPenaltyNum: integer expected";
+            }
             return null;
         };
 
@@ -5224,17 +5298,21 @@ export const rm = $root.rm = (() => {
             if (!options)
                 options = {};
             let object = {};
-            if (options.defaults) {
-                object.penaltyType = 0;
-                object.penaltyEffectSec = 0;
-                object.totalPenaltyNum = 0;
-            }
-            if (message.penaltyType != null && message.hasOwnProperty("penaltyType"))
+            if (message.penaltyType != null && message.hasOwnProperty("penaltyType")) {
                 object.penaltyType = message.penaltyType;
-            if (message.penaltyEffectSec != null && message.hasOwnProperty("penaltyEffectSec"))
+                if (options.oneofs)
+                    object._penaltyType = "penaltyType";
+            }
+            if (message.penaltyEffectSec != null && message.hasOwnProperty("penaltyEffectSec")) {
                 object.penaltyEffectSec = message.penaltyEffectSec;
-            if (message.totalPenaltyNum != null && message.hasOwnProperty("totalPenaltyNum"))
+                if (options.oneofs)
+                    object._penaltyEffectSec = "penaltyEffectSec";
+            }
+            if (message.totalPenaltyNum != null && message.hasOwnProperty("totalPenaltyNum")) {
                 object.totalPenaltyNum = message.totalPenaltyNum;
+                if (options.oneofs)
+                    object._totalPenaltyNum = "totalPenaltyNum";
+            }
             return object;
         };
 
@@ -7316,27 +7394,63 @@ export const rm = $root.rm = (() => {
 
         /**
          * RobotPerformanceSelectionCommand shooter.
-         * @member {number} shooter
+         * @member {number|null|undefined} shooter
          * @memberof rm.RobotPerformanceSelectionCommand
          * @instance
          */
-        RobotPerformanceSelectionCommand.prototype.shooter = 0;
+        RobotPerformanceSelectionCommand.prototype.shooter = null;
 
         /**
          * RobotPerformanceSelectionCommand chassis.
-         * @member {number} chassis
+         * @member {number|null|undefined} chassis
          * @memberof rm.RobotPerformanceSelectionCommand
          * @instance
          */
-        RobotPerformanceSelectionCommand.prototype.chassis = 0;
+        RobotPerformanceSelectionCommand.prototype.chassis = null;
 
         /**
          * RobotPerformanceSelectionCommand sentryControl.
-         * @member {number} sentryControl
+         * @member {number|null|undefined} sentryControl
          * @memberof rm.RobotPerformanceSelectionCommand
          * @instance
          */
-        RobotPerformanceSelectionCommand.prototype.sentryControl = 0;
+        RobotPerformanceSelectionCommand.prototype.sentryControl = null;
+
+        // OneOf field names bound to virtual getters and setters
+        let $oneOfFields;
+
+        /**
+         * RobotPerformanceSelectionCommand _shooter.
+         * @member {"shooter"|undefined} _shooter
+         * @memberof rm.RobotPerformanceSelectionCommand
+         * @instance
+         */
+        Object.defineProperty(RobotPerformanceSelectionCommand.prototype, "_shooter", {
+            get: $util.oneOfGetter($oneOfFields = ["shooter"]),
+            set: $util.oneOfSetter($oneOfFields)
+        });
+
+        /**
+         * RobotPerformanceSelectionCommand _chassis.
+         * @member {"chassis"|undefined} _chassis
+         * @memberof rm.RobotPerformanceSelectionCommand
+         * @instance
+         */
+        Object.defineProperty(RobotPerformanceSelectionCommand.prototype, "_chassis", {
+            get: $util.oneOfGetter($oneOfFields = ["chassis"]),
+            set: $util.oneOfSetter($oneOfFields)
+        });
+
+        /**
+         * RobotPerformanceSelectionCommand _sentryControl.
+         * @member {"sentryControl"|undefined} _sentryControl
+         * @memberof rm.RobotPerformanceSelectionCommand
+         * @instance
+         */
+        Object.defineProperty(RobotPerformanceSelectionCommand.prototype, "_sentryControl", {
+            get: $util.oneOfGetter($oneOfFields = ["sentryControl"]),
+            set: $util.oneOfSetter($oneOfFields)
+        });
 
         /**
          * Creates a new RobotPerformanceSelectionCommand instance using the specified properties.
@@ -7449,15 +7563,22 @@ export const rm = $root.rm = (() => {
         RobotPerformanceSelectionCommand.verify = function verify(message) {
             if (typeof message !== "object" || message === null)
                 return "object expected";
-            if (message.shooter != null && message.hasOwnProperty("shooter"))
+            let properties = {};
+            if (message.shooter != null && message.hasOwnProperty("shooter")) {
+                properties._shooter = 1;
                 if (!$util.isInteger(message.shooter))
                     return "shooter: integer expected";
-            if (message.chassis != null && message.hasOwnProperty("chassis"))
+            }
+            if (message.chassis != null && message.hasOwnProperty("chassis")) {
+                properties._chassis = 1;
                 if (!$util.isInteger(message.chassis))
                     return "chassis: integer expected";
-            if (message.sentryControl != null && message.hasOwnProperty("sentryControl"))
+            }
+            if (message.sentryControl != null && message.hasOwnProperty("sentryControl")) {
+                properties._sentryControl = 1;
                 if (!$util.isInteger(message.sentryControl))
                     return "sentryControl: integer expected";
+            }
             return null;
         };
 
@@ -7495,17 +7616,21 @@ export const rm = $root.rm = (() => {
             if (!options)
                 options = {};
             let object = {};
-            if (options.defaults) {
-                object.shooter = 0;
-                object.chassis = 0;
-                object.sentryControl = 0;
-            }
-            if (message.shooter != null && message.hasOwnProperty("shooter"))
+            if (message.shooter != null && message.hasOwnProperty("shooter")) {
                 object.shooter = message.shooter;
-            if (message.chassis != null && message.hasOwnProperty("chassis"))
+                if (options.oneofs)
+                    object._shooter = "shooter";
+            }
+            if (message.chassis != null && message.hasOwnProperty("chassis")) {
                 object.chassis = message.chassis;
-            if (message.sentryControl != null && message.hasOwnProperty("sentryControl"))
+                if (options.oneofs)
+                    object._chassis = "chassis";
+            }
+            if (message.sentryControl != null && message.hasOwnProperty("sentryControl")) {
                 object.sentryControl = message.sentryControl;
+                if (options.oneofs)
+                    object._sentryControl = "sentryControl";
+            }
             return object;
         };
 

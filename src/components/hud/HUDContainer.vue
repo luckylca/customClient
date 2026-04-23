@@ -358,6 +358,7 @@
                 </v-btn>
             </div>
         </v-navigation-drawer>
+        <RespawnOverlay />
     </div>
 </template>
 
@@ -379,6 +380,7 @@ import DataInspectorPanel from './DataInspectorPanel.vue';
 import TeamAssetPanel from './TeamAssetPanel.vue';
 import CustomVideoTransmissionPanel from './CustomVideoTransmissionPanel.vue';
 import AllUnitStatusPanel from './AllUnitStatusPanel.vue';
+import RespawnOverlay from './RespawnOverlay.vue';
 import { useSettingStore } from '@/stores/setting';
 import { useVideoStatsStore } from '@/stores/videoStats';
 import {

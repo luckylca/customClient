@@ -1,5 +1,5 @@
 import mqtt from 'mqtt';
-import * as rm from '../proto/rm_pb';
+import * as rm from '../proto/rm_pb.js';
 
 export class MqttService {
     private client: mqtt.MqttClient | null = null;
@@ -248,7 +248,7 @@ export class MqttService {
             'GuardCtrlResult', 'AirSupportStatusSync'
         ];
 
-        this.client.subscribe(topics,{qos: 1}, (err) => {
+        this.client.subscribe(topics, { qos: 1 }, (err) => {
             if (err) {
                 console.error('Subscription error:', err);
             } else {

@@ -147,9 +147,9 @@ message Buff {
 }
 
 message PenaltyInfo {
-    uint32 penalty_type = 1;
-    uint32 penalty_effect_sec = 2;
-    uint32 total_penalty_num = 3;
+    optional uint32 penalty_type = 1;
+    optional uint32 penalty_effect_sec = 2;
+    optional uint32 total_penalty_num = 3;
 }
 
 message RobotPathPlanInfo {

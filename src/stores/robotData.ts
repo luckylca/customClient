@@ -1,5 +1,6 @@
 import { ref } from 'vue'
 import { defineStore } from 'pinia'
+import { useSettingStore } from './setting'
 import type { RobotInjuryStat,RobotRespawnStatus,RobotStaticStatus,RobotDynamicStatus,RobotModuleStatus,RobotPosition,Buff,PenaltyInfo,RobotPathPlanInfo,MapClickInfoNotify,RadarInfoToClient,CustomByteBlock,AssemblyCommand,TechCoreMotionStateSync,PerformanceSelection,HeroDeployMode,RuneStatus,SentinelStatusSync,DartInfo,GuardCtrl,AirSupport } from '../types/rmType'
 
 const decodeProtoBytes = (value: unknown): Uint8Array | undefined => {
@@ -345,6 +346,23 @@ export const useRobotStore = defineStore('robot', () => {
                 break
             case 'PenaltyInfo':
                 robot.value.PenaltyInfoData = normalized as PenaltyInfo
+                if (normalized) {
+                    const penalty = normalized as PenaltyInfo
+                    const typeMap: Record<number, string> = {
+                        1: '黄牌',
+                        2: '双方黄牌',
+                        3: '红牌',
+                        4: '超功率',
+                        5: '超热量',
+                        6: '超射速'
+                    }
+                    const typeValue = penalty.penalty_type ?? (penalty as any).penaltyType
+                    const typeStr = typeValue ? (typeMap[typeValue] || `未知(${typeValue})`) : '未知'
+                    const effectSec = penalty.penalty_effect_sec ?? (penalty as any).penaltyEffectSec ?? 0
+                    const totalNum = penalty.total_penalty_num ?? (penalty as any).totalPenaltyNum ?? 0
+                    const settingStore = useSettingStore()
+                    settingStore.pushScriptNotification(`[判罚系统] 受到判罚 - ${typeStr} (时长: ${effectSec}s, 累计: ${totalNum}次)`)
+                }
                 break
             case 'RobotPathPlanInfo':
                 robot.value.RobotPathPlanInfoData = normalized as RobotPathPlanInfo

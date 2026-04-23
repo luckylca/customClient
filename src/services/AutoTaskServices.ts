@@ -44,7 +44,14 @@ const AutoResurrection = (): boolean => {
 		cmdType: 3,
 		param: 1,
 	});
-}
+};
+
+const AutoBuyResurrection = (): boolean => {
+	return sendCommonCommand({
+		cmdType: 4,
+		param: 1,
+	});
+};
 
 const sendHeroDeployMode = (payload: HeroDeployModePayload): boolean => {
 	if (!ipcRenderer) {
@@ -74,4 +81,4 @@ const sendRobotPerformanceSelection = (payload: RobotPerformanceSelectionPayload
 	return true;
 };
 
-export { AutoBuy42mm5, AutoBuy17mm20, AutoResurrection, sendCommonCommand, sendHeroDeployMode, ToggleHeroDeployMode, sendRobotPerformanceSelection };
+export { AutoBuy42mm5, AutoBuy17mm20, AutoResurrection, AutoBuyResurrection, sendCommonCommand, sendHeroDeployMode, ToggleHeroDeployMode, sendRobotPerformanceSelection };

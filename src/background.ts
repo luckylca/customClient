@@ -99,7 +99,7 @@ ipcMain.on('stop-mqtt-service', (event) => {
     mqttService?.disconnect();
 })
 // IPC listener for keyboard/mouse control
-import * as rm from './proto/rm_pb';
+import * as rm from './proto/rm_pb.js';
 ipcMain.on('send-remote-control', (event, data) => {
     const mqttService = (global as any).mqttService as MqttService;
     controlRxCount += 1;
