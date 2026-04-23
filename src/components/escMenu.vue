@@ -3,6 +3,8 @@
         <div class="menu">
             <v-card class="menu-card" hover elevated rounded="pill" elevation="20" @click="continueGame">继续比赛</v-card>
             <v-card class="menu-card" hover elevated rounded="pill" elevation="20" @click="goHome">回到首页</v-card>
+            <v-card class="menu-card" hover elevated rounded="pill" elevation="20"
+                @click="openRobotOptions">机器人选项</v-card>
             <v-card class="menu-card" hover elevated rounded="pill" elevation="20" @click="openSettings">设置</v-card>
         </div>
     </v-overlay>
@@ -32,6 +34,9 @@ function goHome() {
 }
 function openSettings() {
     router.push({ name: 'setting', query: { from: route.fullPath } });
+}
+function openRobotOptions() {
+    router.push({ name: 'robot-options', query: { from: route.fullPath } });
 }
 
 </script>

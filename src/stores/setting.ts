@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref, watch } from 'vue'
-import { AutoBuy42mm5, ToggleHeroDeployMode, AutoBuy17mm20 } from '@/services/AutoTaskServices';
+import { AutoBuy42mm5, ToggleHeroDeployMode, AutoBuy17mm20, AutoResurrection } from '@/services/AutoTaskServices';
 import { useRobotStore } from '@/stores/robotData';
 
 export interface AppSettings {
@@ -168,8 +168,14 @@ export const useSettingStore = defineStore('setting', () => {
             } else {
                 text = `自动购买 17mm 20发子弹发送失败（当前子弹：${ammoText}）`;
             }
-        }
-        else {
+        } else if (scriptId === 'Resurrection') {
+            const sent = AutoResurrection();
+            if (sent) {
+                text = `自动复活指令已发送`;
+            } else {
+                text = `自动复活发送失败`;
+            }
+        }  else {
             text = `未知脚本: ${scriptId}`;
         }
 

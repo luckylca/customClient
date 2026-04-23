@@ -155,7 +155,9 @@ const settingStore = useSettingStore();
 const availableScripts = [
     { id: 'aim_assist', name: '辅助自瞄' },
     { id: 'auto_buy_43mm_5', name: '42mm 5发' },
-    { id: 'Hero_Deploy_Mode_Change', name: '英雄部署模式切换' }
+    { id: 'Hero_Deploy_Mode_Change', name: '英雄部署模式切换' },
+    { id: 'auto_buy_17mm_20', name: '17mm 20发' },
+    { id: 'Resurrection', name: '自动复活' },
 ];
 
 const keyBindings = computed(() => settingStore.keyBindings);

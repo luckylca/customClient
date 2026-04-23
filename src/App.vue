@@ -1,7 +1,6 @@
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed, watch, onMounted, onUnmounted } from 'vue';
 import { RouterView } from 'vue-router'
-import { onMounted, onUnmounted } from 'vue';
 import { InputHandler } from './services/InputHandler';
 import { customByteBlockStream } from './services/CustomByteBlockStream';
 import { useGlobalStore } from './stores/globalData';
@@ -73,6 +72,67 @@ onUnmounted(() => {
     ipcRenderer.removeListener('custom-byte-block-stream', handleCustomByteBlockStream);
   }
 });
+
+const parseEvent = (eventId: number, param: string) => {
+    const params = param ? param.split(',') : [];
+    switch (eventId) {
+        case 1:
+            return `击杀事件: 被击杀者 ${params[0]}, 击杀者 ${params[1]}`;
+        case 2:
+            return `前哨站被摧毁: 目标 ${param}`;
+        case 3:
+            return `大能量机关激活: ${params[0]}臂, 平均${params[1]}环`;
+        case 4:
+            return `能量机关已激活: ${param === '1' ? '小能量机关' : '大能量机关'}`;
+        case 5:
+            return `己方英雄造成狙击伤害: 累计 ${param}`;
+        case 6:
+            return `对方英雄造成狙击伤害: 累计 ${param}`;
+        case 7:
+            return `对方呼叫空中支援`;
+        case 8:
+            return `对方空中支援被反制: 剩余可反制 ${param} 次`;
+        case 9: {
+            const sideStr = params[0] === '1' ? '红方' : '蓝方';
+            let targetStr = '';
+            switch(params[1]) {
+                case '1': targetStr = '前哨站'; break;
+                case '2': targetStr = '基地固定目标'; break;
+                case '3': targetStr = '基地随机固定目标'; break;
+                case '4': targetStr = '基地随机移动目标'; break;
+                case '5': targetStr = '基地末端移动目标'; break;
+            }
+            return `飞镖命中: ${sideStr} 击中 ${targetStr}`;
+        }
+        case 10:
+            return `对方飞镖闸门开启`;
+        case 11:
+            return `基地遭到攻击`;
+        case 12:
+            return `对方前哨站停转`;
+        case 13:
+            return `对方基地护甲展开`;
+        case 14:
+            return `对方请求四级装配, 强制退出缓冲`;
+        case 15: {
+            const resultStrs = ['成功', '拔出', '超时', '离开装配区过久', '工程战亡', '四级难度未满足完成协作时限', '主动退出', '完成装配但结算时未检测到有能量单元', '缓冲期到期，装配流程强制结束'];
+            return `装配结果: ${resultStrs[Number(param)] || param}`;
+        }
+        default:
+            return `未知事件: ${eventId} ${param}`;
+    }
+};
+
+watch(() => globalStore.global.EnventData, (newEvents) => {
+    if (newEvents && newEvents.length > 0) {
+        newEvents.forEach(event => {
+            if (event.eventId !== undefined) {
+                const msg = parseEvent(event.eventId, event.param || '');
+                settingStore.pushScriptNotification(msg);
+            }
+        });
+    }
+}, { deep: true });
 </script>
 
 <template>

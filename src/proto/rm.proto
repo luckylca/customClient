@@ -57,8 +57,8 @@ message GlobalSpecialMechanism {
 }
 
 message Event {
-    int32 event_id = 1;
-    string param = 2;
+    optional int32 event_id = 1;
+    optional string param = 2;
 }
 
 message RobotInjuryStat {
@@ -203,9 +203,9 @@ message TechCoreMotionStateSync {
 }
 
 message RobotPerformanceSelectionCommand {
-    uint32 shooter = 1;
-    uint32 chassis = 2;
-    uint32 sentry_control = 3;
+    optional uint32 shooter = 1;
+    optional uint32 chassis = 2;
+    optional uint32 sentry_control = 3;
 }
 
 message RobotPerformanceSelectionSync {

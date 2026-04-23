@@ -10,6 +10,8 @@ const HERO_DEPLOY_MODE_TOPIC = process.env.MQTT_HERO_DEPLOY_MODE_TOPIC || 'HeroD
 const HERO_DEPLOY_MODE_QOS: 0 = 0;
 const CUSTOM_CONTROL_TOPIC = process.env.MQTT_CUSTOM_CONTROL_TOPIC || 'CustomControl';
 const CUSTOM_CONTROL_QOS: 0 = 0;
+const PERFORMANCE_SELECTION_TOPIC = process.env.MQTT_PERFORMANCE_SELECTION_TOPIC || 'RobotPerformanceSelectionCommand';
+const PERFORMANCE_SELECTION_QOS: 0 = 0;
 
 
 app.whenReady().then(() => {
@@ -200,4 +202,23 @@ ipcMain.on('send-custom-control', (_event, payload: Uint8Array) => {
         data: payload
     };
     mqttService.publish(CUSTOM_CONTROL_TOPIC, commandData, rm.rm.CustomControl, CUSTOM_CONTROL_QOS);
+});
+
+ipcMain.on('send-robot-performance-selection', (_event, payload?: { shooter?: number; chassis?: number; sentry_control?: number }) => {
+    const mqttService = (global as any).mqttService as MqttService;
+    if (!mqttService || !canSentMqtt || !mqttService.isConnected()) {
+        console.warn('[Main] skip RobotPerformanceSelectionCommand publish: mqtt not ready');
+        return;
+    }
+
+    const commandData = {
+        shooter: Number(payload?.shooter ?? 0),
+        chassis: Number(payload?.chassis ?? 0),
+        sentry_control: Number(payload?.sentry_control ?? 0),
+    };
+
+    mqttService.publish(PERFORMANCE_SELECTION_TOPIC, commandData, rm.rm.RobotPerformanceSelectionCommand, PERFORMANCE_SELECTION_QOS);
+    console.log(
+        `[Main] publish RobotPerformanceSelectionCommand shooter=${commandData.shooter} chassis=${commandData.chassis} sentry_control=${commandData.sentry_control} topic=${PERFORMANCE_SELECTION_TOPIC}`,
+    );
 });

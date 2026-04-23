@@ -7,6 +7,12 @@ type HeroDeployModePayload = {
 	mode: number;
 };
 
+export type RobotPerformanceSelectionPayload = {
+	shooter?: number;
+	chassis?: number;
+	sentry_control?: number;
+};
+
 const ipcRenderer = (window as any).require ? (window as any).require('electron').ipcRenderer : null;
 
 const sendCommonCommand = (payload: CommonCommandPayload): boolean => {
@@ -33,6 +39,13 @@ const AutoBuy17mm20 = (): boolean => {
 	});
 };
 
+const AutoResurrection = (): boolean => {
+	return sendCommonCommand({
+		cmdType: 3,
+		param: 1,
+	});
+}
+
 const sendHeroDeployMode = (payload: HeroDeployModePayload): boolean => {
 	if (!ipcRenderer) {
 		console.warn('[AutoTask] ipcRenderer unavailable, cannot send HeroDeployModeEventCommand');
@@ -51,4 +64,14 @@ const ToggleHeroDeployMode = (currentStatus: number | undefined): { sent: boolea
 	};
 };
 
-export { AutoBuy42mm5, AutoBuy17mm20, sendCommonCommand, sendHeroDeployMode, ToggleHeroDeployMode };
+const sendRobotPerformanceSelection = (payload: RobotPerformanceSelectionPayload): boolean => {
+	if (!ipcRenderer) {
+		console.warn('[AutoTask] ipcRenderer unavailable, cannot send RobotPerformanceSelectionCommand');
+		return false;
+	}
+
+	ipcRenderer.send('send-robot-performance-selection', payload);
+	return true;
+};
+
+export { AutoBuy42mm5, AutoBuy17mm20, AutoResurrection, sendCommonCommand, sendHeroDeployMode, ToggleHeroDeployMode, sendRobotPerformanceSelection };
