@@ -175,6 +175,13 @@ export const useSettingStore = defineStore('setting', () => {
             } else {
                 text = `自动复活发送失败`;
             }
+        } else if (scriptId === 'toggle_minimap_overlay') {
+            window.dispatchEvent(new CustomEvent('hud-minimap-overlay', {
+                detail: {
+                    toggle: true,
+                },
+            }));
+            text = '小地图遮罩已切换';
         }  else {
             text = `未知脚本: ${scriptId}`;
         }

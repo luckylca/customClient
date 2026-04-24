@@ -1,11 +1,12 @@
 <script setup lang="ts">
-import { computed, watch, onMounted, onUnmounted } from 'vue';
+import { computed, watch, onMounted, onUnmounted, ref } from 'vue';
 import { RouterView } from 'vue-router'
 import { InputHandler } from './services/InputHandler';
 import { customByteBlockStream } from './services/CustomByteBlockStream';
 import { useGlobalStore } from './stores/globalData';
 import { useRobotStore } from './stores/robotData';
 import { useSettingStore } from './stores/setting';
+import Minimap from './components/hud/Minimap.vue';
 
 let inputHandler: InputHandler | null = null;
 const globalStore = useGlobalStore();
@@ -13,7 +14,20 @@ const robotStore = useRobotStore();
 const settingStore = useSettingStore();
 const MAX_VISIBLE_STACK = 5;
 const scriptCloudItems = computed(() => [...settingStore.scriptNotifications].reverse().slice(0, MAX_VISIBLE_STACK));
+const showMinimapOverlay = ref(false);
 const { ipcRenderer } = (window as any).require ? (window as any).require('electron') : { ipcRenderer: null };
+
+const setMinimapOverlay = (nextVisible: boolean) => {
+  showMinimapOverlay.value = nextVisible;
+};
+
+const toggleMinimapOverlay = (nextVisible?: boolean) => {
+  if (typeof nextVisible === 'boolean') {
+    setMinimapOverlay(nextVisible);
+    return;
+  }
+  showMinimapOverlay.value = !showMinimapOverlay.value;
+};
 
 const toByteArray = (input: unknown): Uint8Array | null => {
   if (!input) return null;
@@ -61,6 +75,8 @@ onMounted(() => {
     ipcRenderer.on('mqtt-message', handleMqttMessage);
     ipcRenderer.on('custom-byte-block-stream', handleCustomByteBlockStream);
   }
+  window.addEventListener('hud-minimap-overlay', handleHudMinimapOverlay as EventListener);
+  window.addEventListener('keydown', handleHudEscapeKey);
 });
 
 onUnmounted(() => {
@@ -71,7 +87,28 @@ onUnmounted(() => {
     ipcRenderer.removeListener('mqtt-message', handleMqttMessage);
     ipcRenderer.removeListener('custom-byte-block-stream', handleCustomByteBlockStream);
   }
+  window.removeEventListener('hud-minimap-overlay', handleHudMinimapOverlay as EventListener);
+  window.removeEventListener('keydown', handleHudEscapeKey);
 });
+
+const handleHudMinimapOverlay = (event: Event) => {
+  const customEvent = event as CustomEvent<{ visible?: boolean; toggle?: boolean }>;
+  if (typeof customEvent.detail?.visible === 'boolean') {
+    setMinimapOverlay(customEvent.detail.visible);
+    return;
+  }
+  if (customEvent.detail?.toggle) {
+    toggleMinimapOverlay();
+    return;
+  }
+  toggleMinimapOverlay();
+};
+
+const handleHudEscapeKey = (event: KeyboardEvent) => {
+  if (event.key === 'Escape' && showMinimapOverlay.value) {
+    showMinimapOverlay.value = false;
+  }
+};
 
 const parseEvent = (eventId: number, param: string) => {
     const params = param ? param.split(',') : [];
@@ -160,6 +197,27 @@ watch(() => globalStore.global.EnventData, (newEvents) => {
         </div>
       </TransitionGroup>
     </div>
+
+    <transition name="minimap-overlay-fade">
+      <div
+        v-if="showMinimapOverlay"
+        class="minimap-mask"
+        @click.self="showMinimapOverlay = false"
+      >
+        <div class="minimap-mask-panel">
+          <div class="minimap-mask-header">
+            <div>
+              <div class="minimap-mask-title">小地图遮罩</div>
+              <div class="minimap-mask-subtitle">按 ESC 或点击外部关闭</div>
+            </div>
+            <v-btn icon="mdi-close" variant="text" @click="showMinimapOverlay = false" />
+          </div>
+          <div class="minimap-mask-body">
+            <Minimap :expanded="true" />
+          </div>
+        </div>
+      </div>
+    </transition>
   </v-app>
 </template>
 
@@ -249,6 +307,75 @@ nav a:first-of-type {
 
 .notify-stack-move {
   transition: transform 260ms cubic-bezier(0.22, 1, 0.36, 1), opacity 220ms ease;
+}
+
+.minimap-mask {
+  position: fixed;
+  inset: 0;
+  z-index: 2147482900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: rgba(0, 0, 0, 0.72);
+  backdrop-filter: blur(10px);
+}
+
+.minimap-mask-panel {
+  width: min(92vw, 1280px);
+  height: min(88vh, 920px);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 16px;
+  border-radius: 24px;
+  background: linear-gradient(180deg, rgba(14, 16, 22, 0.98), rgba(9, 10, 14, 0.98));
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.5);
+}
+
+.minimap-mask-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.minimap-mask-title {
+  color: rgba(255, 255, 255, 0.96);
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.minimap-mask-subtitle {
+  margin-top: 4px;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 12px;
+}
+
+.minimap-mask-body {
+  flex: 1;
+  min-height: 0;
+}
+
+.minimap-mask-body :deep(.minimap),
+.minimap-mask-body :deep(.minimap-card) {
+  width: 100%;
+  height: 100%;
+}
+
+.minimap-mask-body :deep(.minimap-overlay) {
+  padding: 18px;
+}
+
+.minimap-overlay-fade-enter-active,
+.minimap-overlay-fade-leave-active {
+  transition: opacity 180ms ease;
+}
+
+.minimap-overlay-fade-enter-from,
+.minimap-overlay-fade-leave-to {
+  opacity: 0;
 }
 
 @media (min-width: 1024px) {

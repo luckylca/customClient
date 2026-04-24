@@ -158,6 +158,7 @@ const availableScripts = [
     { id: 'Hero_Deploy_Mode_Change', name: '英雄部署模式切换' },
     { id: 'auto_buy_17mm_20', name: '17mm 20发' },
     { id: 'Resurrection', name: '自动复活' },
+    { id: 'toggle_minimap_overlay', name: '小地图遮罩开关' },
 ];
 
 const keyBindings = computed(() => settingStore.keyBindings);

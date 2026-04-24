@@ -1,104 +1,172 @@
-// src/components/hud/Minimap.vue
-// 显示小地图的组件
-
 <template>
-    <div class="minimap">
-        <div class="map-grid"></div>
-        <div class="map-center"></div>
-        <div class="robot-marker" :style="robotStyle">
-            <div class="heading"></div>
-        </div>
-        <div class="coords">
-            <div>X: {{ position.x.toFixed(1) }}</div>
-            <div>Y: {{ position.y.toFixed(1) }}</div>
-            <div>Yaw: {{ position.yaw.toFixed(1) }}°</div>
-        </div>
+    <div class="minimap" :class="{ expanded }">
+        <button class="minimap-card" type="button" @click="requestOpen">
+            <img class="minimap-image" :src="minimapImage" alt="小地图" />
+            <div class="minimap-overlay">
+                <div class="overlay-top">
+                    <div class="overlay-title">小地图</div>
+                    <div class="overlay-subtitle">{{ subtitleText }}</div>
+                </div>
+                <div class="overlay-bottom">
+                    <span class="badge" :class="teamSideClass">{{ teamLabel }}</span>
+                    <span class="hint">点击放大</span>
+                </div>
+            </div>
+        </button>
     </div>
 </template>
 
 <script setup lang="ts">
 import { computed, inject } from 'vue';
+import minimapImage from '@/assets/小地图.png';
 import { useRobotStore } from '@/stores/robotData';
 import { useHudDemoTicker } from './useHudDemo';
+
+const props = withDefaults(
+    defineProps<{
+        expanded?: boolean;
+    }>(),
+    {
+        expanded: false,
+    }
+);
 
 const { robot } = useRobotStore();
 const demoMode = inject('hudDemoMode', computed(() => false));
 const demoTick = useHudDemoTicker();
 
-const position = computed(() => ({
-    x: demoMode.value
-        ? 2 + 1.2 * Math.sin(demoTick.value / 2500)
-        : robot.RobotPositionData?.x ?? 0,
-    y: demoMode.value
-        ? 1.4 + 1.1 * Math.cos(demoTick.value / 2200)
-        : robot.RobotPositionData?.y ?? 0,
-    yaw: demoMode.value
-        ? (demoTick.value / 40) % 360
-        : robot.RobotPositionData?.yaw ?? 0,
-}));
+const teamSideClass = computed(() => {
+    if (robot.color === '红' || robot.color === 'red') return 'team-red';
+    if (robot.color === '蓝' || robot.color === 'blue') return 'team-blue';
+    return 'team-neutral';
+});
 
-const robotStyle = computed(() => ({
-    transform: `translate(-50%, -50%) rotate(${position.value.yaw}deg)`,
-}));
+const teamLabel = computed(() => {
+    if (demoMode.value) return 'DEMO';
+    if (teamSideClass.value === 'team-red') return 'RED';
+    if (teamSideClass.value === 'team-blue') return 'BLUE';
+    return 'UNKNOWN';
+});
+
+const subtitleText = computed(() => {
+    if (demoMode.value) return `演示 · ${Math.round((demoTick.value / 1000) % 60)}s`;
+    if (robot.RobotPositionData) return '实时数据';
+    return '等待定位';
+});
+
+const requestOpen = () => {
+    window.dispatchEvent(new CustomEvent('hud-minimap-overlay', {
+        detail: {
+            visible: true,
+        },
+    }));
+};
 </script>
 
-<style scoped lang="sass">
-.minimap
-    position: relative
-    width: 100%
-    height: 100%
-    background: rgba(13, 16, 23, 0.7)
-    border-radius: var(--md-radius-lg)
-    overflow: hidden
-    padding: 6px
+<style scoped>
+.minimap {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+}
 
-.map-grid
-    position: absolute
-    inset: 12px
-    background-image: linear-gradient(rgba(255, 255, 255, 0.06) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.06) 1px, transparent 1px)
-    background-size: 24px 24px
-    border-radius: var(--md-radius-md)
+.minimap.expanded {
+    width: 100%;
+    height: 100%;
+}
 
-.map-center
-    position: absolute
-    left: 50%
-    top: 50%
-    width: 6px
-    height: 6px
-    background: #00e5ff
-    border-radius: 50%
-    transform: translate(-50%, -50%)
-    box-shadow: 0 0 8px rgba(0, 229, 255, 0.6)
+.minimap-card {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    border: 0;
+    border-radius: var(--md-radius-xl);
+    overflow: hidden;
+    background: rgba(10, 12, 18, 0.96);
+    cursor: pointer;
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.06);
+}
 
-.robot-marker
-    position: absolute
-    left: 50%
-    top: 50%
-    width: 18px
-    height: 18px
-    background: rgba(255, 255, 255, 0.2)
-    border: 2px solid #7c4dff
-    border-radius: 6px
-    display: flex
-    align-items: center
-    justify-content: center
-    transition: transform 120ms ease
+.minimap-image {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    opacity: 0.92;
+    filter: contrast(1.06) saturate(0.92) brightness(0.92);
+}
 
-.robot-marker .heading
-    width: 0
-    height: 0
-    border-left: 6px solid transparent
-    border-right: 6px solid transparent
-    border-bottom: 10px solid #7c4dff
-    transform: translateY(-6px)
+.minimap-overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 12px;
+    background: linear-gradient(180deg, rgba(5, 6, 10, 0.24), rgba(5, 6, 10, 0.5));
+    color: var(--hud-text-primary);
+    text-align: left;
+}
 
-.coords
-    position: absolute
-    right: 14px
-    bottom: 14px
-    font-size: 11px
-    color: var(--hud-text-secondary)
-    display: flex
-    flex-direction: column
-    gap: 2px
+.overlay-top,
+.overlay-bottom {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.overlay-title {
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+}
+
+.overlay-subtitle,
+.hint {
+    font-size: 11px;
+    color: var(--hud-text-secondary);
+}
+
+.badge {
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.badge.team-red {
+    color: #ff8a80;
+}
+
+.badge.team-blue {
+    color: #82b1ff;
+}
+
+.badge.team-neutral {
+    color: var(--hud-text-secondary);
+}
+
+.minimap.expanded .minimap-card {
+    border-radius: var(--md-radius-2xl);
+}
+
+.minimap.expanded .minimap-image {
+    filter: contrast(1.1) saturate(1) brightness(0.98);
+}
+
+.minimap.expanded .overlay-title {
+    font-size: 20px;
+}
+
+.minimap.expanded .overlay-subtitle,
+.minimap.expanded .hint {
+    font-size: 12px;
+}
 </style>
