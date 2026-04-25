@@ -199,6 +199,7 @@ export class InputHandler {
                 // This struct can be expanded in the future
                 const deployModeStatus = this.robotStore?.robot?.HeroDeployModeData?.status === 1 ? 1 : 0;
                 const customData = new Uint8Array([0xA3, deployModeStatus]);
+                // console.log("Sending Custom Control Data:", customData);
                 ipcRenderer.send('send-custom-control', customData);
             }
 

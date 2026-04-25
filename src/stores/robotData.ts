@@ -1,7 +1,7 @@
 import { ref } from 'vue'
 import { defineStore } from 'pinia'
 import { useSettingStore } from './setting'
-import type { RobotInjuryStat,RobotRespawnStatus,RobotStaticStatus,RobotDynamicStatus,RobotModuleStatus,RobotPosition,Buff,PenaltyInfo,RobotPathPlanInfo,MapClickInfoNotify,RadarInfoToClient,CustomByteBlock,AssemblyCommand,TechCoreMotionStateSync,PerformanceSelection,HeroDeployMode,RuneStatus,SentinelStatusSync,DartInfo,GuardCtrl,AirSupport } from '../types/rmType'
+import type { RobotInjuryStat,RobotRespawnStatus,RobotStaticStatus,RobotDynamicStatus,RobotModuleStatus,RobotPosition,Buff,PenaltyInfo,RobotPathPlanInfo,MapClickInfoNotify,RadarInfoToClient,CustomByteBlock,AssemblyCommand,TechCoreMotionStateSync,PerformanceSelection,HeroDeployMode,RuneStatus,SentinelStatusSync,DartInfo,GuardCtrl,AirSupport,LobShotReservedPack } from '../types/rmType'
 
 const decodeProtoBytes = (value: unknown): Uint8Array | undefined => {
     if (!value) return undefined
@@ -58,11 +58,137 @@ const toHexLines = (bytes: Uint8Array, bytesPerLine = 16, maxLines = 3): string 
 
 const CUSTOM_BYTE_BLOCK_LOG_INTERVAL_MS = 500
 const CUSTOM_BYTE_BLOCK_STORE_FLUSH_INTERVAL_MS = 200
+const CUSTOM_BYTE_BLOCK_FRAME_SIZE = 300
+const CUSTOM_BYTE_BLOCK_HEADER_0 = 0xA8
+const CUSTOM_BYTE_BLOCK_HEADER_1 = 0xA7
+const CUSTOM_BYTE_BLOCK_SEQUENCE_BYTES = 2
+const CUSTOM_BYTE_BLOCK_VIDEO_BYTES = 270
+const CUSTOM_BYTE_BLOCK_RESERVED_BYTES = 24
+const CUSTOM_BYTE_BLOCK_VIDEO_OFFSET = 2 + CUSTOM_BYTE_BLOCK_SEQUENCE_BYTES
+const CUSTOM_BYTE_BLOCK_RESERVED_OFFSET = CUSTOM_BYTE_BLOCK_VIDEO_OFFSET + CUSTOM_BYTE_BLOCK_VIDEO_BYTES
+const CUSTOM_BYTE_BLOCK_CRC_OFFSET = CUSTOM_BYTE_BLOCK_RESERVED_OFFSET + CUSTOM_BYTE_BLOCK_RESERVED_BYTES
+const LOB_SHOT_RESERVED_SIZE = 24
 let lastCustomByteBlockLogAt = 0
 let customByteBlockPendingUpdateCount = 0
 let customByteBlockPendingBytes: Uint8Array | null = null
+let customByteBlockPendingSideband: Uint8Array | null = null
+let customByteBlockPendingCrc16: Uint8Array | null = null
+let customByteBlockPendingHeaderValid = false
+let customByteBlockPendingLobShotReserved: LobShotReservedPack | null = null
 let customByteBlockFlushTimer: ReturnType<typeof setTimeout> | null = null
 let lastCustomByteBlockStoreFlushAt = 0
+
+interface ParsedCustomByteBlockFrame {
+    frame: Uint8Array
+    sequenceId: number
+    videoData: Uint8Array
+    reservedData: Uint8Array
+    crc16: Uint8Array
+    headerValid: boolean
+}
+
+const parseCustomByteBlockFrame = (bytes: Uint8Array): ParsedCustomByteBlockFrame | null => {
+    if (bytes.length < CUSTOM_BYTE_BLOCK_FRAME_SIZE) return null
+
+    const maxStart = bytes.length - CUSTOM_BYTE_BLOCK_FRAME_SIZE
+    let frameStart = maxStart
+
+    for (let start = maxStart; start >= 0; start -= 1) {
+        if (bytes[start] === CUSTOM_BYTE_BLOCK_HEADER_0 && bytes[start + 1] === CUSTOM_BYTE_BLOCK_HEADER_1) {
+            frameStart = start
+            break
+        }
+    }
+
+    const frame = bytes.subarray(frameStart, frameStart + CUSTOM_BYTE_BLOCK_FRAME_SIZE)
+    const headerValid = frame[0] === CUSTOM_BYTE_BLOCK_HEADER_0 && frame[1] === CUSTOM_BYTE_BLOCK_HEADER_1
+    const sequenceId = frame[2] | (frame[3] << 8)
+    const videoData = frame.subarray(CUSTOM_BYTE_BLOCK_VIDEO_OFFSET, CUSTOM_BYTE_BLOCK_VIDEO_OFFSET + CUSTOM_BYTE_BLOCK_VIDEO_BYTES)
+    const reservedData = frame.subarray(
+        CUSTOM_BYTE_BLOCK_RESERVED_OFFSET,
+        CUSTOM_BYTE_BLOCK_RESERVED_OFFSET + CUSTOM_BYTE_BLOCK_RESERVED_BYTES,
+    )
+    const crc16 = frame.subarray(CUSTOM_BYTE_BLOCK_CRC_OFFSET, CUSTOM_BYTE_BLOCK_CRC_OFFSET + 2)
+
+    return {
+        frame,
+        sequenceId,
+        videoData,
+        reservedData,
+        crc16,
+        headerValid,
+    }
+}
+
+const bit = (value: number, index: number): boolean => ((value >> index) & 0x01) === 1
+
+const jointModeLabel = (mode: number): string => {
+    const map: Record<number, string> = {
+        0: '失能',
+        1: '上台阶',
+        2: '悬挂',
+        3: '收腿',
+    }
+    return map[mode] || `未知(${mode})`
+}
+
+const chassisModeLabel = (mode: number): string => {
+    const map: Record<number, string> = {
+        0: '失能',
+        1: '自由',
+        2: '跟随',
+        3: '小陀螺',
+    }
+    return map[mode] || `未知(${mode})`
+}
+
+const parseLobShotReservedPack = (reservedData?: Uint8Array | null): LobShotReservedPack | null => {
+    if (!reservedData || reservedData.length < LOB_SHOT_RESERVED_SIZE) return null
+
+    const raw = reservedData.subarray(0, LOB_SHOT_RESERVED_SIZE)
+    const flags = raw[0] | (raw[1] << 8)
+    const modeBits = raw[2]
+    const view = new DataView(raw.buffer, raw.byteOffset, raw.byteLength)
+    const offsetAngle = view.getInt16(3, true)
+    const chassisMode = raw[5]
+
+    const onlineBools = [
+        bit(flags, 0), bit(flags, 1), bit(flags, 2), bit(flags, 3), bit(flags, 4), bit(flags, 5),
+        bit(flags, 6), bit(flags, 7), bit(flags, 8), bit(flags, 9), bit(flags, 10), bit(flags, 11), bit(flags, 12),
+    ]
+    const offlineMotorCount = onlineBools.filter((value) => !value).length
+
+    const jointMode = modeBits & 0x03
+    const modeReserved = (modeBits >> 2) & 0x3f
+
+    return {
+        onlineFlagsRaw: flags,
+        chassislfMotorOnline: bit(flags, 0),
+        chassisrfMotorOnline: bit(flags, 1),
+        chassislbMotorOnline: bit(flags, 2),
+        chassisrbMotorOnline: bit(flags, 3),
+        jointleftMotorOnline: bit(flags, 4),
+        jointrightMotorOnline: bit(flags, 5),
+        yawMotorOnline: bit(flags, 6),
+        pitchMotorOnline: bit(flags, 7),
+        frictionlfMotorOnline: bit(flags, 8),
+        frictionrfMotorOnline: bit(flags, 9),
+        frictionlbMotorOnline: bit(flags, 10),
+        frictionrbMotorOnline: bit(flags, 11),
+        loaderMotorOnline: bit(flags, 12),
+        frictionMode: bit(flags, 13),
+        visionMode: bit(flags, 14),
+        powerMode: bit(flags, 15),
+        jointMode,
+        jointModeLabel: jointModeLabel(jointMode),
+        modeReserved,
+        offsetAngle,
+        chassisMode,
+        chassisModeLabel: chassisModeLabel(chassisMode),
+        reservedBytes: raw.subarray(6, 24),
+        offlineMotorCount,
+    }
+}
 
 interface RobotData {
     color: string
@@ -83,6 +209,11 @@ interface RobotData {
     CustomByteBlockRawLength: number
     CustomByteBlockUpdateCount: number
     CustomByteBlockPreviewHex: string
+    CustomByteBlockSidebandLength: number
+    CustomByteBlockSidebandHex: string
+    CustomByteBlockCrc16Hex: string
+    CustomByteBlockHeaderValid: boolean
+    CustomByteBlockLobShotReservedData?: LobShotReservedPack
     CustomByteBlockLastUpdatedAt: string
     AssemblyCommandData?: AssemblyCommand
     TechCoreMotionStateSyncData?: TechCoreMotionStateSync
@@ -103,6 +234,11 @@ export const useRobotStore = defineStore('robot', () => {
         CustomByteBlockRawLength: 0,
         CustomByteBlockUpdateCount: 0,
         CustomByteBlockPreviewHex: '-',
+        CustomByteBlockSidebandLength: 0,
+        CustomByteBlockSidebandHex: '-',
+        CustomByteBlockCrc16Hex: '-',
+        CustomByteBlockHeaderValid: false,
+        CustomByteBlockLobShotReservedData: undefined,
         CustomByteBlockLastUpdatedAt: '-',
     })
 
@@ -117,7 +253,28 @@ export const useRobotStore = defineStore('robot', () => {
         robot.value.CustomByteBlockUpdateCount += customByteBlockPendingUpdateCount
         robot.value.CustomByteBlockRawLength = customByteBlockPendingBytes?.length || 0
         robot.value.CustomByteBlockPreviewHex = customByteBlockPendingBytes ? toHexPreview(customByteBlockPendingBytes) : '-'
+        robot.value.CustomByteBlockSidebandLength = customByteBlockPendingSideband?.length || 0
+        robot.value.CustomByteBlockSidebandHex = customByteBlockPendingSideband ? toHexPreview(customByteBlockPendingSideband, CUSTOM_BYTE_BLOCK_RESERVED_BYTES) : '-'
+        robot.value.CustomByteBlockCrc16Hex = customByteBlockPendingCrc16 ? toHexPreview(customByteBlockPendingCrc16, 2) : '-'
+        robot.value.CustomByteBlockHeaderValid = customByteBlockPendingHeaderValid
+        robot.value.CustomByteBlockLobShotReservedData = customByteBlockPendingLobShotReserved || undefined
         robot.value.CustomByteBlockLastUpdatedAt = new Date(now).toLocaleTimeString()
+
+        robot.value.CustomByteBlockData = {
+            data: customByteBlockPendingBytes || new Uint8Array(0),
+            sequenceId:
+                customByteBlockPendingBytes && customByteBlockPendingBytes.length >= 4
+                    ? (customByteBlockPendingBytes[2] | (customByteBlockPendingBytes[3] << 8))
+                    : undefined,
+            videoData:
+                customByteBlockPendingBytes && customByteBlockPendingBytes.length >= CUSTOM_BYTE_BLOCK_FRAME_SIZE
+                    ? customByteBlockPendingBytes.subarray(CUSTOM_BYTE_BLOCK_VIDEO_OFFSET, CUSTOM_BYTE_BLOCK_VIDEO_OFFSET + CUSTOM_BYTE_BLOCK_VIDEO_BYTES)
+                    : undefined,
+            sidebandData: customByteBlockPendingSideband || undefined,
+            headerValid: customByteBlockPendingHeaderValid,
+            crc16: customByteBlockPendingCrc16 || undefined,
+            lobShotReserved: customByteBlockPendingLobShotReserved || undefined,
+        }
 
         if (now - lastCustomByteBlockLogAt >= CUSTOM_BYTE_BLOCK_LOG_INTERVAL_MS) {
             lastCustomByteBlockLogAt = now
@@ -128,6 +285,10 @@ export const useRobotStore = defineStore('robot', () => {
 
         customByteBlockPendingUpdateCount = 0
         customByteBlockPendingBytes = null
+        customByteBlockPendingSideband = null
+        customByteBlockPendingCrc16 = null
+        customByteBlockPendingHeaderValid = false
+        customByteBlockPendingLobShotReserved = null
         lastCustomByteBlockStoreFlushAt = now
     }
 
@@ -143,8 +304,15 @@ export const useRobotStore = defineStore('robot', () => {
         const bytes = decodeProtoBytes(rawData)
         if (!bytes) return
 
+        const parsed = parseCustomByteBlockFrame(bytes)
+        const frame = parsed?.frame ?? bytes
+
         customByteBlockPendingUpdateCount += 1
-        customByteBlockPendingBytes = bytes
+        customByteBlockPendingBytes = frame
+        customByteBlockPendingSideband = parsed?.reservedData || null
+        customByteBlockPendingCrc16 = parsed?.crc16 || null
+        customByteBlockPendingHeaderValid = parsed?.headerValid || false
+        customByteBlockPendingLobShotReserved = parseLobShotReservedPack(parsed?.reservedData)
         flushCustomByteBlockStats(false)
 
         if (customByteBlockPendingUpdateCount > 0) {

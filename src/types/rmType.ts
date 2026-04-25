@@ -209,9 +209,44 @@ export interface RadarInfoToClient {
     RadarSingleRobotInfo?: RadarSingleRobotInfo[]; // 雷达发送的所有机器人位置及特殊标识
 }
 
+// CustomByteBlock 中的吊射回传包保留区（24字节，位于索引274~297）
+export interface LobShotReservedPack {
+    onlineFlagsRaw?: number; // bit0~15 原始位图
+    chassislfMotorOnline?: boolean
+    chassisrfMotorOnline?: boolean
+    chassislbMotorOnline?: boolean
+    chassisrbMotorOnline?: boolean
+    jointleftMotorOnline?: boolean
+    jointrightMotorOnline?: boolean
+    yawMotorOnline?: boolean
+    pitchMotorOnline?: boolean
+    frictionlfMotorOnline?: boolean
+    frictionrfMotorOnline?: boolean
+    frictionlbMotorOnline?: boolean
+    frictionrbMotorOnline?: boolean
+    loaderMotorOnline?: boolean
+    frictionMode?: boolean
+    visionMode?: boolean
+    powerMode?: boolean
+    jointMode?: number // 0-失能,1-上台阶,2-悬挂,3-收腿
+    jointModeLabel?: string
+    modeReserved?: number
+    offsetAngle?: number // 单位度
+    chassisMode?: number // 0-失能，1-自由，2-跟随，3-小陀螺
+    chassisModeLabel?: string
+    reservedBytes?: Uint8Array // 后18字节保留位
+    offlineMotorCount?: number
+}
+
 // 2.2.19 CustomByteBlock - 用途：自定义数据流
 export interface CustomByteBlock {
     data?: Uint8Array; // 最大为 2.4 kbit 的自定义数据包
+    sequenceId?: number; // 固定帧中的 2 字节序列号（索引2~3，小端）
+    videoData?: Uint8Array; // 固定帧中的 270 字节图传数据段（索引4~273）
+    sidebandData?: Uint8Array; // 固定帧中的 24 字节保留区（索引274~297）
+    headerValid?: boolean; // 帧头是否匹配 0xA8 0xA7
+    crc16?: Uint8Array; // 末尾2字节CRC16（当前不做校验）
+    lobShotReserved?: LobShotReservedPack; // 索引274~297的24字节结构体
 }
 
 // 2.2.20 AssemblyCommand - 用途：工程装配指令

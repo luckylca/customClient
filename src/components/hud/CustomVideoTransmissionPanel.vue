@@ -10,25 +10,30 @@
         </div>
 
         <div class="status-overlay">
-            <span class="status-pill" :class="{ online: isStreaming, offline: !isStreaming }">
-                {{ isStreaming ? '解码中' : '等待中' }}
+            <span class="status-pill" :class="statusClass">
+                {{ streamStatusText }}
             </span>
             <span class="status-item">FPS {{ decodedFps }}</span>
             <span class="status-item">Seq 丢包 {{ droppedPackets }}</span>
             <span class="status-item">包数 {{ packetCount }}</span>
             <span class="status-item">解析错 {{ parserErrors }}</span>
             <span class="status-item">解码错 {{ decoderErrors }}</span>
+            <span class="status-item">Codec {{ codecDisplay }}</span>
+            <span class="status-item">关键帧 {{ syncedToKeyFrame ? '已同步' : '未同步' }}</span>
         </div>
 
         <div class="debug-overlay">
-            <div class="debug-title">CustomByteBlock 原始数据</div>
+            <div class="debug-title">CustomByteBlock / H264 状态</div>
+            <div class="debug-row">视频结论: {{ decodeSummary }}</div>
             <div class="debug-row">更新次数: {{ rawUpdateCount }}</div>
             <div class="debug-row">最近长度: {{ lastRawLength }} bytes</div>
             <div class="debug-row">最近包头: {{ lastPacketHeaderHex }}</div>
             <div class="debug-row">最近序号: {{ lastPacketSequenceDisplay }}</div>
             <div class="debug-row">最近更新: {{ lastReceivedAtText }}</div>
+            <div class="debug-row">当前 Codec: {{ codecDisplay }}</div>
             <div class="debug-row">HEX预览: {{ lastPayloadPreviewHex }}</div>
         </div>
+        <div class="health-overlay" :class="healthClass">{{ decodeHealthHint }}</div>
     </div>
 </template>
 
@@ -86,6 +91,60 @@ const lastPacketHeader = ref<number | null>(null);
 const lastPacketSequence = ref<number | null>(null);
 const lastPayloadPreviewHex = ref('-');
 const lastReceivedAtText = ref('-');
+const detectedCodec = ref('-');
+const hasDecodedFrame = ref(false);
+const keyframeSeen = ref(false);
+const lastDecodeAtText = ref('-');
+const syncedToKeyFrame = ref(false);
+const decoderConfigured = computed(() => !!decoder && decoder.state === 'configured');
+const codecDisplay = computed(() => detectedCodec.value || '-');
+const streamStatusText = computed(() => {
+    if (unsupportedReason.value) return '环境不支持';
+    if (hasDecodedFrame.value && isStreaming.value) return '视频正常';
+    if (decoderConfigured.value && keyframeSeen.value) return '等待出图';
+    if (packetCount.value > 0) return '收到码流';
+    return '等待中';
+});
+const statusClass = computed(() => {
+    if (unsupportedReason.value) return 'offline';
+    if (hasDecodedFrame.value && isStreaming.value) return 'online';
+    if (decoderErrors.value > 0 || parserErrors.value > 0) return 'warning';
+    if (packetCount.value > 0) return 'warning';
+    return 'offline';
+});
+const decodeSummary = computed(() => {
+    if (unsupportedReason.value) return unsupportedReason.value;
+    if (hasDecodedFrame.value && isStreaming.value && decoderErrors.value === 0 && parserErrors.value === 0) {
+        return 'H264 正在稳定解码，当前可以正常出视频';
+    }
+    if (hasDecodedFrame.value && isStreaming.value) {
+        return 'H264 已成功出图，但仍存在少量解析或解码错误';
+    }
+    if (decoderConfigured.value && keyframeSeen.value) {
+        return '已经拿到关键帧并配置解码器，但暂时还没绘制出视频帧';
+    }
+    if (packetCount.value > 0 && detectedCodec.value !== '-') {
+        return '已经识别到 H264 码流，但还没有成功出图';
+    }
+    if (packetCount.value > 0) {
+        return '已经收到 CustomByteBlock 数据，正在等待可解码的 H264 数据';
+    }
+    return '还没有收到足够的数据，暂时无法判断是否能正常解码';
+});
+const decodeHealthHint = computed(() => {
+    if (unsupportedReason.value) return unsupportedReason.value;
+    if (hasDecodedFrame.value && isStreaming.value) return `最近成功出图: ${lastDecodeAtText.value}`;
+    if (decoderErrors.value > 0) return '解码器已经报错，请重点检查 H264 payload 是否连续';
+    if (parserErrors.value > 0) return '解析器有报错，请重点检查 CustomByteBlock 帧格式';
+    if (keyframeSeen.value) return '已同步关键帧，等待更多帧稳定输出';
+    if (packetCount.value > 0) return '有码流输入，等待关键帧';
+    return '暂无图传输入';
+});
+const healthClass = computed(() => {
+    if (hasDecodedFrame.value && isStreaming.value) return 'ok';
+    if (decoderErrors.value > 0 || parserErrors.value > 0) return 'error';
+    return 'idle';
+});
 
 const lastPacketHeaderHex = computed(() => {
     if (lastPacketHeader.value === null) return '-';
@@ -108,7 +167,6 @@ let currentCodec = '';
 let decodedFrameCount = 0;
 let fpsWindowStart = 0;
 let frameIndex = 0;
-let syncedToKeyFrame = false;
 
 const markStreaming = () => {
     isStreaming.value = true;
@@ -139,7 +197,7 @@ const closeDecoder = () => {
         decoder.close();
     }
     decoder = null;
-    syncedToKeyFrame = false;
+    syncedToKeyFrame.value = false;
 };
 
 const createDecoder = (codec: string): boolean => {
@@ -153,13 +211,15 @@ const createDecoder = (codec: string): boolean => {
                 if (ctx && canvasRef.value) {
                     ctx.drawImage(frame, 0, 0, canvasRef.value.clientWidth, canvasRef.value.clientHeight);
                     decodedFrameCount += 1;
+                    hasDecodedFrame.value = true;
+                    lastDecodeAtText.value = new Date().toLocaleTimeString();
                     markStreaming();
                 }
                 frame.close();
             },
             error: (error) => {
                 decoderErrors.value += 1;
-                syncedToKeyFrame = false;
+                syncedToKeyFrame.value = false;
                 console.error('Custom HUD VideoDecoder error:', error);
             },
         });
@@ -171,8 +231,12 @@ const createDecoder = (codec: string): boolean => {
         });
 
         currentCodec = codec;
+        detectedCodec.value = codec;
         frameIndex = 0;
-        syncedToKeyFrame = false;
+        syncedToKeyFrame.value = false;
+        keyframeSeen.value = false;
+        hasDecodedFrame.value = false;
+        lastDecodeAtText.value = '-';
         return true;
     } catch (error) {
         closeDecoder();
@@ -207,8 +271,9 @@ const decodeAccessUnit = (data: Uint8Array, isKey: boolean) => {
     if (!data.length) return;
     if (!decoder || decoder.state !== 'configured') return;
 
-    if (!syncedToKeyFrame && !isKey) return;
-    if (isKey) syncedToKeyFrame = true;
+    if (isKey) keyframeSeen.value = true;
+    if (!syncedToKeyFrame.value && !isKey) return;
+    if (isKey) syncedToKeyFrame.value = true;
 
     try {
         decoder.decode(
@@ -221,7 +286,7 @@ const decodeAccessUnit = (data: Uint8Array, isKey: boolean) => {
         frameIndex += 1;
     } catch (error) {
         decoderErrors.value += 1;
-        syncedToKeyFrame = false;
+        syncedToKeyFrame.value = false;
         console.warn('Custom HUD decode chunk failed:', error);
     }
 };
@@ -413,6 +478,10 @@ onUnmounted(() => {
     border-color: rgba(255, 138, 138, 0.45)
     color: rgba(255, 166, 166, 0.96)
 
+.status-pill.warning
+    border-color: rgba(255, 214, 102, 0.5)
+    color: rgba(255, 229, 153, 0.96)
+
 .debug-overlay
     position: absolute
     left: 8px
@@ -437,4 +506,32 @@ onUnmounted(() => {
     white-space: nowrap
     overflow: hidden
     text-overflow: ellipsis
+
+.health-overlay
+    position: absolute
+    left: 8px
+    right: 8px
+    bottom: 38px
+    min-height: 24px
+    padding: 4px 10px
+    border-radius: 8px
+    font-size: 11px
+    line-height: 16px
+    letter-spacing: 0.02em
+    pointer-events: none
+    border: 1px solid rgba(183, 212, 255, 0.2)
+    background: rgba(6, 12, 26, 0.62)
+    color: rgba(226, 236, 255, 0.9)
+
+.health-overlay.ok
+    border-color: rgba(117, 255, 174, 0.32)
+    color: rgba(151, 255, 199, 0.96)
+
+.health-overlay.error
+    border-color: rgba(255, 138, 138, 0.32)
+    color: rgba(255, 173, 173, 0.96)
+
+.health-overlay.idle
+    border-color: rgba(255, 214, 102, 0.24)
+    color: rgba(255, 229, 153, 0.94)
 </style>

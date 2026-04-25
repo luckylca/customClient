@@ -41,35 +41,35 @@ const respawnData = computed(() => robotStore.robot.RobotRespawnStatusData);
 
 const isVisible = computed(() => {
    // 如果明确处于存活状态，则不显示复活遮罩
-   if (robotStore.robot.RobotStaticStatusData?.aliveState === 1) {
+   if (robotStore.robot.RobotStaticStatusData?.alive_state === 1) {
       return false;
    }
-   
+
    const data = respawnData.value;
    if (!data) return false;
 
-   const isPending = !!data.isPendingRespawn;
+   const isPending = !!data.is_pending_respawn;
    // 如果总读条大于0，说明正在读条或需要读条
-   const hasProgress = (data.totalRespawnProgress || 0) > 0;
+   const hasProgress = (data.total_respawn_progress || 0) > 0;
 
    return isPending || hasProgress;
 });
 
-const currentProgress = computed(() => respawnData.value?.currentRespawnProgress || 0);
-const totalProgress = computed(() => respawnData.value?.totalRespawnProgress || 100);
+const currentProgress = computed(() => respawnData.value?.current_respawn_progress || 0);
+const totalProgress = computed(() => respawnData.value?.total_respawn_progress || 100);
 const progressPercent = computed(() => {
    if (totalProgress.value === 0) return 100;
    return Math.min(100, Math.max(0, (currentProgress.value / totalProgress.value) * 100));
 });
 
 const isProgressFinished = computed(() => {
-    return !!respawnData.value?.isPendingRespawn || 
+    return !!respawnData.value?.is_pending_respawn ||
            (totalProgress.value > 0 && currentProgress.value >= totalProgress.value);
 });
 
-const canFreeRespawn = computed(() => !!respawnData.value?.canFreeRespawn);
-const canPayForRespawn = computed(() => !!respawnData.value?.canPayForRespawn);
-const goldCost = computed(() => respawnData.value?.goldCostForRespawn || 0);
+const canFreeRespawn = computed(() => !!respawnData.value?.can_free_respawn);
+const canPayForRespawn = computed(() => !!respawnData.value?.can_pay_for_respawn);
+const goldCost = computed(() => respawnData.value?.gold_cost_for_respawn || 0);
 
 const handleFreeRespawnClick = () => {
    if (canFreeRespawn.value) {

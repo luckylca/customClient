@@ -71,6 +71,19 @@ const robotEntries = computed<TopicEntry[]>(() => [
                 ? {
                       updates: robot.CustomByteBlockUpdateCount,
                       length: robot.CustomByteBlockRawLength,
+                      sequenceId: robot.CustomByteBlockData.sequenceId,
+                      headerValid: robot.CustomByteBlockHeaderValid ? '是' : '否',
+                      videoLength: robot.CustomByteBlockData.videoData?.length || 0,
+                      reservedLength: robot.CustomByteBlockSidebandLength,
+                      crc16Hex: robot.CustomByteBlockCrc16Hex,
+                      offlineMotorCount: robot.CustomByteBlockLobShotReservedData?.offlineMotorCount ?? '-',
+                      jointMode: robot.CustomByteBlockLobShotReservedData?.jointModeLabel ?? '-',
+                      chassisMode: robot.CustomByteBlockLobShotReservedData?.chassisModeLabel ?? '-',
+                      frictionMode: robot.CustomByteBlockLobShotReservedData?.frictionMode ? '开' : '关',
+                      visionMode: robot.CustomByteBlockLobShotReservedData?.visionMode ? '开' : '关',
+                      powerMode: robot.CustomByteBlockLobShotReservedData?.powerMode ? '开' : '关',
+                      offsetAngle: robot.CustomByteBlockLobShotReservedData?.offsetAngle ?? '-',
+                      reservedHex: robot.CustomByteBlockSidebandHex,
                       preview: robot.CustomByteBlockPreviewHex,
                       updatedAt: robot.CustomByteBlockLastUpdatedAt,
                   }
@@ -129,7 +142,7 @@ const flattenPreview = (value: unknown) => {
 
     if (typeof value === 'object') {
         const entries = Object.entries(value as Record<string, unknown>);
-        return entries.slice(0, 8).map(([k, v]) => ({
+        return entries.slice(0, 16).map(([k, v]) => ({
             key: k,
             value: formatValue(v),
         }));

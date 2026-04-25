@@ -57,7 +57,7 @@ const enemyColor = computed(() => isRedTeam.value ? '#1e88e5' : '#e53935');
 
 // For getting robot health. Assuming array of 16 elements.
 const getRobotHp = (isRed: boolean, index: number) => {
-    const healthArr = globalData.GlobalUnitStatusData?.robotHealth || [];
+    const healthArr = globalData.GlobalUnitStatusData?.robot_health || [];
     if (demoMode.value) return 500 + Math.floor(Math.random() * 500);
 
     // index is 0 for Hero, 1 for Eng, 2 for Inf3, 3 for Inf4, 6 for Sentry
@@ -68,19 +68,19 @@ const getRobotHp = (isRed: boolean, index: number) => {
 const getBaseHp = (isOur: boolean) => {
     if (demoMode.value) return 5000;
     const s = globalData.GlobalUnitStatusData || {};
-    return isOur ? (s.baseHealth || 0) : (s.enemyBaseHealth || 0);
+    return isOur ? (s.base_health || 0) : (s.enemy_base_health || 0);
 };
 
 const getBaseShield = (isOur: boolean) => {
     if (demoMode.value) return 500;
     const s = globalData.GlobalUnitStatusData || {};
-    return isOur ? (s.baseShield || 0) : (s.enemyBaseShield || 0);
+    return isOur ? (s.base_shield || 0) : (s.enemy_base_shield || 0);
 };
 
 const getOutpostHp = (isOur: boolean) => {
     if (demoMode.value) return 1500;
     const s = globalData.GlobalUnitStatusData || {};
-    return isOur ? (s.outpostHealth || 0) : (s.enemyOutpostHealth || 0);
+    return isOur ? (s.outpost_health || 0) : (s.enemy_outpost_health || 0);
 };
 
 const createTeamUnits = (isOur: boolean) => {

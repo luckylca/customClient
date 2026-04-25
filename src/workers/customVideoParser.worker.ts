@@ -1,6 +1,13 @@
-const PACKET_HEADER = 0xA4;
-const PACKET_SIZE = 254;
-const PACKET_PAYLOAD_SIZE = 250;
+const FRAME_HEADER_0 = 0xA8;
+const FRAME_HEADER_1 = 0xA7;
+const FRAME_SIZE = 300;
+const FRAME_SEQUENCE_BYTES = 2;
+const FRAME_VIDEO_BYTES = 270;
+const FRAME_RESERVED_BYTES = 24;
+const FRAME_CRC_BYTES = 2;
+const FRAME_VIDEO_OFFSET = 2 + FRAME_SEQUENCE_BYTES;
+const FRAME_RESERVED_OFFSET = FRAME_VIDEO_OFFSET + FRAME_VIDEO_BYTES;
+const FRAME_CRC_OFFSET = FRAME_RESERVED_OFFSET + FRAME_RESERVED_BYTES;
 const MAX_STREAM_BUFFER_BYTES = 2 * 1024 * 1024;
 const MAX_ACCESS_UNIT_BYTES = 512 * 1024;
 
@@ -32,7 +39,6 @@ type WorkerOutMessage =
           isKey: boolean;
       };
 
-let expectedSequence: number | null = null;
 let streamBuffer: Uint8Array<ArrayBufferLike> = new Uint8Array(0);
 let pendingAccessUnit: Uint8Array[] = [];
 let pendingHasVcl = false;
@@ -296,31 +302,33 @@ const appendStreamPayload = (payload: Uint8Array) => {
     }
 };
 
-const parseCustomPacket = (packet: Uint8Array) => {
-    if (packet.length < PACKET_SIZE) {
+const parseCustomFrame = (frame: Uint8Array) => {
+    if (frame.length < FRAME_SIZE) {
         parserErrors += 1;
+        droppedPackets += 1;
         return;
     }
 
-    if (packet[0] !== PACKET_HEADER) {
+    if (frame[0] !== FRAME_HEADER_0 || frame[1] !== FRAME_HEADER_1) {
         parserErrors += 1;
+        droppedPackets += 1;
         return;
     }
 
     packetCount += 1;
-    lastPacketHeader = packet[0];
+    lastPacketHeader = frame[0];
+    lastPacketSequence = frame[2] | (frame[3] << 8);
 
-    const sequence = packet[1];
-    lastPacketSequence = sequence;
-    if (expectedSequence !== null) {
-        const gap = (sequence - expectedSequence + 256) % 256;
-        if (gap !== 0) {
-            droppedPackets += gap;
-        }
+    const payload = frame.subarray(FRAME_VIDEO_OFFSET, FRAME_VIDEO_OFFSET + FRAME_VIDEO_BYTES);
+    const reserved = frame.subarray(FRAME_RESERVED_OFFSET, FRAME_RESERVED_OFFSET + FRAME_RESERVED_BYTES);
+    const crc16 = frame.subarray(FRAME_CRC_OFFSET, FRAME_CRC_OFFSET + FRAME_CRC_BYTES);
+    if (reserved.length !== FRAME_RESERVED_BYTES || crc16.length !== FRAME_CRC_BYTES) {
+        parserErrors += 1;
+        droppedPackets += 1;
+        return;
     }
-    expectedSequence = (sequence + 1) % 256;
 
-    const payload = packet.subarray(2, 2 + PACKET_PAYLOAD_SIZE);
+    // 保留区与 crc16 在上层 store 里展示，这里仅提取图传段并继续 H264 解析。
     appendStreamPayload(payload);
 };
 
@@ -332,28 +340,26 @@ const ingestCustomBytes = (bytes: Uint8Array) => {
     if (bytes.length >= 1) {
         lastPacketHeader = bytes[0];
     }
-    if (bytes.length >= 2) {
-        lastPacketSequence = bytes[1];
-    }
+    lastPacketSequence = null;
     lastPayloadPreviewHex = toHexPreview(bytes);
     lastReceivedAtText = new Date().toLocaleTimeString();
 
-    if (bytes.length >= PACKET_SIZE && bytes[0] === PACKET_HEADER) {
-        const packetCountInBlob = Math.floor(bytes.length / PACKET_SIZE);
-        for (let i = 0; i < packetCountInBlob; i += 1) {
-            const start = i * PACKET_SIZE;
-            parseCustomPacket(bytes.subarray(start, start + PACKET_SIZE));
+    if (bytes.length >= FRAME_SIZE) {
+        const frameCountInBlob = Math.floor(bytes.length / FRAME_SIZE);
+        const blobStart = bytes.length - frameCountInBlob * FRAME_SIZE;
+        for (let i = 0; i < frameCountInBlob; i += 1) {
+            const start = blobStart + i * FRAME_SIZE;
+            parseCustomFrame(bytes.subarray(start, start + FRAME_SIZE));
         }
         return;
     }
 
-    if (bytes.length === PACKET_PAYLOAD_SIZE) {
+    if (bytes.length === FRAME_VIDEO_BYTES) {
         appendStreamPayload(bytes);
         return;
     }
 
     parserErrors += 1;
-    appendStreamPayload(bytes);
 };
 
 const toByteArray = (input: unknown): Uint8Array | null => {

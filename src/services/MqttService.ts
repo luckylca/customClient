@@ -2,6 +2,15 @@ import mqtt from 'mqtt';
 import * as rm from '../proto/rm_pb.js';
 
 export class MqttService {
+    private readonly customByteBlockFrameSize = 300;
+    private readonly customByteBlockHeader0 = 0xA8;
+    private readonly customByteBlockHeader1 = 0xA7;
+    private readonly customByteBlockSequenceLength = 2;
+    private readonly customByteBlockVideoLength = 270;
+    private readonly customByteBlockReservedLength = 24;
+    private readonly customByteBlockVideoOffset = 2 + this.customByteBlockSequenceLength;
+    private readonly customByteBlockReservedOffset = this.customByteBlockVideoOffset + this.customByteBlockVideoLength;
+    private readonly customByteBlockCrcOffset = this.customByteBlockReservedOffset + this.customByteBlockReservedLength;
     private client: mqtt.MqttClient | null = null;
     private readonly host: string = '192.168.12.1';
     // private readonly host: string = '127.0.0.1';
@@ -297,6 +306,46 @@ export class MqttService {
         return bytes.length > maxLen ? `${hex} ...` : hex;
     }
 
+    private parseCustomByteBlockFrame(bytes: Uint8Array): {
+        frame: Uint8Array;
+        sequenceId: number;
+        videoData: Uint8Array;
+        sidebandData: Uint8Array;
+        crc16: Uint8Array;
+        headerValid: boolean;
+    } | null {
+        if (bytes.length < this.customByteBlockFrameSize) return null;
+
+        const maxStart = bytes.length - this.customByteBlockFrameSize;
+        let frameStart = maxStart;
+
+        for (let start = maxStart; start >= 0; start -= 1) {
+            if (bytes[start] === this.customByteBlockHeader0 && bytes[start + 1] === this.customByteBlockHeader1) {
+                frameStart = start;
+                break;
+            }
+        }
+
+        const frame = bytes.subarray(frameStart, frameStart + this.customByteBlockFrameSize);
+        const headerValid = frame[0] === this.customByteBlockHeader0 && frame[1] === this.customByteBlockHeader1;
+        const sequenceId = frame[2] | (frame[3] << 8);
+        const videoData = frame.subarray(this.customByteBlockVideoOffset, this.customByteBlockVideoOffset + this.customByteBlockVideoLength);
+        const sidebandData = frame.subarray(
+            this.customByteBlockReservedOffset,
+            this.customByteBlockReservedOffset + this.customByteBlockReservedLength,
+        );
+        const crc16 = frame.subarray(this.customByteBlockCrcOffset, this.customByteBlockCrcOffset + 2);
+
+        return {
+            frame,
+            sequenceId,
+            videoData,
+            sidebandData,
+            crc16,
+            headerValid,
+        };
+    }
+
     private toUint8Array(value: unknown): Uint8Array | null {
         if (!value) return null;
         if (value instanceof Uint8Array) return value;
@@ -328,10 +377,20 @@ export class MqttService {
                 console.log(`[MQTT][DEBUG] topic=${topic} payload has no decodable bytes`);
                 return;
             }
-            const header = bytes.length > 0 ? `0x${bytes[0].toString(16).padStart(2, '0').toUpperCase()}` : '-';
-            const sequence = bytes.length > 1 ? bytes[1] : '-';
+
+            const parsed = this.parseCustomByteBlockFrame(bytes);
+            const header0 = bytes.length > 0 ? `0x${bytes[0].toString(16).padStart(2, '0').toUpperCase()}` : '-';
+            const header1 = bytes.length > 1 ? `0x${bytes[1].toString(16).padStart(2, '0').toUpperCase()}` : '-';
+
+            if (!parsed) {
+                console.log(
+                    `[MQTT][DEBUG] topic=${topic} len=${bytes.length} header=[${header0}, ${header1}] frame=incomplete\n${this.hexPreview(bytes, 64)}`,
+                );
+                return;
+            }
+
             console.log(
-                `[MQTT][DEBUG] topic=${topic} len=${bytes.length} header=${header} seq=${sequence}\n${this.hexPreview(bytes, 64)}`,
+                `[MQTT][DEBUG] topic=${topic} frameLen=${parsed.frame.length} header=[${header0}, ${header1}] sequence=${parsed.sequenceId} headerValid=${parsed.headerValid ? 'yes' : 'no'} videoLen=${parsed.videoData.length} reservedLen=${parsed.sidebandData.length} crc16=${this.hexPreview(parsed.crc16, 2)}\nvideo=${this.hexPreview(parsed.videoData, 32)}\nreserved=${this.hexPreview(parsed.sidebandData, 24)}`,
             );
             return;
         }
@@ -354,7 +413,15 @@ export class MqttService {
 
                 if (topic === 'CustomByteBlock') {
                     const bytes = this.toUint8Array((message as any)?.data);
-                    const object = { data: bytes ?? new Uint8Array(0) };
+                    const parsed = bytes ? this.parseCustomByteBlockFrame(bytes) : null;
+                    const object = {
+                        data: parsed?.frame ?? bytes ?? new Uint8Array(0),
+                        sequenceId: parsed?.sequenceId,
+                        videoData: parsed?.videoData,
+                        sidebandData: parsed?.sidebandData,
+                        crc16: parsed?.crc16,
+                        headerValid: parsed?.headerValid ?? false,
+                    };
                     this.logDebugTopic(topic, object);
                     if (this.onMessageCallback) {
                         this.onMessageCallback(topic, object);
