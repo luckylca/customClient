@@ -28,10 +28,33 @@ type WorkerOutMessage =
           packetCount: number;
           droppedPackets: number;
           parserErrors: number;
+          frameBufferLength: number;
+          streamBufferLength: number;
+          accessUnitBufferLength: number;
+          rawFrameCountHint: number;
+          rawTrailingBytesHint: number;
+          alignedFrameCount: number;
+          syncSearchCount: number;
+          gapResetCount: number;
+          parserResetCount: number;
+          codecResetCount: number;
+          waitForKeyframe: boolean;
+          keyframeSyncAcquired: boolean;
+          lastResetReason: string;
+          frameSyncState: string;
       }
     | {
           type: 'codec';
           codec: string;
+          source: 'stable' | 'sps';
+      }
+    | {
+          type: 'reset';
+          reason: string;
+          gapResetCount: number;
+          parserResetCount: number;
+          codecResetCount: number;
+          waitForKeyframe: boolean;
       }
     | {
           type: 'au';
@@ -54,6 +77,23 @@ let lastReceivedAtText = '-';
 let packetCount = 0;
 let droppedPackets = 0;
 let parserErrors = 0;
+
+let frameBufferLength = 0;
+let streamBufferLength = 0;
+let accessUnitBufferLength = 0;
+let rawFrameCountHint = 0;
+let rawTrailingBytesHint = 0;
+let alignedFrameCount = 0;
+let syncSearchCount = 0;
+let gapResetCount = 0;
+let parserResetCount = 0;
+let codecResetCount = 0;
+let waitForKeyframe = true;
+let keyframeSyncAcquired = false;
+let lastResetReason = '-';
+let frameSyncState = 'idle';
+
+let expectedSequence: number | null = null;
 
 const startCodeLengthAt = (data: Uint8Array, index: number): number => {
     if (index + 3 < data.length && data[index] === 0 && data[index + 1] === 0 && data[index + 2] === 0 && data[index + 3] === 1) {
@@ -196,18 +236,52 @@ const postStats = () => {
         packetCount,
         droppedPackets,
         parserErrors,
+        frameBufferLength,
+        streamBufferLength,
+        accessUnitBufferLength,
+        rawFrameCountHint,
+        rawTrailingBytesHint,
+        alignedFrameCount,
+        syncSearchCount,
+        gapResetCount,
+        parserResetCount,
+        codecResetCount,
+        waitForKeyframe,
+        keyframeSyncAcquired,
+        lastResetReason,
+        frameSyncState,
+    });
+};
+
+const emitReset = (reason: string) => {
+    lastResetReason = reason;
+    waitForKeyframe = true;
+    keyframeSyncAcquired = false;
+    postWorkerMessage({
+        type: 'reset',
+        reason,
+        gapResetCount,
+        parserResetCount,
+        codecResetCount,
+        waitForKeyframe,
     });
 };
 
 const emitCodec = (codec: string) => {
     if (!codec || codec === lastCodec) return;
     lastCodec = codec;
-    postWorkerMessage({ type: 'codec', codec });
+    postWorkerMessage({ type: 'codec', codec, source: 'sps' });
 };
 
 const emitAccessUnit = (nals: Uint8Array[], hasVcl: boolean) => {
     if (!hasVcl || !nals.length) return;
     const isKey = nals.some((nal) => getNalType(nal) === 5);
+    if (isKey) {
+        keyframeSyncAcquired = true;
+        waitForKeyframe = false;
+    }
+    if (waitForKeyframe) return; // Drop until keyframe
+
     const data = concatBytes(nals);
     const transferable = data.buffer;
     (self as { postMessage: (data: WorkerOutMessage, transfer?: Transferable[]) => void }).postMessage(
@@ -286,14 +360,20 @@ const extractNalUnits = (): Uint8Array[] => {
     }
 
     streamBuffer = streamBuffer.slice(start);
+    streamBufferLength = streamBuffer.length;
+    syncSearchCount++;
     return out;
 };
 
 const appendStreamPayload = (payload: Uint8Array) => {
     streamBuffer = appendBytes(streamBuffer, payload);
+    streamBufferLength = streamBuffer.length;
     if (streamBuffer.length > MAX_STREAM_BUFFER_BYTES) {
         parserErrors += 1;
+        parserResetCount += 1;
         streamBuffer = streamBuffer.slice(streamBuffer.length - MAX_STREAM_BUFFER_BYTES);
+        streamBufferLength = streamBuffer.length;
+        emitReset('stream_buffer_overflow');
     }
 
     const nalUnits = extractNalUnits();
@@ -302,22 +382,43 @@ const appendStreamPayload = (payload: Uint8Array) => {
     }
 };
 
-const parseCustomFrame = (frame: Uint8Array) => {
+const parseCustomFrame = (frame: Uint8Array, index: number, totalFrames: number) => {
+    alignedFrameCount += 1;
     if (frame.length < FRAME_SIZE) {
         parserErrors += 1;
         droppedPackets += 1;
+        console.log(`[Worker] Invalid frame length: ${frame.length}`);
         return;
     }
 
-    if (frame[0] !== FRAME_HEADER_0 || frame[1] !== FRAME_HEADER_1) {
+    const headerValid = frame[0] === FRAME_HEADER_0 && frame[1] === FRAME_HEADER_1;
+    if (!headerValid) {
         parserErrors += 1;
         droppedPackets += 1;
+        console.log(`[Worker] Invalid header: 0x${frame[0].toString(16)} 0x${frame[1].toString(16)}`);
         return;
     }
 
     packetCount += 1;
     lastPacketHeader = frame[0];
-    lastPacketSequence = frame[2] | (frame[3] << 8);
+    const seq = frame[2] | (frame[3] << 8);
+    lastPacketSequence = seq;
+
+    let isReset = false;
+    let isLoss = false;
+    if (expectedSequence !== null && expectedSequence !== seq) {
+        isLoss = true;
+        gapResetCount += 1;
+        streamBuffer = new Uint8Array(0);
+        streamBufferLength = 0;
+        pendingAccessUnit = [];
+        pendingHasVcl = false;
+        pendingBytes = 0;
+        isReset = true;
+        emitReset(`sequence_gap_${expectedSequence}_to_${seq}`);
+    }
+    
+    expectedSequence = (seq + 1) & 0xffff;
 
     const payload = frame.subarray(FRAME_VIDEO_OFFSET, FRAME_VIDEO_OFFSET + FRAME_VIDEO_BYTES);
     const reserved = frame.subarray(FRAME_RESERVED_OFFSET, FRAME_RESERVED_OFFSET + FRAME_RESERVED_BYTES);
@@ -326,6 +427,10 @@ const parseCustomFrame = (frame: Uint8Array) => {
         parserErrors += 1;
         droppedPackets += 1;
         return;
+    }
+
+    if (index === 0 || isReset || totalFrames <= 2) {
+        console.log(`[Worker] MQTT Payload: len=${totalFrames * FRAME_SIZE}, HeaderValid=${headerValid}, Seq=${seq}, ExpectedSeq=${isReset ? 'gap' : expectedSequence}, PayloadLen=${payload.length}, Loss=${isLoss}, Reset=${isReset}`);
     }
 
     // 保留区与 crc16 在上层 store 里展示，这里仅提取图传段并继续 H264 解析。
@@ -347,9 +452,11 @@ const ingestCustomBytes = (bytes: Uint8Array) => {
     if (bytes.length >= FRAME_SIZE) {
         const frameCountInBlob = Math.floor(bytes.length / FRAME_SIZE);
         const blobStart = bytes.length - frameCountInBlob * FRAME_SIZE;
+        rawFrameCountHint = frameCountInBlob;
+        rawTrailingBytesHint = blobStart;
         for (let i = 0; i < frameCountInBlob; i += 1) {
             const start = blobStart + i * FRAME_SIZE;
-            parseCustomFrame(bytes.subarray(start, start + FRAME_SIZE));
+            parseCustomFrame(bytes.subarray(start, start + FRAME_SIZE), i, frameCountInBlob);
         }
         return;
     }

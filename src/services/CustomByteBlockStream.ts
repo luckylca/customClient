@@ -1,4 +1,6 @@
-type CustomByteBlockListener = (bytes: Uint8Array) => void;
+import type { CustomByteBlockStreamEvent } from '@/types/rmType';
+
+type CustomByteBlockListener = (event: CustomByteBlockStreamEvent) => void;
 
 const listeners = new Set<CustomByteBlockListener>();
 const STREAM_DEBUG_ENABLED = true;
@@ -16,19 +18,20 @@ const toHexPreview = (bytes: Uint8Array, maxLen = 16): string => {
     return bytes.length > maxLen ? `${parts.join(' ')} ...` : parts.join(' ');
 };
 
-const logStreamRxIfNeeded = (bytes: Uint8Array) => {
+const logStreamRxIfNeeded = (event: CustomByteBlockStreamEvent) => {
     if (!STREAM_DEBUG_ENABLED) return;
 
+    const bytes = event.data ?? new Uint8Array(0);
     streamRxChunkCount += 1;
     streamRxByteCount += bytes.length;
 
     const header = bytes.length > 0 ? `0x${bytes[0].toString(16).padStart(2, '0').toUpperCase()}` : '-';
-    const sequence = bytes.length > 1 ? String(bytes[1]) : '-';
+    const sequence = event.sequenceId ?? event.lastFrame?.sequenceId ?? '-';
 
     if (!firstPacketLogged) {
         firstPacketLogged = true;
         console.log(
-            `[CustomByteBlockStream] topic通信成功: 已收到首包 len=${bytes.length} header=${header} seq=${sequence} preview=${toHexPreview(bytes)}`
+            `[CustomByteBlockStream] topic通信成功: 已收到首包 rawLen=${bytes.length} frameCount=${event.frameCount ?? 0} trailing=${event.trailingBytes ?? 0} header=${header} seq=${sequence} preview=${toHexPreview(bytes)}`
         );
     }
 
@@ -37,15 +40,15 @@ const logStreamRxIfNeeded = (bytes: Uint8Array) => {
     lastStreamDebugLogAt = now;
 
     console.log(
-        `[CustomByteBlockStream] topic心跳: 已接收 chunks=${streamRxChunkCount} totalBytes=${streamRxByteCount} lastLen=${bytes.length} header=${header} seq=${sequence}`
+        `[CustomByteBlockStream] topic心跳: 已接收 chunks=${streamRxChunkCount} totalBytes=${streamRxByteCount} lastRawLen=${bytes.length} frameCount=${event.frameCount ?? 0} trailing=${event.trailingBytes ?? 0} lastSeq=${sequence}`
     );
 };
 
 export const customByteBlockStream = {
-    publish(bytes: Uint8Array) {
-        logStreamRxIfNeeded(bytes);
+    publish(event: CustomByteBlockStreamEvent) {
+        logStreamRxIfNeeded(event);
         for (const listener of listeners) {
-            listener(bytes);
+            listener(event);
         }
     },
     subscribe(listener: CustomByteBlockListener) {
@@ -55,3 +58,5 @@ export const customByteBlockStream = {
         };
     },
 };
+
+export type { CustomByteBlockListener };

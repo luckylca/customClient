@@ -111,7 +111,7 @@
             <div class="hud-body">
                 <component :is="widget.component" v-bind="widget.props" />
             </div>
-            <div v-if="props.enableEdit && settings.editMode" class="resize-overlay">
+            <div v-if="props.enableEdit && settings.editMode && widget.id !== 'hero-model-viewer'" class="resize-overlay">
                 <button
                     v-for="handle in resizeHandles"
                     :key="widget.id + '-' + handle.dir"
@@ -380,6 +380,7 @@ import DataInspectorPanel from './DataInspectorPanel.vue';
 import TeamAssetPanel from './TeamAssetPanel.vue';
 import CustomVideoTransmissionPanel from './CustomVideoTransmissionPanel.vue';
 import AllUnitStatusPanel from './AllUnitStatusPanel.vue';
+import HeroModelPanel from './HeroModelPanel.vue';
 import RespawnOverlay from './RespawnOverlay.vue';
 import { useSettingStore } from '@/stores/setting';
 import { useVideoStatsStore } from '@/stores/videoStats';
@@ -521,6 +522,8 @@ const widgetComponentById = (id: string) => {
             return markRaw(CustomVideoTransmissionPanel);
         case 'all-unit-status':
             return markRaw(AllUnitStatusPanel);
+        case 'hero-model-viewer':
+            return markRaw(HeroModelPanel);
         default:
             return markRaw(HealthPanel);
     }
@@ -740,6 +743,20 @@ const defaultWidgets = (width = 1920, height = 1080): HudWidget[] => {
             h: 220,
             minW: 260,
             minH: 180,
+            visible: true,
+            locked: false,
+            z: 4,
+        },
+        {
+            id: 'hero-model-viewer',
+            title: '英雄 3D 模型',
+            component: markRaw(HeroModelPanel),
+            x: Math.max(width - 280 - padding, padding),
+            y: 390,
+            w: 280,
+            h: 300,
+            minW: 280,
+            minH: 300,
             visible: true,
             locked: false,
             z: 4,

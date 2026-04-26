@@ -238,16 +238,32 @@ export interface LobShotReservedPack {
     offlineMotorCount?: number
 }
 
-// 2.2.19 CustomByteBlock - 用途：自定义数据流
-export interface CustomByteBlock {
-    data?: Uint8Array; // 最大为 2.4 kbit 的自定义数据包
+export interface CustomByteBlockFrameMeta {
+    frame?: Uint8Array; // 单个 300 字节固定帧
+    frameStart?: number; // 该帧在原始 blob 中的起始偏移
     sequenceId?: number; // 固定帧中的 2 字节序列号（索引2~3，小端）
     videoData?: Uint8Array; // 固定帧中的 270 字节图传数据段（索引4~273）
     sidebandData?: Uint8Array; // 固定帧中的 24 字节保留区（索引274~297）
     headerValid?: boolean; // 帧头是否匹配 0xA8 0xA7
     crc16?: Uint8Array; // 末尾2字节CRC16（当前不做校验）
-    lobShotReserved?: LobShotReservedPack; // 索引274~297的24字节结构体
 }
+
+// 2.2.19 CustomByteBlock - 用途：自定义数据流
+export interface CustomByteBlock {
+    data?: Uint8Array; // 保留原始负载，不强制裁成单个300字节帧
+    rawLength?: number; // 原始负载长度
+    frameCount?: number; // 原始负载中可切出的完整300字节帧数量
+    trailingBytes?: number; // 原始负载末尾剩余的不足300字节数据量
+    lastFrame?: CustomByteBlockFrameMeta; // 原始负载中最近一个已解析固定帧
+    sequenceId?: number; // 最近一个固定帧的 2 字节序列号（索引2~3，小端）
+    videoData?: Uint8Array; // 最近一个固定帧中的 270 字节图传数据段（索引4~273）
+    sidebandData?: Uint8Array; // 最近一个固定帧中的 24 字节保留区（索引274~297）
+    headerValid?: boolean; // 最近一个固定帧的帧头是否匹配 0xA8 0xA7
+    crc16?: Uint8Array; // 最近一个固定帧末尾2字节CRC16（当前不做校验）
+    lobShotReserved?: LobShotReservedPack; // 最近一个固定帧索引274~297的24字节结构体
+}
+
+export interface CustomByteBlockStreamEvent extends CustomByteBlock {}
 
 // 2.2.20 AssemblyCommand - 用途：工程装配指令
 export interface AssemblyCommand {

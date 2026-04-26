@@ -1,7 +1,7 @@
 import { ref } from 'vue'
 import { defineStore } from 'pinia'
 import { useSettingStore } from './setting'
-import type { RobotInjuryStat,RobotRespawnStatus,RobotStaticStatus,RobotDynamicStatus,RobotModuleStatus,RobotPosition,Buff,PenaltyInfo,RobotPathPlanInfo,MapClickInfoNotify,RadarInfoToClient,CustomByteBlock,AssemblyCommand,TechCoreMotionStateSync,PerformanceSelection,HeroDeployMode,RuneStatus,SentinelStatusSync,DartInfo,GuardCtrl,AirSupport,LobShotReservedPack } from '../types/rmType'
+import type { RobotInjuryStat,RobotRespawnStatus,RobotStaticStatus,RobotDynamicStatus,RobotModuleStatus,RobotPosition,Buff,PenaltyInfo,RobotPathPlanInfo,MapClickInfoNotify,RadarInfoToClient,CustomByteBlock,CustomByteBlockFrameMeta,CustomByteBlockStreamEvent,AssemblyCommand,TechCoreMotionStateSync,PerformanceSelection,HeroDeployMode,RuneStatus,SentinelStatusSync,DartInfo,GuardCtrl,AirSupport,LobShotReservedPack } from '../types/rmType'
 
 const decodeProtoBytes = (value: unknown): Uint8Array | undefined => {
     if (!value) return undefined
@@ -71,14 +71,19 @@ const LOB_SHOT_RESERVED_SIZE = 24
 let lastCustomByteBlockLogAt = 0
 let customByteBlockPendingUpdateCount = 0
 let customByteBlockPendingBytes: Uint8Array | null = null
+let customByteBlockPendingFrameCount = 0
+let customByteBlockPendingTrailingBytes = 0
 let customByteBlockPendingSideband: Uint8Array | null = null
 let customByteBlockPendingCrc16: Uint8Array | null = null
 let customByteBlockPendingHeaderValid = false
+let customByteBlockPendingFrameStart = -1
+let customByteBlockPendingSequenceId: number | undefined = undefined
+let customByteBlockPendingVideoData: Uint8Array | null = null
 let customByteBlockPendingLobShotReserved: LobShotReservedPack | null = null
 let customByteBlockFlushTimer: ReturnType<typeof setTimeout> | null = null
 let lastCustomByteBlockStoreFlushAt = 0
 
-interface ParsedCustomByteBlockFrame {
+interface ParsedCustomByteBlockFrame extends CustomByteBlockFrameMeta {
     frame: Uint8Array
     sequenceId: number
     videoData: Uint8Array
@@ -112,9 +117,11 @@ const parseCustomByteBlockFrame = (bytes: Uint8Array): ParsedCustomByteBlockFram
 
     return {
         frame,
+        frameStart,
         sequenceId,
         videoData,
         reservedData,
+        sidebandData: reservedData,
         crc16,
         headerValid,
     }
@@ -207,12 +214,15 @@ interface RobotData {
     RadarInfoToClientData?: RadarInfoToClient
     CustomByteBlockData: CustomByteBlock
     CustomByteBlockRawLength: number
+    CustomByteBlockFrameCount: number
+    CustomByteBlockTrailingBytes: number
     CustomByteBlockUpdateCount: number
     CustomByteBlockPreviewHex: string
     CustomByteBlockSidebandLength: number
     CustomByteBlockSidebandHex: string
     CustomByteBlockCrc16Hex: string
     CustomByteBlockHeaderValid: boolean
+    CustomByteBlockLastFrameStart: number
     CustomByteBlockLobShotReservedData?: LobShotReservedPack
     CustomByteBlockLastUpdatedAt: string
     AssemblyCommandData?: AssemblyCommand
@@ -232,12 +242,15 @@ export const useRobotStore = defineStore('robot', () => {
         id: '',
         CustomByteBlockData: { data: new Uint8Array(0) },
         CustomByteBlockRawLength: 0,
+        CustomByteBlockFrameCount: 0,
+        CustomByteBlockTrailingBytes: 0,
         CustomByteBlockUpdateCount: 0,
         CustomByteBlockPreviewHex: '-',
         CustomByteBlockSidebandLength: 0,
         CustomByteBlockSidebandHex: '-',
         CustomByteBlockCrc16Hex: '-',
         CustomByteBlockHeaderValid: false,
+        CustomByteBlockLastFrameStart: -1,
         CustomByteBlockLobShotReservedData: undefined,
         CustomByteBlockLastUpdatedAt: '-',
     })
@@ -252,29 +265,110 @@ export const useRobotStore = defineStore('robot', () => {
 
         robot.value.CustomByteBlockUpdateCount += customByteBlockPendingUpdateCount
         robot.value.CustomByteBlockRawLength = customByteBlockPendingBytes?.length || 0
+        robot.value.CustomByteBlockFrameCount = customByteBlockPendingFrameCount
+        robot.value.CustomByteBlockTrailingBytes = customByteBlockPendingTrailingBytes
         robot.value.CustomByteBlockPreviewHex = customByteBlockPendingBytes ? toHexPreview(customByteBlockPendingBytes) : '-'
         robot.value.CustomByteBlockSidebandLength = customByteBlockPendingSideband?.length || 0
         robot.value.CustomByteBlockSidebandHex = customByteBlockPendingSideband ? toHexPreview(customByteBlockPendingSideband, CUSTOM_BYTE_BLOCK_RESERVED_BYTES) : '-'
         robot.value.CustomByteBlockCrc16Hex = customByteBlockPendingCrc16 ? toHexPreview(customByteBlockPendingCrc16, 2) : '-'
         robot.value.CustomByteBlockHeaderValid = customByteBlockPendingHeaderValid
+        robot.value.CustomByteBlockLastFrameStart = customByteBlockPendingFrameStart
         robot.value.CustomByteBlockLobShotReservedData = customByteBlockPendingLobShotReserved || undefined
         robot.value.CustomByteBlockLastUpdatedAt = new Date(now).toLocaleTimeString()
 
         robot.value.CustomByteBlockData = {
             data: customByteBlockPendingBytes || new Uint8Array(0),
-            sequenceId:
-                customByteBlockPendingBytes && customByteBlockPendingBytes.length >= 4
-                    ? (customByteBlockPendingBytes[2] | (customByteBlockPendingBytes[3] << 8))
+            rawLength: customByteBlockPendingBytes?.length || 0,
+            frameCount: customByteBlockPendingFrameCount,
+            trailingBytes: customByteBlockPendingTrailingBytes,
+            lastFrame:
+                customByteBlockPendingVideoData || customByteBlockPendingSideband || customByteBlockPendingCrc16
+                    ? {
+                        frame: customByteBlockPendingFrameStart >= 0 && customByteBlockPendingBytes && customByteBlockPendingBytes.length >= CUSTOM_BYTE_BLOCK_FRAME_SIZE
+                            ? customByteBlockPendingBytes.subarray(customByteBlockPendingFrameStart, customByteBlockPendingFrameStart + CUSTOM_BYTE_BLOCK_FRAME_SIZE)
+                            : undefined,
+                        frameStart: customByteBlockPendingFrameStart >= 0 ? customByteBlockPendingFrameStart : undefined,
+                        sequenceId: customByteBlockPendingSequenceId,
+                        videoData: customByteBlockPendingVideoData || undefined,
+                        sidebandData: customByteBlockPendingSideband || undefined,
+                        headerValid: customByteBlockPendingHeaderValid,
+                        crc16: customByteBlockPendingCrc16 || undefined,
+                    }
                     : undefined,
-            videoData:
-                customByteBlockPendingBytes && customByteBlockPendingBytes.length >= CUSTOM_BYTE_BLOCK_FRAME_SIZE
-                    ? customByteBlockPendingBytes.subarray(CUSTOM_BYTE_BLOCK_VIDEO_OFFSET, CUSTOM_BYTE_BLOCK_VIDEO_OFFSET + CUSTOM_BYTE_BLOCK_VIDEO_BYTES)
-                    : undefined,
+            sequenceId: customByteBlockPendingSequenceId,
+            videoData: customByteBlockPendingVideoData || undefined,
             sidebandData: customByteBlockPendingSideband || undefined,
             headerValid: customByteBlockPendingHeaderValid,
             crc16: customByteBlockPendingCrc16 || undefined,
             lobShotReserved: customByteBlockPendingLobShotReserved || undefined,
         }
+
+        if (!robot.value.CustomByteBlockData.lastFrame && customByteBlockPendingFrameStart >= 0 && customByteBlockPendingBytes && customByteBlockPendingBytes.length >= CUSTOM_BYTE_BLOCK_FRAME_SIZE) {
+            robot.value.CustomByteBlockData.lastFrame = {
+                frame: customByteBlockPendingBytes.subarray(customByteBlockPendingFrameStart, customByteBlockPendingFrameStart + CUSTOM_BYTE_BLOCK_FRAME_SIZE),
+                frameStart: customByteBlockPendingFrameStart,
+                sequenceId: customByteBlockPendingSequenceId,
+                videoData: customByteBlockPendingVideoData || undefined,
+                sidebandData: customByteBlockPendingSideband || undefined,
+                headerValid: customByteBlockPendingHeaderValid,
+                crc16: customByteBlockPendingCrc16 || undefined,
+            }
+        }
+
+        if (!robot.value.CustomByteBlockData.lastFrame && customByteBlockPendingSequenceId !== undefined) {
+            robot.value.CustomByteBlockData.lastFrame = {
+                frameStart: customByteBlockPendingFrameStart >= 0 ? customByteBlockPendingFrameStart : undefined,
+                sequenceId: customByteBlockPendingSequenceId,
+                videoData: customByteBlockPendingVideoData || undefined,
+                sidebandData: customByteBlockPendingSideband || undefined,
+                headerValid: customByteBlockPendingHeaderValid,
+                crc16: customByteBlockPendingCrc16 || undefined,
+            }
+        }
+
+        if (robot.value.CustomByteBlockData.lastFrame?.frameStart === undefined && customByteBlockPendingFrameStart >= 0) {
+            robot.value.CustomByteBlockData.lastFrame.frameStart = customByteBlockPendingFrameStart
+        }
+
+        if (robot.value.CustomByteBlockData.lastFrame?.frame === undefined && customByteBlockPendingFrameStart >= 0 && customByteBlockPendingBytes && customByteBlockPendingBytes.length >= customByteBlockPendingFrameStart + CUSTOM_BYTE_BLOCK_FRAME_SIZE) {
+            robot.value.CustomByteBlockData.lastFrame.frame = customByteBlockPendingBytes.subarray(customByteBlockPendingFrameStart, customByteBlockPendingFrameStart + CUSTOM_BYTE_BLOCK_FRAME_SIZE)
+        }
+
+        if (robot.value.CustomByteBlockData.lastFrame?.videoData === undefined) {
+            robot.value.CustomByteBlockData.lastFrame!.videoData = customByteBlockPendingVideoData || undefined
+        }
+
+        if (robot.value.CustomByteBlockData.lastFrame?.sidebandData === undefined) {
+            robot.value.CustomByteBlockData.lastFrame!.sidebandData = customByteBlockPendingSideband || undefined
+        }
+
+        if (robot.value.CustomByteBlockData.lastFrame?.crc16 === undefined) {
+            robot.value.CustomByteBlockData.lastFrame!.crc16 = customByteBlockPendingCrc16 || undefined
+        }
+
+        robot.value.CustomByteBlockData.headerValid = customByteBlockPendingHeaderValid
+        if (robot.value.CustomByteBlockData.lastFrame) {
+            robot.value.CustomByteBlockData.lastFrame.headerValid = customByteBlockPendingHeaderValid
+        }
+
+        if (robot.value.CustomByteBlockData.lastFrame && customByteBlockPendingSequenceId !== undefined) {
+            robot.value.CustomByteBlockData.lastFrame.sequenceId = customByteBlockPendingSequenceId
+        }
+
+        if (robot.value.CustomByteBlockData.lastFrame && robot.value.CustomByteBlockData.lastFrame.frameStart === undefined && customByteBlockPendingFrameStart >= 0) {
+            robot.value.CustomByteBlockData.lastFrame.frameStart = customByteBlockPendingFrameStart
+        }
+
+        robot.value.CustomByteBlockData.rawLength = robot.value.CustomByteBlockRawLength
+        robot.value.CustomByteBlockData.frameCount = robot.value.CustomByteBlockFrameCount
+        robot.value.CustomByteBlockData.trailingBytes = robot.value.CustomByteBlockTrailingBytes
+        robot.value.CustomByteBlockData.sequenceId = customByteBlockPendingSequenceId
+        robot.value.CustomByteBlockData.videoData = customByteBlockPendingVideoData || undefined
+        robot.value.CustomByteBlockData.sidebandData = customByteBlockPendingSideband || undefined
+        robot.value.CustomByteBlockData.crc16 = customByteBlockPendingCrc16 || undefined
+        robot.value.CustomByteBlockData.lobShotReserved = customByteBlockPendingLobShotReserved || undefined
+        robot.value.CustomByteBlockData.headerValid = customByteBlockPendingHeaderValid
+        robot.value.CustomByteBlockData.data = customByteBlockPendingBytes || new Uint8Array(0)
 
         if (now - lastCustomByteBlockLogAt >= CUSTOM_BYTE_BLOCK_LOG_INTERVAL_MS) {
             lastCustomByteBlockLogAt = now
@@ -285,9 +379,14 @@ export const useRobotStore = defineStore('robot', () => {
 
         customByteBlockPendingUpdateCount = 0
         customByteBlockPendingBytes = null
+        customByteBlockPendingFrameCount = 0
+        customByteBlockPendingTrailingBytes = 0
         customByteBlockPendingSideband = null
         customByteBlockPendingCrc16 = null
         customByteBlockPendingHeaderValid = false
+        customByteBlockPendingFrameStart = -1
+        customByteBlockPendingSequenceId = undefined
+        customByteBlockPendingVideoData = null
         customByteBlockPendingLobShotReserved = null
         lastCustomByteBlockStoreFlushAt = now
     }
@@ -301,18 +400,52 @@ export const useRobotStore = defineStore('robot', () => {
     }
 
     const updateCustomByteBlockStats = (rawData: unknown) => {
-        const bytes = decodeProtoBytes(rawData)
-        if (!bytes) return
+        let event: CustomByteBlockStreamEvent | null = null
+        let bytes: Uint8Array | undefined
 
-        const parsed = parseCustomByteBlockFrame(bytes)
-        const frame = parsed?.frame ?? bytes
+        if (rawData && typeof rawData === 'object' && !Array.isArray(rawData)) {
+            const maybeEvent = rawData as CustomByteBlockStreamEvent
+            bytes = decodeProtoBytes(maybeEvent.data)
+            if (bytes) {
+                event = {
+                    ...maybeEvent,
+                    data: bytes,
+                }
+            }
+        }
+
+        if (!event) {
+            bytes = decodeProtoBytes(rawData)
+            if (!bytes) return
+            event = {
+                data: bytes,
+            }
+        }
+
+        const parsed = event.lastFrame?.frame
+            ? {
+                frame: event.lastFrame.frame,
+                frameStart: event.lastFrame.frameStart ?? -1,
+                sequenceId: event.lastFrame.sequenceId ?? 0,
+                videoData: event.lastFrame.videoData ?? new Uint8Array(0),
+                reservedData: event.lastFrame.sidebandData ?? new Uint8Array(0),
+                sidebandData: event.lastFrame.sidebandData ?? new Uint8Array(0),
+                crc16: event.lastFrame.crc16 ?? new Uint8Array(0),
+                headerValid: event.lastFrame.headerValid ?? false,
+            }
+            : parseCustomByteBlockFrame(event.data || new Uint8Array(0))
 
         customByteBlockPendingUpdateCount += 1
-        customByteBlockPendingBytes = frame
-        customByteBlockPendingSideband = parsed?.reservedData || null
-        customByteBlockPendingCrc16 = parsed?.crc16 || null
-        customByteBlockPendingHeaderValid = parsed?.headerValid || false
-        customByteBlockPendingLobShotReserved = parseLobShotReservedPack(parsed?.reservedData)
+        customByteBlockPendingBytes = event.data || new Uint8Array(0)
+        customByteBlockPendingFrameCount = event.frameCount ?? Math.floor((event.data?.length || 0) / CUSTOM_BYTE_BLOCK_FRAME_SIZE)
+        customByteBlockPendingTrailingBytes = event.trailingBytes ?? ((event.data?.length || 0) - customByteBlockPendingFrameCount * CUSTOM_BYTE_BLOCK_FRAME_SIZE)
+        customByteBlockPendingSideband = event.sidebandData || parsed?.reservedData || null
+        customByteBlockPendingCrc16 = event.crc16 || parsed?.crc16 || null
+        customByteBlockPendingHeaderValid = event.headerValid ?? parsed?.headerValid ?? false
+        customByteBlockPendingFrameStart = event.lastFrame?.frameStart ?? parsed?.frameStart ?? -1
+        customByteBlockPendingSequenceId = event.sequenceId ?? event.lastFrame?.sequenceId ?? parsed?.sequenceId
+        customByteBlockPendingVideoData = event.videoData || parsed?.videoData || null
+        customByteBlockPendingLobShotReserved = parseLobShotReservedPack(event.sidebandData || parsed?.reservedData)
         flushCustomByteBlockStats(false)
 
         if (customByteBlockPendingUpdateCount > 0) {

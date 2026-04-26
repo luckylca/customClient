@@ -7,6 +7,7 @@ import { useGlobalStore } from './stores/globalData';
 import { useRobotStore } from './stores/robotData';
 import { useSettingStore } from './stores/setting';
 import Minimap from './components/hud/Minimap.vue';
+import type { CustomByteBlockStreamEvent } from './types/rmType';
 
 let inputHandler: InputHandler | null = null;
 const globalStore = useGlobalStore();
@@ -47,14 +48,40 @@ const toByteArray = (input: unknown): Uint8Array | null => {
   return null;
 };
 
+const normalizeCustomByteBlockEvent = (payload: unknown): CustomByteBlockStreamEvent | null => {
+  if (!payload || typeof payload !== 'object') return null;
+  const event = payload as CustomByteBlockStreamEvent & { lastFrame?: Record<string, unknown> };
+  const data = toByteArray(event.data);
+  if (!data) return null;
+
+  const lastFrame = event.lastFrame
+    ? {
+        ...event.lastFrame,
+        frame: toByteArray(event.lastFrame.frame),
+        videoData: toByteArray(event.lastFrame.videoData),
+        sidebandData: toByteArray(event.lastFrame.sidebandData),
+        crc16: toByteArray(event.lastFrame.crc16),
+      }
+    : undefined;
+
+  return {
+    ...event,
+    data,
+    videoData: toByteArray(event.videoData),
+    sidebandData: toByteArray(event.sidebandData),
+    crc16: toByteArray(event.crc16),
+    lastFrame,
+  };
+};
+
 const handleMqttMessage = (_event: any, payload: { topic: string; data: unknown }) => {
   if (!payload || !payload.topic) return;
 
   if (payload.topic === 'CustomByteBlock') {
-    const bytes = toByteArray((payload.data as { data?: unknown })?.data ?? payload.data);
-    if (!bytes) return;
-    customByteBlockStream.publish(bytes);
-    robotStore.updateCustomByteBlockStats(bytes);
+    const event = normalizeCustomByteBlockEvent(payload.data);
+    if (!event) return;
+    customByteBlockStream.publish(event);
+    robotStore.updateCustomByteBlockStats(event);
     return;
   }
 
@@ -63,10 +90,10 @@ const handleMqttMessage = (_event: any, payload: { topic: string; data: unknown 
 };
 
 const handleCustomByteBlockStream = (_event: any, payload: unknown) => {
-  const bytes = toByteArray((payload as { data?: unknown })?.data ?? payload);
-  if (!bytes) return;
-  customByteBlockStream.publish(bytes);
-  robotStore.updateCustomByteBlockStats(bytes);
+  const event = normalizeCustomByteBlockEvent(payload);
+  if (!event) return;
+  customByteBlockStream.publish(event);
+  robotStore.updateCustomByteBlockStats(event);
 };
 
 onMounted(() => {

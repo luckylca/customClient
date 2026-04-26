@@ -2,6 +2,7 @@
 import { app, BrowserWindow, ipcMain } from 'electron'
 import { VideoHandler } from './services/VideoHandler';
 import { MqttService } from './services/MqttService';
+import type { CustomByteBlockStreamEvent } from './types/rmType';
 const CONTROL_TOPIC = process.env.MQTT_CONTROL_TOPIC || 'KeyboardMouseControl';
 const CONTROL_QOS: 0 = 0;
 const COMMON_COMMAND_TOPIC = process.env.MQTT_COMMON_COMMAND_TOPIC || 'CommonCommand';
@@ -42,8 +43,7 @@ app.whenReady().then(() => {
         if (!win || win.isDestroyed()) return;
 
         if (topic === 'CustomByteBlock') {
-            const streamData = (data as { data?: Uint8Array })?.data ?? data;
-            win.webContents.send('custom-byte-block-stream', streamData);
+            win.webContents.send('custom-byte-block-stream', data as CustomByteBlockStreamEvent);
             return;
         }
 
