@@ -26,7 +26,7 @@ export class MqttService {
     private shouldReconnect = true;
     private bindLocalAddress = true;
     private readonly debugTopics: string[] = (
-        process.env.MQTT_DEBUG_TOPICS || 'CustomByteBlock'
+        process.env.MQTT_DEBUG_TOPICS || 'CustomByteBlock,GlobalUnitStatus'
     )
         .split(',')
         .map((item) => item.trim())
@@ -255,8 +255,8 @@ export class MqttService {
             'PenaltyInfo', 'RobotPathPlanInfo', 'MapClickInfoNotify', 'RadarInfoToClient', 'CustomByteBlock',
             'AssemblyCommand',
             'TechCoreMotionStateSync', 'RobotPerformanceSelectionSync', 'DeployModeStatusSync',
-            'RuneStatusSync', 'SentinelStatusSync', 'DartSelectTargetStatusSync',
-            'GuardCtrlResult', 'AirSupportStatusSync'
+            'RuneStatusSync', 'SentinelStatusSync', 'SentryStatusSync', 'DartSelectTargetStatusSync',
+            'GuardCtrlResult', 'SentryCtrlResult', 'AirSupportStatusSync'
         ];
 
         this.client.subscribe(topics, { qos: 1 }, (err) => {
@@ -445,6 +445,7 @@ export class MqttService {
                 const object = this.buildCustomByteBlockObject(bytes);
                 this.logDebugTopic(topic, object);
                 if (this.onMessageCallback) {
+                    // 传递原始字节数组，而不是解析后的对象，供图传组件使用
                     this.onMessageCallback(topic, object);
                 }
                 return;

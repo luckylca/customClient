@@ -73,7 +73,22 @@ type ParserWorkerAccessUnitMessage = {
     isKey: boolean;
 };
 
-type ParserWorkerOutMessage = ParserWorkerStatsMessage | ParserWorkerCodecMessage | ParserWorkerAccessUnitMessage;
+// 【修复 1】：补充 Worker 在丢包重置时发出的类型
+type ParserWorkerResetMessage = {
+    type: 'reset';
+    reason: string;
+    gapResetCount: number;
+    parserResetCount: number;
+    codecResetCount: number;
+    waitForKeyframe: boolean;
+};
+
+// 将 ParserWorkerResetMessage 放入联合类型中
+type ParserWorkerOutMessage = 
+    | ParserWorkerStatsMessage 
+    | ParserWorkerCodecMessage 
+    | ParserWorkerAccessUnitMessage 
+    | ParserWorkerResetMessage;
 
 const wrapperRef = ref<HTMLDivElement | null>(null);
 const canvasRef = ref<HTMLCanvasElement | null>(null);
@@ -248,7 +263,7 @@ const createDecoder = (codec: string): boolean => {
 const ensureDecoderFromCodec = (codecHint: string) => {
     if (decoder && decoder.state === 'configured' && currentCodec === codecHint) return;
 
-    const codecCandidates = [
+    const codecCandidates =[
         codecHint,
         'avc1.640034',
         'avc1.640033',
@@ -316,6 +331,14 @@ const stopFpsSampler = () => {
 const handleWorkerMessage = (event: MessageEvent<ParserWorkerOutMessage>) => {
     const message = event.data;
     if (!message) return;
+
+    // 【修复 2】：处理由于 sequence_id 不连续引发的解码器挂起等待关键帧
+    if (message.type === 'reset') {
+        syncedToKeyFrame.value = false;
+        keyframeSeen.value = false;
+        console.warn(`[Custom HUD] H264 丢包或越界，正在等待下一个关键帧 (原因: ${message.reason})`);
+        return;
+    }
 
     if (message.type === 'stats') {
         rawUpdateCount.value = message.rawUpdateCount;
@@ -386,8 +409,11 @@ onMounted(() => {
     parserWorker.addEventListener('message', handleWorkerMessage);
     parserWorker.addEventListener('error', handleWorkerError);
 
-    stopStreamSubscription = customByteBlockStream.subscribe((bytes) => {
-        postChunkToWorker(bytes);
+    // 【修复 3】：兼容传入 event 本身为 Uint8Array 或带 data 属性的对象
+    stopStreamSubscription = customByteBlockStream.subscribe((event: any) => {
+        const rawBytes = event instanceof Uint8Array ? event : event?.data;
+        if (!rawBytes || rawBytes.length === 0) return;
+        postChunkToWorker(rawBytes);
     });
 });
 
