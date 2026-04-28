@@ -5,7 +5,9 @@
         <div v-if="unsupportedReason" class="placeholder">
             {{ unsupportedReason }}
         </div>
-        <div v-else-if="!isStreaming" class="placeholder">
+
+        <!-- 关键：已经解出帧后，不再用 placeholder 覆盖 canvas -->
+        <div v-else-if="!hasDecodedFrame && !isStreaming" class="placeholder">
             等待 CustomByteBlock 图传...
         </div>
 
@@ -13,13 +15,15 @@
             <span class="status-pill" :class="statusClass">
                 {{ streamStatusText }}
             </span>
+
             <span class="status-item">FPS {{ decodedFps }}</span>
-            <span class="status-item">Seq 丢包 {{ droppedPackets }}</span>
             <span class="status-item">包数 {{ packetCount }}</span>
+            <span class="status-item">丢包 {{ droppedPackets }}</span>
+            <span class="status-item">丢包率 {{ packetLossRate }}</span>
             <span class="status-item">解析错 {{ parserErrors }}</span>
             <span class="status-item">解码错 {{ decoderErrors }}</span>
             <span class="status-item">Codec {{ codecDisplay }}</span>
-            <span class="status-item">关键帧 {{ syncedToKeyFrame ? '已同步' : '未同步' }}</span>
+            <span class="status-item">关键帧 {{ syncedToKeyFrame ? "已同步" : "未同步" }}</span>
         </div>
 
         <div class="debug-overlay">
@@ -32,25 +36,29 @@
             <div class="debug-row">最近更新: {{ lastReceivedAtText }}</div>
             <div class="debug-row">当前 Codec: {{ codecDisplay }}</div>
             <div class="debug-row">HEX预览: {{ lastPayloadPreviewHex }}</div>
+
+            <div class="debug-title second">画面诊断</div>
+            <div class="debug-row">VideoFrame: {{ frameSizeText }}</div>
+            <div class="debug-row">Canvas: {{ canvasSizeText }}</div>
+            <div class="debug-row">中心亮度: {{ avgBrightnessText }}</div>
+            <div class="debug-row">绘制状态: {{ drawDebugText }}</div>
         </div>
-        <div class="health-overlay" :class="healthClass">{{ decodeHealthHint }}</div>
+
+        <div class="health-overlay" :class="healthClass">
+            {{ decodeHealthHint }}
+        </div>
     </div>
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, onUnmounted, ref } from 'vue';
-import { customByteBlockStream } from '@/services/CustomByteBlockStream';
+import { computed, onMounted, onUnmounted, ref } from "vue";
+import { customByteBlockStream } from "@/services/CustomByteBlockStream";
 
-const TARGET_FPS = 60;
+const TARGET_FPS = 10;
 const FRAME_INTERVAL_US = Math.floor(1_000_000 / TARGET_FPS);
 
-type ParserWorkerInMessage = {
-    type: 'chunk';
-    bytes: ArrayBuffer;
-};
-
 type ParserWorkerStatsMessage = {
-    type: 'stats';
+    type: "stats";
     rawUpdateCount: number;
     lastRawLength: number;
     lastPacketHeader: number | null;
@@ -63,37 +71,25 @@ type ParserWorkerStatsMessage = {
 };
 
 type ParserWorkerCodecMessage = {
-    type: 'codec';
+    type: "codec";
     codec: string;
 };
 
 type ParserWorkerAccessUnitMessage = {
-    type: 'au';
+    type: "au";
     data: ArrayBuffer;
     isKey: boolean;
 };
 
-// 【修复 1】：补充 Worker 在丢包重置时发出的类型
-type ParserWorkerResetMessage = {
-    type: 'reset';
-    reason: string;
-    gapResetCount: number;
-    parserResetCount: number;
-    codecResetCount: number;
-    waitForKeyframe: boolean;
-};
-
-// 将 ParserWorkerResetMessage 放入联合类型中
-type ParserWorkerOutMessage = 
-    | ParserWorkerStatsMessage 
-    | ParserWorkerCodecMessage 
-    | ParserWorkerAccessUnitMessage 
-    | ParserWorkerResetMessage;
+type ParserWorkerOutMessage =
+    | ParserWorkerStatsMessage
+    | ParserWorkerCodecMessage
+    | ParserWorkerAccessUnitMessage;
 
 const wrapperRef = ref<HTMLDivElement | null>(null);
 const canvasRef = ref<HTMLCanvasElement | null>(null);
 
-const unsupportedReason = ref('');
+const unsupportedReason = ref("");
 const isStreaming = ref(false);
 const decodedFps = ref(0);
 const packetCount = ref(0);
@@ -104,71 +100,139 @@ const rawUpdateCount = ref(0);
 const lastRawLength = ref(0);
 const lastPacketHeader = ref<number | null>(null);
 const lastPacketSequence = ref<number | null>(null);
-const lastPayloadPreviewHex = ref('-');
-const lastReceivedAtText = ref('-');
-const detectedCodec = ref('-');
+const lastPayloadPreviewHex = ref("-");
+const lastReceivedAtText = ref("-");
+const detectedCodec = ref("-");
 const hasDecodedFrame = ref(false);
 const keyframeSeen = ref(false);
-const lastDecodeAtText = ref('-');
+const lastDecodeAtText = ref("-");
 const syncedToKeyFrame = ref(false);
-const decoderConfigured = computed(() => !!decoder && decoder.state === 'configured');
-const codecDisplay = computed(() => detectedCodec.value || '-');
+
+const frameSizeText = ref("-");
+const canvasSizeText = ref("-");
+const avgBrightnessText = ref("-");
+const drawDebugText = ref("尚未绘制");
+
+const decoderConfigured = computed(() => {
+    return !!decoder && decoder.state === "configured";
+});
+
+const codecDisplay = computed(() => {
+    return detectedCodec.value || "-";
+});
+
+const packetLossRate = computed(() => {
+    const totalExpected = packetCount.value + droppedPackets.value;
+
+    if (totalExpected === 0) return "0.00%";
+
+    return ((droppedPackets.value / totalExpected) * 100).toFixed(2) + "%";
+});
+
 const streamStatusText = computed(() => {
-    if (unsupportedReason.value) return '环境不支持';
-    if (hasDecodedFrame.value && isStreaming.value) return '视频正常';
-    if (decoderConfigured.value && keyframeSeen.value) return '等待出图';
-    if (packetCount.value > 0) return '收到码流';
-    return '等待中';
+    if (unsupportedReason.value) return "环境不支持";
+    if (hasDecodedFrame.value && isStreaming.value) return "视频正常";
+    if (hasDecodedFrame.value) return "已出图";
+    if (decoderConfigured.value && keyframeSeen.value) return "等待出图";
+    if (decoderConfigured.value) return "等待关键帧";
+    if (packetCount.value > 0) return "收到码流";
+    return "等待中";
 });
+
 const statusClass = computed(() => {
-    if (unsupportedReason.value) return 'offline';
-    if (hasDecodedFrame.value && isStreaming.value) return 'online';
-    if (decoderErrors.value > 0 || parserErrors.value > 0) return 'warning';
-    if (packetCount.value > 0) return 'warning';
-    return 'offline';
+    if (unsupportedReason.value) return "offline";
+    if (hasDecodedFrame.value) return "online";
+    if (decoderErrors.value > 0 || parserErrors.value > 0) return "warning";
+    if (packetCount.value > 0) return "warning";
+    return "offline";
 });
+
 const decodeSummary = computed(() => {
     if (unsupportedReason.value) return unsupportedReason.value;
-    if (hasDecodedFrame.value && isStreaming.value && decoderErrors.value === 0 && parserErrors.value === 0) {
-        return 'H264 正在稳定解码，当前可以正常出视频';
-    }
+
     if (hasDecodedFrame.value && isStreaming.value) {
-        return 'H264 已成功出图，但仍存在少量解析或解码错误';
+        if (avgBrightnessText.value !== "-" && Number(avgBrightnessText.value) < 5) {
+            return "WebCodecs 已输出 VideoFrame，但画面亮度接近 0，疑似黑帧";
+        }
+
+        return "H264 已成功解码并绘制到 Canvas";
     }
-    if (decoderConfigured.value && keyframeSeen.value) {
-        return '已经拿到关键帧并配置解码器，但暂时还没绘制出视频帧';
+
+    if (hasDecodedFrame.value) {
+        return "曾经成功出图，当前等待新帧";
     }
-    if (packetCount.value > 0 && detectedCodec.value !== '-') {
-        return '已经识别到 H264 码流，但还没有成功出图';
+
+    if (decoderConfigured.value && syncedToKeyFrame.value) {
+        return "已经配置解码器，正在投喂画面";
     }
+
+    if (decoderConfigured.value && !syncedToKeyFrame.value) {
+        return "已经配置解码器，正在等待完整 SPS/PPS/IDR 关键帧";
+    }
+
+    if (packetCount.value > 0 && detectedCodec.value !== "-") {
+        return "已经识别到 H264 码流，正在等待有效画帧";
+    }
+
     if (packetCount.value > 0) {
-        return '已经收到 CustomByteBlock 数据，正在等待可解码的 H264 数据';
+        return "已经收到数据，正在解析流";
     }
-    return '还没有收到足够的数据，暂时无法判断是否能正常解码';
+
+    return "暂无数据流入";
 });
+
 const decodeHealthHint = computed(() => {
     if (unsupportedReason.value) return unsupportedReason.value;
-    if (hasDecodedFrame.value && isStreaming.value) return `最近成功出图: ${lastDecodeAtText.value}`;
-    if (decoderErrors.value > 0) return '解码器已经报错，请重点检查 H264 payload 是否连续';
-    if (parserErrors.value > 0) return '解析器有报错，请重点检查 CustomByteBlock 帧格式';
-    if (keyframeSeen.value) return '已同步关键帧，等待更多帧稳定输出';
-    if (packetCount.value > 0) return '有码流输入，等待关键帧';
-    return '暂无图传输入';
+
+    if (hasDecodedFrame.value && isStreaming.value) {
+        return `最近成功出图: ${lastDecodeAtText.value} | ${drawDebugText.value}`;
+    }
+
+    if (hasDecodedFrame.value) {
+        return `已解出过画面: ${lastDecodeAtText.value} | ${drawDebugText.value}`;
+    }
+
+    if (decoderErrors.value > 0) {
+        return "解码器异常，已自动重置，等待下一个完整关键帧";
+    }
+
+    if (parserErrors.value > 0) {
+        return "解析错误，可能存在丢包、乱序或码流损坏";
+    }
+
+    if (keyframeSeen.value) {
+        return "正在解码出图...";
+    }
+
+    if (packetCount.value > 0) {
+        return "有码流输入，等待完整 SPS/PPS/IDR 关键帧中...";
+    }
+
+    return "暂无图传输入";
 });
+
 const healthClass = computed(() => {
-    if (hasDecodedFrame.value && isStreaming.value) return 'ok';
-    if (decoderErrors.value > 0 || parserErrors.value > 0) return 'error';
-    return 'idle';
+    if (hasDecodedFrame.value && isStreaming.value) {
+        if (avgBrightnessText.value !== "-" && Number(avgBrightnessText.value) < 5) {
+            return "error";
+        }
+
+        return "ok";
+    }
+
+    if (decoderErrors.value > 0 || parserErrors.value > 0) return "error";
+
+    return "idle";
 });
 
 const lastPacketHeaderHex = computed(() => {
-    if (lastPacketHeader.value === null) return '-';
-    return `0x${lastPacketHeader.value.toString(16).padStart(2, '0').toUpperCase()}`;
+    return lastPacketHeader.value === null
+        ? "-"
+        : `0x${lastPacketHeader.value.toString(16).padStart(2, "0").toUpperCase()}`;
 });
 
 const lastPacketSequenceDisplay = computed(() => {
-    if (lastPacketSequence.value === null) return '-';
-    return `${lastPacketSequence.value}`;
+    return lastPacketSequence.value === null ? "-" : `${lastPacketSequence.value}`;
 });
 
 let ctx: CanvasRenderingContext2D | null = null;
@@ -178,14 +242,25 @@ let fpsTimer: ReturnType<typeof setInterval> | null = null;
 let decoder: VideoDecoder | null = null;
 let parserWorker: Worker | null = null;
 let stopStreamSubscription: (() => void) | null = null;
-let currentCodec = '';
+
+let currentCodec = "";
 let decodedFrameCount = 0;
 let fpsWindowStart = 0;
 let frameIndex = 0;
+let isConfiguring = false;
+
+let pendingKeyAU: {
+    data: Uint8Array;
+    isKey: boolean;
+} | null = null;
 
 const markStreaming = () => {
     isStreaming.value = true;
-    if (streamTimer) clearTimeout(streamTimer);
+
+    if (streamTimer) {
+        clearTimeout(streamTimer);
+    }
+
     streamTimer = setTimeout(() => {
         isStreaming.value = false;
     }, 1500);
@@ -194,6 +269,7 @@ const markStreaming = () => {
 const updateCanvasSize = () => {
     const wrapper = wrapperRef.value;
     const canvas = canvasRef.value;
+
     if (!wrapper || !canvas || !ctx) return;
 
     const width = Math.max(1, Math.floor(wrapper.clientWidth));
@@ -202,17 +278,151 @@ const updateCanvasSize = () => {
 
     canvas.width = Math.floor(width * dpr);
     canvas.height = Math.floor(height * dpr);
+
     canvas.style.width = `${width}px`;
     canvas.style.height = `${height}px`;
+
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+    canvasSizeText.value = `${width}x${height} css / ${canvas.width}x${canvas.height} px / dpr=${dpr.toFixed(2)}`;
 };
 
 const closeDecoder = () => {
-    if (decoder && decoder.state !== 'closed') {
-        decoder.close();
+    if (decoder && decoder.state !== "closed") {
+        try {
+            decoder.close();
+        } catch {
+            // ignore
+        }
     }
+
     decoder = null;
     syncedToKeyFrame.value = false;
+};
+
+const sampleCanvasBrightness = (
+    canvas: HTMLCanvasElement,
+    cssWidth: number,
+    cssHeight: number
+): number | null => {
+    if (!ctx) return null;
+
+    try {
+        const dpr = window.devicePixelRatio || 1;
+
+        const sampleCssSize = 24;
+        const samplePxSize = Math.max(4, Math.floor(sampleCssSize * dpr));
+
+        const sampleX = Math.max(
+            0,
+            Math.min(
+                canvas.width - samplePxSize,
+                Math.floor((cssWidth / 2) * dpr - samplePxSize / 2)
+            )
+        );
+
+        const sampleY = Math.max(
+            0,
+            Math.min(
+                canvas.height - samplePxSize,
+                Math.floor((cssHeight / 2) * dpr - samplePxSize / 2)
+            )
+        );
+
+        const imageData = ctx.getImageData(sampleX, sampleY, samplePxSize, samplePxSize);
+        const data = imageData.data;
+
+        let total = 0;
+
+        for (let i = 0; i < data.length; i += 4) {
+            total += (data[i] + data[i + 1] + data[i + 2]) / 3;
+        }
+
+        return total / (data.length / 4);
+    } catch (error) {
+        console.warn("[Custom HUD] 读取 Canvas 像素失败:", error);
+        return null;
+    }
+};
+
+const drawVideoFrame = (frame: VideoFrame) => {
+    const canvas = canvasRef.value;
+
+    if (!ctx || !canvas) {
+        drawDebugText.value = "ctx 或 canvas 不存在";
+        return;
+    }
+
+    const cssWidth = canvas.clientWidth;
+    const cssHeight = canvas.clientHeight;
+
+    if (cssWidth <= 0 || cssHeight <= 0) {
+        drawDebugText.value = "Canvas 显示尺寸为 0";
+        console.warn("[Custom HUD] Canvas 显示尺寸为 0，无法绘制");
+        return;
+    }
+
+    const frameWidth =
+        frame.displayWidth ||
+        frame.codedWidth ||
+        frame.visibleRect?.width ||
+        0;
+
+    const frameHeight =
+        frame.displayHeight ||
+        frame.codedHeight ||
+        frame.visibleRect?.height ||
+        0;
+
+    frameSizeText.value = `display=${frame.displayWidth}x${frame.displayHeight}, coded=${frame.codedWidth}x${frame.codedHeight}`;
+
+    console.log(
+        `[Custom HUD] VideoFrame 输出: display=${frame.displayWidth}x${frame.displayHeight}, coded=${frame.codedWidth}x${frame.codedHeight}, canvas=${cssWidth}x${cssHeight}`
+    );
+
+    if (frameWidth <= 0 || frameHeight <= 0) {
+        drawDebugText.value = "VideoFrame 宽高异常";
+        return;
+    }
+
+    ctx.clearRect(0, 0, cssWidth, cssHeight);
+
+    // 先填一个深灰底，避免透明/未绘制时误判
+    ctx.fillStyle = "rgb(8, 12, 20)";
+    ctx.fillRect(0, 0, cssWidth, cssHeight);
+
+    // 保持比例完整显示
+    const scale = Math.min(cssWidth / frameWidth, cssHeight / frameHeight);
+
+    const drawWidth = Math.max(1, frameWidth * scale);
+    const drawHeight = Math.max(1, frameHeight * scale);
+    const drawX = (cssWidth - drawWidth) / 2;
+    const drawY = (cssHeight - drawHeight) / 2;
+
+    ctx.drawImage(frame, drawX, drawY, drawWidth, drawHeight);
+
+    // 绿色边框：只要你看到绿色框，就证明 Canvas 绘制路径正常
+    ctx.strokeStyle = "lime";
+    ctx.lineWidth = 2;
+    ctx.strokeRect(drawX, drawY, drawWidth, drawHeight);
+
+    const brightness = sampleCanvasBrightness(canvas, cssWidth, cssHeight);
+
+    if (brightness === null) {
+        avgBrightnessText.value = "-";
+        drawDebugText.value = "已绘制，但无法读取中心亮度";
+    } else {
+        avgBrightnessText.value = brightness.toFixed(2);
+
+        if (brightness < 5) {
+            drawDebugText.value = "已绘制，但中心几乎全黑，疑似编码源黑帧/YUV 输入问题";
+            console.warn(
+                `[Custom HUD] 已绘制 VideoFrame，但中心平均亮度=${brightness.toFixed(2)}，疑似黑帧`
+            );
+        } else {
+            drawDebugText.value = "已绘制，画面存在有效亮度";
+        }
+    }
 };
 
 const createDecoder = (codec: string): boolean => {
@@ -222,99 +432,226 @@ const createDecoder = (codec: string): boolean => {
 
     try {
         decoder = new VideoDecoder({
-            output: (frame) => {
-                if (ctx && canvasRef.value) {
-                    ctx.drawImage(frame, 0, 0, canvasRef.value.clientWidth, canvasRef.value.clientHeight);
+            output: frame => {
+                try {
+                    drawVideoFrame(frame);
+
                     decodedFrameCount += 1;
                     hasDecodedFrame.value = true;
                     lastDecodeAtText.value = new Date().toLocaleTimeString();
                     markStreaming();
+                } finally {
+                    frame.close();
                 }
-                frame.close();
             },
-            error: (error) => {
+
+            error: error => {
                 decoderErrors.value += 1;
                 syncedToKeyFrame.value = false;
-                console.error('Custom HUD VideoDecoder error:', error);
+                keyframeSeen.value = false;
+                pendingKeyAU = null;
+
+                console.warn(`[Custom HUD] 解码器底层报错[${codec}]:`, error);
+
+                const codecToRecreate = currentCodec;
+
+                closeDecoder();
+
+                if (codecToRecreate) {
+                    setTimeout(() => {
+                        createDecoder(codecToRecreate);
+                    }, 300);
+                }
             },
         });
 
-        decoder.configure({
+        const config: VideoDecoderConfig = {
             codec,
+
+            // 低码率低分辨率，软件解码通常更稳
+            // 如果你确认硬解更好，可以改成 "prefer-hardware"
+            hardwareAcceleration: "prefer-software",
+
             optimizeForLatency: true,
-            hardwareAcceleration: 'prefer-hardware',
-        });
+        };
+
+        // Annex B 模式不要传 description
+        decoder.configure(config);
 
         currentCodec = codec;
         detectedCodec.value = codec;
+
         frameIndex = 0;
         syncedToKeyFrame.value = false;
         keyframeSeen.value = false;
         hasDecodedFrame.value = false;
-        lastDecodeAtText.value = '-';
+        lastDecodeAtText.value = "-";
+
+        frameSizeText.value = "-";
+        avgBrightnessText.value = "-";
+        drawDebugText.value = "解码器已创建，等待 VideoFrame";
+
         return true;
     } catch (error) {
+        console.warn("[Custom HUD] 创建 VideoDecoder 失败:", error);
         closeDecoder();
-        console.warn(`Custom HUD decoder configure failed: ${codec}`, error);
         return false;
     }
 };
 
-const ensureDecoderFromCodec = (codecHint: string) => {
-    if (decoder && decoder.state === 'configured' && currentCodec === codecHint) return;
+const drainPendingKeyAU = () => {
+    if (!pendingKeyAU) return;
+    if (!decoder || decoder.state !== "configured") return;
 
-    const codecCandidates =[
-        codecHint,
-        'avc1.640034',
-        'avc1.640033',
-        'avc1.640032',
-        'avc1.4d0032',
-        'avc1.42e01e',
-    ];
+    const item = pendingKeyAU;
+    pendingKeyAU = null;
+
+    decodeAccessUnit(item.data, item.isKey);
+};
+
+const ensureDecoderFromCodec = async (codecHint: string) => {
+    if (isConfiguring) return;
+
+    if (
+        decoder &&
+        decoder.state === "configured" &&
+        currentCodec === codecHint
+    ) {
+        drainPendingKeyAU();
+        return;
+    }
+
+    isConfiguring = true;
+
+    const codecCandidates = Array.from(
+        new Set([
+            codecHint,
+            "avc1.42e01e",
+            "avc1.4d001f",
+            "avc1.4d0032",
+            "avc1.64001f",
+            "avc1.640032",
+            "avc1.640034",
+        ])
+    );
+
+    let validCodec = "";
 
     for (const candidate of codecCandidates) {
-        if (createDecoder(candidate)) {
-            unsupportedReason.value = '';
-            return;
+        try {
+            const support = await VideoDecoder.isConfigSupported({
+                codec: candidate,
+                hardwareAcceleration: "prefer-software",
+                optimizeForLatency: true,
+            });
+
+            if (support.supported) {
+                validCodec = candidate;
+                break;
+            }
+        } catch {
+            // try next
         }
     }
 
-    unsupportedReason.value = '当前环境无法配置 H264 解码器';
+    if (validCodec) {
+        const ok = createDecoder(validCodec);
+
+        if (ok) {
+            unsupportedReason.value = "";
+            drainPendingKeyAU();
+        } else {
+            unsupportedReason.value = "VideoDecoder 初始化失败";
+        }
+    } else {
+        unsupportedReason.value = "当前浏览器环境无法初始化 H264 解码器";
+    }
+
+    isConfiguring = false;
+};
+
+const resetDecoderAfterDecodeError = () => {
+    try {
+        if (decoder && decoder.state === "configured") {
+            decoder.reset();
+        }
+    } catch {
+        // ignore
+    }
+
+    syncedToKeyFrame.value = false;
+    keyframeSeen.value = false;
+    pendingKeyAU = null;
 };
 
 const decodeAccessUnit = (data: Uint8Array, isKey: boolean) => {
     if (!data.length) return;
-    if (!decoder || decoder.state !== 'configured') return;
+    if (!decoder || decoder.state !== "configured") return;
 
-    if (isKey) keyframeSeen.value = true;
-    if (!syncedToKeyFrame.value && !isKey) return;
-    if (isKey) syncedToKeyFrame.value = true;
+    if (!syncedToKeyFrame.value) {
+        if (!isKey) return;
+
+        syncedToKeyFrame.value = true;
+        keyframeSeen.value = true;
+    }
+
+    // 低延迟：队列太长时丢 delta，不丢 key
+    if (!isKey && decoder.decodeQueueSize > 4) {
+        return;
+    }
 
     try {
-        decoder.decode(
-            new EncodedVideoChunk({
-                type: isKey ? 'key' : 'delta',
-                timestamp: frameIndex * FRAME_INTERVAL_US,
-                data,
-            })
-        );
+        const chunk = new EncodedVideoChunk({
+            type: isKey ? "key" : "delta",
+            timestamp: frameIndex * FRAME_INTERVAL_US,
+            data,
+        });
+
+        decoder.decode(chunk);
         frameIndex += 1;
     } catch (error) {
         decoderErrors.value += 1;
-        syncedToKeyFrame.value = false;
-        console.warn('Custom HUD decode chunk failed:', error);
+
+        console.warn("[Custom HUD] 执行 decode() 时报错:", error);
+
+        resetDecoderAfterDecodeError();
     }
+};
+
+const tryDecodeOrQueue = (data: Uint8Array, isKey: boolean) => {
+    if (!decoder || decoder.state !== "configured") {
+        // decoder 还没 ready 时，只缓存关键帧
+        if (isKey) {
+            pendingKeyAU = {
+                data: new Uint8Array(data),
+                isKey,
+            };
+        }
+
+        return;
+    }
+
+    if (pendingKeyAU && !syncedToKeyFrame.value) {
+        drainPendingKeyAU();
+    }
+
+    decodeAccessUnit(data, isKey);
 };
 
 const startFpsSampler = () => {
     if (fpsTimer) return;
+
     decodedFrameCount = 0;
     decodedFps.value = 0;
     fpsWindowStart = performance.now();
+
     fpsTimer = setInterval(() => {
         const now = performance.now();
-        const elapsed = Math.max(1, now - fpsWindowStart);
-        decodedFps.value = Math.round((decodedFrameCount * 1000) / elapsed);
+
+        decodedFps.value = Math.round(
+            (decodedFrameCount * 1000) / Math.max(1, now - fpsWindowStart)
+        );
+
         decodedFrameCount = 0;
         fpsWindowStart = now;
     }, 500);
@@ -322,25 +659,22 @@ const startFpsSampler = () => {
 
 const stopFpsSampler = () => {
     if (!fpsTimer) return;
+
     clearInterval(fpsTimer);
     fpsTimer = null;
+
     decodedFps.value = 0;
     decodedFrameCount = 0;
 };
 
-const handleWorkerMessage = (event: MessageEvent<ParserWorkerOutMessage>) => {
+const handleWorkerMessage = async (
+    event: MessageEvent<ParserWorkerOutMessage>
+) => {
     const message = event.data;
+
     if (!message) return;
 
-    // 【修复 2】：处理由于 sequence_id 不连续引发的解码器挂起等待关键帧
-    if (message.type === 'reset') {
-        syncedToKeyFrame.value = false;
-        keyframeSeen.value = false;
-        console.warn(`[Custom HUD] H264 丢包或越界，正在等待下一个关键帧 (原因: ${message.reason})`);
-        return;
-    }
-
-    if (message.type === 'stats') {
+    if (message.type === "stats") {
         rawUpdateCount.value = message.rawUpdateCount;
         lastRawLength.value = message.lastRawLength;
         lastPacketHeader.value = message.lastPacketHeader;
@@ -350,69 +684,89 @@ const handleWorkerMessage = (event: MessageEvent<ParserWorkerOutMessage>) => {
         packetCount.value = message.packetCount;
         droppedPackets.value = message.droppedPackets;
         parserErrors.value = message.parserErrors;
+
         return;
     }
 
-    if (message.type === 'codec') {
-        ensureDecoderFromCodec(message.codec);
+    if (message.type === "codec") {
+        await ensureDecoderFromCodec(message.codec);
         return;
     }
 
-    if (message.type === 'au') {
-        decodeAccessUnit(new Uint8Array(message.data), message.isKey);
+    if (message.type === "au") {
+        tryDecodeOrQueue(new Uint8Array(message.data), message.isKey);
     }
 };
 
 const handleWorkerError = (error: ErrorEvent) => {
     parserErrors.value += 1;
-    console.error('Custom HUD parser worker error:', error);
+
+    console.error(
+        `[Custom HUD] Worker 崩溃详情: ${error.message} (${error.filename}:${error.lineno})`
+    );
 };
 
 const postChunkToWorker = (bytes: Uint8Array) => {
-    if (!parserWorker) return;
-    if (!bytes.length) return;
-    const transferable = bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength);
-    const payload: ParserWorkerInMessage = {
-        type: 'chunk',
-        bytes: transferable,
-    };
-    parserWorker.postMessage(payload, [transferable]);
+    if (!parserWorker || !bytes.length) return;
+
+    const transferable = bytes.buffer.slice(
+        bytes.byteOffset,
+        bytes.byteOffset + bytes.byteLength
+    );
+
+    parserWorker.postMessage(
+        {
+            type: "chunk",
+            bytes: transferable,
+        },
+        [transferable]
+    );
 };
 
 onMounted(() => {
-    if (typeof VideoDecoder === 'undefined' || typeof EncodedVideoChunk === 'undefined') {
-        unsupportedReason.value = '当前运行环境不支持 WebCodecs';
+    if (typeof VideoDecoder === "undefined") {
+        unsupportedReason.value = "当前运行环境不支持 WebCodecs";
         return;
     }
 
     const canvas = canvasRef.value;
+
     if (!canvas) return;
 
-    ctx = canvas.getContext('2d');
+    ctx = canvas.getContext("2d", {
+        alpha: false,
+        desynchronized: true,
+    });
+
     if (!ctx) {
-        unsupportedReason.value = '无法初始化视频画布';
+        unsupportedReason.value = "无法初始化视频画布";
         return;
     }
 
     updateCanvasSize();
 
-    if ('ResizeObserver' in window && wrapperRef.value) {
+    if ("ResizeObserver" in window && wrapperRef.value) {
         resizeObserver = new ResizeObserver(() => updateCanvasSize());
         resizeObserver.observe(wrapperRef.value);
     }
 
     startFpsSampler();
 
-    parserWorker = new Worker(new URL('../../workers/customVideoParser.worker.ts', import.meta.url), {
-        type: 'module',
-    });
-    parserWorker.addEventListener('message', handleWorkerMessage);
-    parserWorker.addEventListener('error', handleWorkerError);
+    parserWorker = new Worker(
+        new URL("../../workers/customVideoParser.worker.ts", import.meta.url),
+        {
+            type: "module",
+        }
+    );
 
-    // 【修复 3】：兼容传入 event 本身为 Uint8Array 或带 data 属性的对象
+    parserWorker.addEventListener("message", handleWorkerMessage);
+    parserWorker.addEventListener("error", handleWorkerError);
+
     stopStreamSubscription = customByteBlockStream.subscribe((event: any) => {
         const rawBytes = event instanceof Uint8Array ? event : event?.data;
+
         if (!rawBytes || rawBytes.length === 0) return;
+
         postChunkToWorker(rawBytes);
     });
 });
@@ -436,13 +790,12 @@ onUnmounted(() => {
     }
 
     if (parserWorker) {
-        parserWorker.removeEventListener('message', handleWorkerMessage);
-        parserWorker.removeEventListener('error', handleWorkerError);
         parserWorker.terminate();
         parserWorker = null;
     }
 
     closeDecoder();
+
     ctx = null;
 });
 </script>
@@ -459,12 +812,16 @@ onUnmounted(() => {
     background: radial-gradient(circle at 30% 20%, rgba(65, 95, 145, 0.24), rgba(4, 8, 20, 0.92) 58%)
 
 .video-canvas
+    position: relative
+    z-index: 0
     width: 100%
     height: 100%
     display: block
+    background: #050914
 
 .placeholder
     position: absolute
+    z-index: 1
     inset: 0
     display: flex
     align-items: center
@@ -476,6 +833,7 @@ onUnmounted(() => {
 
 .status-overlay
     position: absolute
+    z-index: 3
     left: 8px
     right: 8px
     bottom: 8px
@@ -484,8 +842,7 @@ onUnmounted(() => {
     gap: 6px
     pointer-events: none
 
-.status-pill,
-.status-item
+.status-pill, .status-item
     height: 20px
     padding: 0 8px
     border-radius: 999px
@@ -510,9 +867,10 @@ onUnmounted(() => {
 
 .debug-overlay
     position: absolute
+    z-index: 3
     left: 8px
     top: 8px
-    max-width: min(92%, 520px)
+    max-width: min(92%, 600px)
     padding: 10px 12px
     border-radius: 10px
     border: 1px solid rgba(150, 210, 255, 0.28)
@@ -528,6 +886,9 @@ onUnmounted(() => {
     font-weight: 600
     color: rgba(164, 213, 255, 0.98)
 
+.debug-title.second
+    margin-top: 8px
+
 .debug-row
     white-space: nowrap
     overflow: hidden
@@ -535,6 +896,7 @@ onUnmounted(() => {
 
 .health-overlay
     position: absolute
+    z-index: 3
     left: 8px
     right: 8px
     bottom: 38px

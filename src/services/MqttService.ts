@@ -26,7 +26,7 @@ export class MqttService {
     private shouldReconnect = true;
     private bindLocalAddress = true;
     private readonly debugTopics: string[] = (
-        process.env.MQTT_DEBUG_TOPICS || 'CustomByteBlock,GlobalUnitStatus'
+        process.env.MQTT_DEBUG_TOPICS || 'CustomByteBlock'
     )
         .split(',')
         .map((item) => item.trim())

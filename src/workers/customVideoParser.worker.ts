@@ -1,160 +1,215 @@
+console.log("[VideoParser] 🚀 Annex B 连续 H264 裸流 Worker 启动！");
+
+/**
+ * 当前协议理解：
+ *
+ * 外层可能是：
+ * 0A AC 02 + A8 A7 + seq低 + seq高 + 270字节H264码流 + 其余填充/保留
+ *
+ * 或者直接是：
+ * A8 A7 + seq低 + seq高 + 270字节H264码流 + 其余填充/保留
+ *
+ * 注意：
+ * 270 字节 payload 不是视频帧，只是连续 H264 裸流切片。
+ */
+
 const FRAME_HEADER_0 = 0xA8;
 const FRAME_HEADER_1 = 0xA7;
+
+const OUTER_BLOCK_SIZE = 303;
+const OUTER_PREFIX_SIZE = 3;
+
 const FRAME_SIZE = 300;
-const FRAME_SEQUENCE_BYTES = 2;
+const FRAME_SEQUENCE_OFFSET = 2;
+const FRAME_VIDEO_OFFSET = 4;
 const FRAME_VIDEO_BYTES = 270;
-const FRAME_RESERVED_BYTES = 24;
-const FRAME_CRC_BYTES = 2;
-const FRAME_VIDEO_OFFSET = 2 + FRAME_SEQUENCE_BYTES;
-const FRAME_RESERVED_OFFSET = FRAME_VIDEO_OFFSET + FRAME_VIDEO_BYTES;
-const FRAME_CRC_OFFSET = FRAME_RESERVED_OFFSET + FRAME_RESERVED_BYTES;
-const MAX_STREAM_BUFFER_BYTES = 2 * 1024 * 1024;
-const MAX_ACCESS_UNIT_BYTES = 512 * 1024;
 
-type WorkerInMessage = {
-    type: 'chunk';
-    bytes: ArrayBuffer;
-};
+const MAX_RAW_BUFFER_BYTES = 4 * 1024 * 1024;
+const MAX_STREAM_BUFFER_BYTES = 4 * 1024 * 1024;
+const MAX_ACCESS_UNIT_BYTES = 2 * 1024 * 1024;
 
-type WorkerOutMessage =
-    | {
-          type: 'stats';
-          rawUpdateCount: number;
-          lastRawLength: number;
-          lastPacketHeader: number | null;
-          lastPacketSequence: number | null;
-          lastPayloadPreviewHex: string;
-          lastReceivedAtText: string;
-          packetCount: number;
-          droppedPackets: number;
-          parserErrors: number;
-          frameBufferLength: number;
-          streamBufferLength: number;
-          accessUnitBufferLength: number;
-          rawFrameCountHint: number;
-          rawTrailingBytesHint: number;
-          alignedFrameCount: number;
-          syncSearchCount: number;
-          gapResetCount: number;
-          parserResetCount: number;
-          codecResetCount: number;
-          waitForKeyframe: boolean;
-          keyframeSyncAcquired: boolean;
-          lastResetReason: string;
-          frameSyncState: string;
-      }
-    | {
-          type: 'codec';
-          codec: string;
-          source: 'stable' | 'sps';
-      }
-    | {
-          type: 'reset';
-          reason: string;
-          gapResetCount: number;
-          parserResetCount: number;
-          codecResetCount: number;
-          waitForKeyframe: boolean;
-      }
-    | {
-          type: 'au';
-          data: ArrayBuffer;
-          isKey: boolean;
-      };
+const RECENT_PACKET_CACHE_LIMIT = 128;
 
-let streamBuffer: Uint8Array<ArrayBufferLike> = new Uint8Array(0);
+let rawBuffer = new Uint8Array(0);
+let streamBuffer = new Uint8Array(0);
+
 let pendingAccessUnit: Uint8Array[] = [];
 let pendingHasVcl = false;
 let pendingBytes = 0;
-let lastCodec = '';
 
-let rawUpdateCount = 0;
-let lastRawLength = 0;
-let lastPacketHeader: number | null = null;
-let lastPacketSequence: number | null = null;
-let lastPayloadPreviewHex = '-';
-let lastReceivedAtText = '-';
+let cachedSps: Uint8Array | null = null;
+let cachedPps: Uint8Array | null = null;
+
 let packetCount = 0;
-let droppedPackets = 0;
+let waitForKeyframe = true;
+let gapResetCount = 0;
 let parserErrors = 0;
 
-let frameBufferLength = 0;
-let streamBufferLength = 0;
-let accessUnitBufferLength = 0;
-let rawFrameCountHint = 0;
-let rawTrailingBytesHint = 0;
-let alignedFrameCount = 0;
-let syncSearchCount = 0;
-let gapResetCount = 0;
-let parserResetCount = 0;
-let codecResetCount = 0;
-let waitForKeyframe = true;
-let keyframeSyncAcquired = false;
-let lastResetReason = '-';
-let frameSyncState = 'idle';
+let lastPacketSequence: number | null = null;
+let codecSent = false;
+let lastPayloadPreviewHex = "-";
 
-let expectedSequence: number | null = null;
+let recentPacketKeys: string[] = [];
+const recentPacketKeySet = new Set<string>();
+
+const getFormattedTime = () => {
+    const d = new Date();
+
+    return `${d.getHours().toString().padStart(2, "0")}:${d
+        .getMinutes()
+        .toString()
+        .padStart(2, "0")}:${d.getSeconds().toString().padStart(2, "0")}`;
+};
+
+const toHexPreview = (bytes: Uint8Array, max = 32) => {
+    return Array.from(bytes.subarray(0, max))
+        .map(v => v.toString(16).padStart(2, "0").toUpperCase())
+        .join(" ");
+};
+
+const hashPayload = (payload: Uint8Array): number => {
+    // FNV-1a 32bit
+    let hash = 0x811c9dc5;
+
+    for (let i = 0; i < payload.length; i += 1) {
+        hash ^= payload[i];
+        hash = Math.imul(hash, 0x01000193);
+    }
+
+    return hash >>> 0;
+};
+
+const rememberPacketKey = (key: string) => {
+    if (recentPacketKeySet.has(key)) return;
+
+    recentPacketKeySet.add(key);
+    recentPacketKeys.push(key);
+
+    while (recentPacketKeys.length > RECENT_PACKET_CACHE_LIMIT) {
+        const oldKey = recentPacketKeys.shift();
+
+        if (oldKey) {
+            recentPacketKeySet.delete(oldKey);
+        }
+    }
+};
+
+setInterval(() => {
+    (self as any).postMessage({
+        type: "stats",
+        rawUpdateCount: packetCount,
+        lastRawLength: pendingBytes,
+        lastPacketHeader: FRAME_HEADER_0,
+        lastPacketSequence,
+        lastPayloadPreviewHex,
+        lastReceivedAtText: getFormattedTime(),
+        packetCount,
+        droppedPackets: gapResetCount,
+        parserErrors,
+    });
+}, 1000);
 
 const startCodeLengthAt = (data: Uint8Array, index: number): number => {
-    if (index + 3 < data.length && data[index] === 0 && data[index + 1] === 0 && data[index + 2] === 0 && data[index + 3] === 1) {
+    if (
+        index + 3 < data.length &&
+        data[index] === 0x00 &&
+        data[index + 1] === 0x00 &&
+        data[index + 2] === 0x00 &&
+        data[index + 3] === 0x01
+    ) {
         return 4;
     }
-    if (index + 2 < data.length && data[index] === 0 && data[index + 1] === 0 && data[index + 2] === 1) {
+
+    if (
+        index + 2 < data.length &&
+        data[index] === 0x00 &&
+        data[index + 1] === 0x00 &&
+        data[index + 2] === 0x01
+    ) {
         return 3;
     }
+
     return 0;
 };
 
-const findStartCode = (data: Uint8Array, from = 0): { index: number; length: number } | null => {
+const findStartCode = (
+    data: Uint8Array,
+    from = 0
+): { index: number; length: number } | null => {
     for (let i = from; i <= data.length - 3; i += 1) {
         const length = startCodeLengthAt(data, i);
+
         if (length > 0) {
             return { index: i, length };
         }
     }
-    return null;
-};
 
-const concatBytes = (parts: Uint8Array[]): Uint8Array => {
-    const total = parts.reduce((sum, item) => sum + item.length, 0);
-    const out = new Uint8Array(total);
-    let offset = 0;
-    for (const part of parts) {
-        out.set(part, offset);
-        offset += part.length;
-    }
-    return out;
+    return null;
 };
 
 const appendBytes = (base: Uint8Array, extra: Uint8Array): Uint8Array => {
     if (!base.length) return extra;
     if (!extra.length) return base;
+
     const out = new Uint8Array(base.length + extra.length);
+
     out.set(base, 0);
     out.set(extra, base.length);
+
     return out;
 };
 
-const toHexPreview = (bytes: Uint8Array, maxLen = 20): string => {
-    if (!bytes.length) return '-';
-    const clipped = bytes.subarray(0, maxLen);
-    const parts = Array.from(clipped).map((value) => value.toString(16).padStart(2, '0').toUpperCase());
-    return bytes.length > maxLen ? `${parts.join(' ')} ...` : parts.join(' ');
+const concatBytes = (parts: Uint8Array[]): Uint8Array => {
+    const total = parts.reduce((sum, item) => sum + item.length, 0);
+    const out = new Uint8Array(total);
+
+    let offset = 0;
+
+    for (const part of parts) {
+        out.set(part, offset);
+        offset += part.length;
+    }
+
+    return out;
 };
 
-const toRbsp = (ebsp: Uint8Array): Uint8Array => {
-    const out: number[] = [];
-    for (let i = 0; i < ebsp.length; i += 1) {
-        if (i >= 2 && ebsp[i] === 0x03 && ebsp[i - 1] === 0x00 && ebsp[i - 2] === 0x00) {
-            continue;
-        }
-        out.push(ebsp[i]);
+const stripStartCode = (nal: Uint8Array): Uint8Array => {
+    const startLen = startCodeLengthAt(nal, 0);
+
+    if (!startLen) {
+        return nal;
     }
-    return new Uint8Array(out);
+
+    return nal.subarray(startLen);
+};
+
+const sanitizeNal = (nal: Uint8Array): Uint8Array => {
+    const raw = stripStartCode(nal);
+
+    const out = new Uint8Array(4 + raw.length);
+
+    out[0] = 0x00;
+    out[1] = 0x00;
+    out[2] = 0x00;
+    out[3] = 0x01;
+
+    out.set(raw, 4);
+
+    return out;
+};
+
+const getNalType = (nal: Uint8Array): number => {
+    const raw = stripStartCode(nal);
+
+    if (!raw.length) {
+        return -1;
+    }
+
+    return raw[0] & 0x1f;
 };
 
 class BitReader {
-    private readonly data: Uint8Array;
+    private data: Uint8Array;
     private bitOffset = 0;
 
     constructor(data: Uint8Array) {
@@ -162,131 +217,210 @@ class BitReader {
     }
 
     readBit(): number {
-        if (this.bitOffset >= this.data.length * 8) throw new Error('bit overflow');
-        const byte = this.data[this.bitOffset >> 3];
-        const bit = 7 - (this.bitOffset & 7);
+        const byteOffset = this.bitOffset >> 3;
+
+        if (byteOffset >= this.data.length) {
+            throw new Error("BitReader EOF");
+        }
+
+        const bitIndex = 7 - (this.bitOffset & 7);
+        const bit = (this.data[byteOffset] >> bitIndex) & 1;
+
         this.bitOffset += 1;
-        return (byte >> bit) & 1;
+
+        return bit;
+    }
+
+    readBits(count: number): number {
+        let value = 0;
+
+        for (let i = 0; i < count; i += 1) {
+            value = (value << 1) | this.readBit();
+        }
+
+        return value;
     }
 
     readUE(): number {
         let zeroCount = 0;
+
         while (this.readBit() === 0) {
             zeroCount += 1;
-            if (zeroCount > 31) throw new Error('ue overflow');
+
+            if (zeroCount > 31) {
+                throw new Error("Invalid Exp-Golomb");
+            }
         }
-        let value = 1;
-        for (let i = 0; i < zeroCount; i += 1) {
-            value = (value << 1) | this.readBit();
+
+        if (zeroCount === 0) {
+            return 0;
         }
-        return value - 1;
+
+        const suffix = this.readBits(zeroCount);
+
+        return (1 << zeroCount) - 1 + suffix;
     }
 }
 
-const getNalType = (nal: Uint8Array): number => {
-    const startLen = startCodeLengthAt(nal, 0);
-    if (!startLen || startLen >= nal.length) return -1;
-    return nal[startLen] & 0x1f;
+const getNalPayloadRbsp = (nal: Uint8Array): Uint8Array => {
+    const raw = stripStartCode(nal);
+
+    if (raw.length <= 1) {
+        return new Uint8Array(0);
+    }
+
+    // 跳过 NAL header
+    const payload = raw.subarray(1);
+
+    const out: number[] = [];
+    let zeroCount = 0;
+
+    for (let i = 0; i < payload.length; i += 1) {
+        const value = payload[i];
+
+        // 去掉 emulation prevention byte: 00 00 03
+        if (zeroCount >= 2 && value === 0x03) {
+            zeroCount = 0;
+            continue;
+        }
+
+        out.push(value);
+
+        if (value === 0x00) {
+            zeroCount += 1;
+        } else {
+            zeroCount = 0;
+        }
+    }
+
+    return new Uint8Array(out);
 };
 
-const getNalPayload = (nal: Uint8Array): Uint8Array => {
-    const startLen = startCodeLengthAt(nal, 0);
-    if (!startLen || startLen + 1 >= nal.length) return new Uint8Array(0);
-    return nal.subarray(startLen + 1);
-};
+const isFirstVclNalOfPicture = (nal: Uint8Array): boolean => {
+    const nalType = getNalType(nal);
 
-const isVclNal = (nalType: number): boolean => nalType >= 1 && nalType <= 5;
+    if (nalType < 1 || nalType > 5) {
+        return false;
+    }
 
-const isFirstSlice = (nal: Uint8Array): boolean => {
     try {
-        const payload = getNalPayload(nal);
-        if (!payload.length) return true;
-        const rbsp = toRbsp(payload);
-        if (!rbsp.length) return true;
+        const rbsp = getNalPayloadRbsp(nal);
+
+        if (!rbsp.length) {
+            return false;
+        }
+
         const reader = new BitReader(rbsp);
         const firstMbInSlice = reader.readUE();
+
         return firstMbInSlice === 0;
     } catch {
-        return true;
+        return false;
     }
 };
 
-const parseAvcCodecFromSps = (nal: Uint8Array): string | null => {
-    const payload = getNalPayload(nal);
-    if (payload.length < 3) return null;
-    const rbsp = toRbsp(payload);
-    if (rbsp.length < 3) return null;
-    const h = (value: number) => value.toString(16).padStart(2, '0');
-    return `avc1.${h(rbsp[0])}${h(rbsp[1])}${h(rbsp[2])}`;
-};
-
-const postWorkerMessage = (message: WorkerOutMessage) => {
-    (self as { postMessage: (data: WorkerOutMessage) => void }).postMessage(message);
-};
-
-const postStats = () => {
-    postWorkerMessage({
-        type: 'stats',
-        rawUpdateCount,
-        lastRawLength,
-        lastPacketHeader,
-        lastPacketSequence,
-        lastPayloadPreviewHex,
-        lastReceivedAtText,
-        packetCount,
-        droppedPackets,
-        parserErrors,
-        frameBufferLength,
-        streamBufferLength,
-        accessUnitBufferLength,
-        rawFrameCountHint,
-        rawTrailingBytesHint,
-        alignedFrameCount,
-        syncSearchCount,
-        gapResetCount,
-        parserResetCount,
-        codecResetCount,
-        waitForKeyframe,
-        keyframeSyncAcquired,
-        lastResetReason,
-        frameSyncState,
-    });
-};
-
-const emitReset = (reason: string) => {
-    lastResetReason = reason;
+const resetH264StateAfterGap = () => {
+    streamBuffer = new Uint8Array(0);
+    pendingAccessUnit = [];
+    pendingHasVcl = false;
+    pendingBytes = 0;
     waitForKeyframe = true;
-    keyframeSyncAcquired = false;
-    postWorkerMessage({
-        type: 'reset',
-        reason,
-        gapResetCount,
-        parserResetCount,
-        codecResetCount,
-        waitForKeyframe,
-    });
 };
 
-const emitCodec = (codec: string) => {
-    if (!codec || codec === lastCodec) return;
-    lastCodec = codec;
-    postWorkerMessage({ type: 'codec', codec, source: 'sps' });
+const checkAndSendCodec = () => {
+    if (codecSent) return;
+
+    // 必须 SPS + PPS 都有，再初始化解码器
+    if (!cachedSps || !cachedPps) return;
+
+    const sps = stripStartCode(cachedSps);
+
+    if (sps.length < 4) return;
+
+    const profile = sps[1].toString(16).padStart(2, "0");
+    const compat = sps[2].toString(16).padStart(2, "0");
+    const level = sps[3].toString(16).padStart(2, "0");
+
+    const codecStr = `avc1.${profile}${compat}${level}`;
+
+    console.log(`[VideoParser] 🏷️ SPS/PPS 已齐全，Annex B codec=${codecStr}`);
+
+    // 重点：
+    // Annex B 模式不要发送 description。
+    // 主线程 configure 也不要传 description。
+    (self as any).postMessage({
+        type: "codec",
+        codec: codecStr,
+    });
+
+    codecSent = true;
 };
 
 const emitAccessUnit = (nals: Uint8Array[], hasVcl: boolean) => {
     if (!hasVcl || !nals.length) return;
-    const isKey = nals.some((nal) => getNalType(nal) === 5);
-    if (isKey) {
-        keyframeSyncAcquired = true;
+    if (!codecSent) return;
+
+    const originalTypes = nals.map(getNalType);
+
+    // AUD 可以不送给 WebCodecs
+    let finalNals = nals.filter((_, index) => originalTypes[index] !== 9);
+
+    let finalTypes = finalNals.map(getNalType);
+    const hasIdr = finalTypes.includes(5);
+
+    // 如果是 IDR，确保 SPS/PPS 在前面
+    if (hasIdr) {
+        if (!cachedSps || !cachedPps) {
+            console.warn("[VideoParser] 收到 IDR，但 SPS/PPS 不完整，丢弃并等待下一个关键帧");
+            waitForKeyframe = true;
+            return;
+        }
+
+        const hasSps = finalTypes.includes(7);
+        const hasPps = finalTypes.includes(8);
+
+        const inject: Uint8Array[] = [];
+
+        if (!hasSps) inject.push(cachedSps);
+        if (!hasPps) inject.push(cachedPps);
+
+        finalNals = [...inject, ...finalNals];
+        finalTypes = finalNals.map(getNalType);
+    }
+
+    const isKey =
+        finalTypes.includes(5) &&
+        finalTypes.includes(7) &&
+        finalTypes.includes(8);
+
+    if (waitForKeyframe) {
+        if (!isKey) return;
+
+        console.log("[VideoParser] 🎉 组装到 Annex B Key Access Unit");
         waitForKeyframe = false;
     }
-    if (waitForKeyframe) return; // Drop until keyframe
 
-    const data = concatBytes(nals);
-    const transferable = data.buffer;
-    (self as { postMessage: (data: WorkerOutMessage, transfer?: Transferable[]) => void }).postMessage(
+    const annexBNals = finalNals.map(sanitizeNal);
+
+    if (!annexBNals.length) return;
+
+    const data = concatBytes(annexBNals);
+
+    // 注意：
+    // 这里不要因为 KEY 小就丢。
+    // 在你的低码率场景下，几百字节的 IDR 是可能存在的。
+    console.log(
+        `[VideoParser] 📦 发送 AU: ${isKey ? "KEY" : "DELTA"} | NAL=${finalTypes.join(",")} | size=${data.length}`
+    );
+
+    const transferable = data.buffer.slice(
+        data.byteOffset,
+        data.byteOffset + data.byteLength
+    );
+
+    (self as any).postMessage(
         {
-            type: 'au',
+            type: "au",
             data: transferable,
             isKey,
         },
@@ -296,201 +430,247 @@ const emitAccessUnit = (nals: Uint8Array[], hasVcl: boolean) => {
 
 const flushPendingAccessUnit = () => {
     if (!pendingAccessUnit.length) return;
-    const nals = pendingAccessUnit;
-    const hasVcl = pendingHasVcl;
+
+    emitAccessUnit(pendingAccessUnit, pendingHasVcl);
+
     pendingAccessUnit = [];
     pendingHasVcl = false;
     pendingBytes = 0;
-    emitAccessUnit(nals, hasVcl);
-};
-
-const handleNal = (nal: Uint8Array) => {
-    const nalType = getNalType(nal);
-    if (nalType < 0) return;
-
-    if (nalType === 7) {
-        const codec = parseAvcCodecFromSps(nal);
-        if (codec) emitCodec(codec);
-    }
-
-    if (nalType === 9 && pendingAccessUnit.length) {
-        flushPendingAccessUnit();
-    }
-
-    if (isVclNal(nalType)) {
-        const firstSlice = isFirstSlice(nal);
-        if (pendingHasVcl && firstSlice) {
-            flushPendingAccessUnit();
-        }
-        pendingHasVcl = true;
-        pendingAccessUnit.push(nal);
-        pendingBytes += nal.length;
-    } else {
-        if (pendingHasVcl && (nalType === 6 || nalType === 7 || nalType === 8 || nalType === 9)) {
-            flushPendingAccessUnit();
-        }
-        pendingAccessUnit.push(nal);
-        pendingBytes += nal.length;
-    }
-
-    if (pendingBytes > MAX_ACCESS_UNIT_BYTES) {
-        flushPendingAccessUnit();
-    }
 };
 
 const extractNalUnits = (): Uint8Array[] => {
     const first = findStartCode(streamBuffer, 0);
+
     if (!first) {
-        if (streamBuffer.length > 4) {
+        // 保留最后几个 0，防止 start code 被切在两个 270 包之间
+        if (streamBuffer.length > 2000) {
             streamBuffer = streamBuffer.slice(streamBuffer.length - 4);
         }
+
         return [];
     }
 
     let start = first.index;
-    let cursor = first.index + first.length;
+    let cursor = start + first.length;
+
     const out: Uint8Array[] = [];
 
     while (true) {
         const next = findStartCode(streamBuffer, cursor);
+
         if (!next) break;
-        out.push(streamBuffer.slice(start, next.index));
+
+        const nal = streamBuffer.slice(start, next.index);
+
+        if (nal.length > 4) {
+            out.push(nal);
+        }
+
         start = next.index;
-        cursor = next.index + next.length;
+        cursor = start + next.length;
     }
 
+    // 保留最后一个尚未遇到下一个 start code 的 NAL
     streamBuffer = streamBuffer.slice(start);
-    streamBufferLength = streamBuffer.length;
-    syncSearchCount++;
+
+    if (streamBuffer.length > MAX_STREAM_BUFFER_BYTES) {
+        console.warn("[VideoParser] streamBuffer 过大，清空并等待关键帧");
+        parserErrors += 1;
+        resetH264StateAfterGap();
+    }
+
     return out;
 };
 
-const appendStreamPayload = (payload: Uint8Array) => {
-    streamBuffer = appendBytes(streamBuffer, payload);
-    streamBufferLength = streamBuffer.length;
-    if (streamBuffer.length > MAX_STREAM_BUFFER_BYTES) {
-        parserErrors += 1;
-        parserResetCount += 1;
-        streamBuffer = streamBuffer.slice(streamBuffer.length - MAX_STREAM_BUFFER_BYTES);
-        streamBufferLength = streamBuffer.length;
-        emitReset('stream_buffer_overflow');
+const handleNal = (nal: Uint8Array) => {
+    const nalType = getNalType(nal);
+
+    if (nalType < 0) return;
+
+    let typeStr = "";
+
+    switch (nalType) {
+        case 1:
+            typeStr = "P/B帧切片(1) 📄";
+            break;
+        case 5:
+            typeStr = "I帧/IDR(5) ❤️";
+            break;
+        case 6:
+            typeStr = "SEI(6) 📝";
+            break;
+        case 7:
+            typeStr = "SPS(7) 🔵";
+            break;
+        case 8:
+            typeStr = "PPS(8) 🟢";
+            break;
+        case 9:
+            typeStr = "AUD分隔符(9) ✂️";
+            break;
+        default:
+            typeStr = `未知(${nalType}) ❓`;
+            break;
     }
 
-    const nalUnits = extractNalUnits();
-    for (const nal of nalUnits) {
-        handleNal(nal);
+    console.log(`[VideoParser] 🎞️ NAL: ${typeStr} | 大小: ${nal.length} 字节`);
+
+    if (nalType === 7) {
+        cachedSps = sanitizeNal(nal);
+        checkAndSendCodec();
+    }
+
+    if (nalType === 8) {
+        cachedPps = sanitizeNal(nal);
+        checkAndSendCodec();
+    }
+
+    const isVcl = nalType >= 1 && nalType <= 5;
+
+    // AUD / SPS / PPS / SEI 通常意味着上一个 AU 可以结算
+    if (
+        pendingHasVcl &&
+        (nalType === 9 || nalType === 7 || nalType === 8 || nalType === 6)
+    ) {
+        flushPendingAccessUnit();
+    }
+
+    // 没有 AUD 的时候，用 first_mb_in_slice 判断新图像开始
+    if (isVcl && pendingHasVcl && isFirstVclNalOfPicture(nal)) {
+        flushPendingAccessUnit();
+    }
+
+    pendingAccessUnit.push(nal);
+
+    if (isVcl) {
+        pendingHasVcl = true;
+    }
+
+    pendingBytes += nal.length;
+
+    if (pendingBytes > MAX_ACCESS_UNIT_BYTES) {
+        console.warn("[VideoParser] 单个 AU 过大，强制清空并等待关键帧");
+        parserErrors += 1;
+        resetH264StateAfterGap();
     }
 };
 
-const parseCustomFrame = (frame: Uint8Array, index: number, totalFrames: number) => {
-    alignedFrameCount += 1;
-    if (frame.length < FRAME_SIZE) {
-        parserErrors += 1;
-        droppedPackets += 1;
-        console.log(`[Worker] Invalid frame length: ${frame.length}`);
-        return;
-    }
-
-    const headerValid = frame[0] === FRAME_HEADER_0 && frame[1] === FRAME_HEADER_1;
-    if (!headerValid) {
-        parserErrors += 1;
-        droppedPackets += 1;
-        console.log(`[Worker] Invalid header: 0x${frame[0].toString(16)} 0x${frame[1].toString(16)}`);
-        return;
-    }
+const parseCustomFrame = (frame: Uint8Array) => {
+    if (frame.length < FRAME_SIZE) return;
 
     packetCount += 1;
-    lastPacketHeader = frame[0];
-    const seq = frame[2] | (frame[3] << 8);
-    lastPacketSequence = seq;
 
-    let isReset = false;
-    let isLoss = false;
-    if (expectedSequence !== null && expectedSequence !== seq) {
-        isLoss = true;
-        gapResetCount += 1;
-        streamBuffer = new Uint8Array(0);
-        streamBufferLength = 0;
-        pendingAccessUnit = [];
-        pendingHasVcl = false;
-        pendingBytes = 0;
-        isReset = true;
-        emitReset(`sequence_gap_${expectedSequence}_to_${seq}`);
-    }
-    
-    expectedSequence = (seq + 1) & 0xffff;
+    const seq =
+        frame[FRAME_SEQUENCE_OFFSET] |
+        (frame[FRAME_SEQUENCE_OFFSET + 1] << 8);
 
-    const payload = frame.subarray(FRAME_VIDEO_OFFSET, FRAME_VIDEO_OFFSET + FRAME_VIDEO_BYTES);
-    const reserved = frame.subarray(FRAME_RESERVED_OFFSET, FRAME_RESERVED_OFFSET + FRAME_RESERVED_BYTES);
-    const crc16 = frame.subarray(FRAME_CRC_OFFSET, FRAME_CRC_OFFSET + FRAME_CRC_BYTES);
-    if (reserved.length !== FRAME_RESERVED_BYTES || crc16.length !== FRAME_CRC_BYTES) {
-        parserErrors += 1;
-        droppedPackets += 1;
+    const payload = frame.subarray(
+        FRAME_VIDEO_OFFSET,
+        FRAME_VIDEO_OFFSET + FRAME_VIDEO_BYTES
+    );
+
+    lastPayloadPreviewHex = toHexPreview(payload);
+
+    // 上层可能会重复推送同一个包，所以用 seq + payload hash 判断“真重复”
+    const payloadHash = hashPayload(payload);
+    const packetKey = `${seq}:${payloadHash}`;
+
+    if (recentPacketKeySet.has(packetKey)) {
+        console.warn(
+            `[VideoParser] 真重复包 seq=${seq}, hash=${payloadHash.toString(16)}，已丢弃`
+        );
         return;
     }
 
-    if (index === 0 || isReset || totalFrames <= 2) {
-        console.log(`[Worker] MQTT Payload: len=${totalFrames * FRAME_SIZE}, HeaderValid=${headerValid}, Seq=${seq}, ExpectedSeq=${isReset ? 'gap' : expectedSequence}, PayloadLen=${payload.length}, Loss=${isLoss}, Reset=${isReset}`);
+    rememberPacketKey(packetKey);
+
+    if (lastPacketSequence !== null) {
+        const expectedSeq = (lastPacketSequence + 1) & 0xffff;
+
+        if (seq === lastPacketSequence) {
+            // seq 相同但 payload 不同，说明协议可能不是“每个 270 字节包递增一次”
+            // 不要直接丢，否则会破坏连续码流
+            console.warn(
+                `[VideoParser] seq 相同但 payload 不同: seq=${seq}，继续拼接`
+            );
+        } else if (seq !== expectedSeq) {
+            gapResetCount += 1;
+
+            console.warn(
+                `[VideoParser] H264 丢包或乱序: expected=${expectedSeq}, got=${seq}，清空缓存等待下一个关键帧`
+            );
+
+            resetH264StateAfterGap();
+        }
     }
 
-    // 保留区与 crc16 在上层 store 里展示，这里仅提取图传段并继续 H264 解析。
-    appendStreamPayload(payload);
+    lastPacketSequence = seq;
+
+    // 关键：这里只是连续拼接 270 字节 H264 裸流
+    streamBuffer = appendBytes(streamBuffer, payload);
+
+    for (const nal of extractNalUnits()) {
+        handleNal(nal);
+    }
 };
 
 const ingestCustomBytes = (bytes: Uint8Array) => {
     if (!bytes.length) return;
 
-    rawUpdateCount += 1;
-    lastRawLength = bytes.length;
-    if (bytes.length >= 1) {
-        lastPacketHeader = bytes[0];
-    }
-    lastPacketSequence = null;
-    lastPayloadPreviewHex = toHexPreview(bytes);
-    lastReceivedAtText = new Date().toLocaleTimeString();
-
-    if (bytes.length >= FRAME_SIZE) {
-        const frameCountInBlob = Math.floor(bytes.length / FRAME_SIZE);
-        const blobStart = bytes.length - frameCountInBlob * FRAME_SIZE;
-        rawFrameCountHint = frameCountInBlob;
-        rawTrailingBytesHint = blobStart;
-        for (let i = 0; i < frameCountInBlob; i += 1) {
-            const start = blobStart + i * FRAME_SIZE;
-            parseCustomFrame(bytes.subarray(start, start + FRAME_SIZE), i, frameCountInBlob);
-        }
+    // 兼容 303 字节外层包：0A AC 02 + 300 字节图传帧
+    if (
+        bytes.length === OUTER_BLOCK_SIZE &&
+        bytes[OUTER_PREFIX_SIZE] === FRAME_HEADER_0 &&
+        bytes[OUTER_PREFIX_SIZE + 1] === FRAME_HEADER_1
+    ) {
+        parseCustomFrame(
+            bytes.subarray(OUTER_PREFIX_SIZE, OUTER_PREFIX_SIZE + FRAME_SIZE)
+        );
         return;
     }
 
-    if (bytes.length === FRAME_VIDEO_BYTES) {
-        appendStreamPayload(bytes);
+    // 兼容纯 300 字节图传帧
+    if (
+        bytes.length === FRAME_SIZE &&
+        bytes[0] === FRAME_HEADER_0 &&
+        bytes[1] === FRAME_HEADER_1
+    ) {
+        parseCustomFrame(bytes);
         return;
     }
 
-    parserErrors += 1;
-};
+    // 兜底：如果一次收到多个包或半包，就扫描 A8 A7
+    rawBuffer = appendBytes(rawBuffer, bytes);
 
-const toByteArray = (input: unknown): Uint8Array | null => {
-    if (!input) return null;
-    if (input instanceof Uint8Array) return input;
-    if (input instanceof ArrayBuffer) return new Uint8Array(input);
-    return null;
-};
-
-const workerGlobal = self as {
-    onmessage: ((event: MessageEvent<WorkerInMessage>) => void) | null;
-};
-
-workerGlobal.onmessage = (event: MessageEvent<WorkerInMessage>) => {
-    const message = event.data;
-    if (!message || message.type !== 'chunk') return;
-
-    const bytes = toByteArray(message.bytes);
-    if (!bytes) {
+    if (rawBuffer.length > MAX_RAW_BUFFER_BYTES) {
+        console.warn("[VideoParser] rawBuffer 过大，丢弃旧数据");
         parserErrors += 1;
-        postStats();
-        return;
+        rawBuffer = rawBuffer.slice(rawBuffer.length - FRAME_SIZE * 2);
     }
 
-    ingestCustomBytes(bytes);
-    postStats();
+    let offset = 0;
+
+    while (offset <= rawBuffer.length - FRAME_SIZE) {
+        if (
+            rawBuffer[offset] === FRAME_HEADER_0 &&
+            rawBuffer[offset + 1] === FRAME_HEADER_1
+        ) {
+            parseCustomFrame(rawBuffer.subarray(offset, offset + FRAME_SIZE));
+            offset += FRAME_SIZE;
+        } else {
+            offset += 1;
+        }
+    }
+
+    if (offset > 0) {
+        rawBuffer = rawBuffer.subarray(offset);
+    }
 };
+
+(self as any).onmessage = (event: MessageEvent<any>) => {
+    if (event.data?.type === "chunk" && event.data.bytes) {
+        ingestCustomBytes(new Uint8Array(event.data.bytes));
+    }
+};
+
+export default {};

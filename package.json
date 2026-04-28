@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@marsio/vue-grid-layout": "^1.0.3",
+    "broadwayjs": "^0.0.2",
     "long": "^5.3.2",
     "mqtt": "^5.14.1",
     "pinia": "^3.0.3",
