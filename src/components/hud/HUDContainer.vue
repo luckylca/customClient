@@ -757,7 +757,7 @@ const defaultWidgets = (width = 1920, height = 1080): HudWidget[] => {
             h: 300,
             minW: 280,
             minH: 300,
-            visible: true,
+            visible: false,
             locked: false,
             z: 4,
         },

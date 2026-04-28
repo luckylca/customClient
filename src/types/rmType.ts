@@ -209,7 +209,7 @@ export interface RadarInfoToClient {
     RadarSingleRobotInfo?: RadarSingleRobotInfo[]; // 雷达发送的所有机器人位置及特殊标识
 }
 
-// CustomByteBlock 中的吊射回传包保留区（24字节，位于索引274~297）
+// CustomByteBlock 中的吊射回传包保留区（5字节，位于索引295~299）
 export interface LobShotReservedPack {
     onlineFlagsRaw?: number; // bit0~15 原始位图
     chassislfMotorOnline?: boolean
@@ -220,8 +220,8 @@ export interface LobShotReservedPack {
     jointrightMotorOnline?: boolean
     yawMotorOnline?: boolean
     pitchMotorOnline?: boolean
-    frictionlfMotorOnline?: boolean
-    frictionrfMotorOnline?: boolean
+    frictionufMotorOnline?: boolean
+    frictiondfMotorOnline?: boolean
     frictionlbMotorOnline?: boolean
     frictionrbMotorOnline?: boolean
     loaderMotorOnline?: boolean
@@ -242,8 +242,8 @@ export interface CustomByteBlockFrameMeta {
     frame?: Uint8Array; // 单个 300 字节固定帧
     frameStart?: number; // 该帧在原始 blob 中的起始偏移
     sequenceId?: number; // 固定帧中的 2 字节序列号（索引2~3，小端）
-    videoData?: Uint8Array; // 固定帧中的 270 字节图传数据段（索引4~273）
-    sidebandData?: Uint8Array; // 固定帧中的 24 字节保留区（索引274~297）
+    videoData?: Uint8Array; // 固定帧中的 291 字节图传数据段（索引4~294）
+    sidebandData?: Uint8Array; // 固定帧中的 5 字节保留区（索引295~299）
     headerValid?: boolean; // 帧头是否匹配 0xA8 0xA7
     crc16?: Uint8Array; // 末尾2字节CRC16（当前不做校验）
 }
@@ -256,11 +256,11 @@ export interface CustomByteBlock {
     trailingBytes?: number; // 原始负载末尾剩余的不足300字节数据量
     lastFrame?: CustomByteBlockFrameMeta; // 原始负载中最近一个已解析固定帧
     sequenceId?: number; // 最近一个固定帧的 2 字节序列号（索引2~3，小端）
-    videoData?: Uint8Array; // 最近一个固定帧中的 270 字节图传数据段（索引4~273）
-    sidebandData?: Uint8Array; // 最近一个固定帧中的 24 字节保留区（索引274~297）
+    videoData?: Uint8Array; // 最近一个固定帧中的 291 字节图传数据段（索引4~294）
+    sidebandData?: Uint8Array; // 最近一个固定帧中的 5 字节保留区（索引295~299）
     headerValid?: boolean; // 最近一个固定帧的帧头是否匹配 0xA8 0xA7
     crc16?: Uint8Array; // 最近一个固定帧末尾2字节CRC16（当前不做校验）
-    lobShotReserved?: LobShotReservedPack; // 最近一个固定帧索引274~297的24字节结构体
+    lobShotReserved?: LobShotReservedPack; // 最近一个固定帧索引295~299的5字节结构体
 }
 
 export interface CustomByteBlockStreamEvent extends CustomByteBlock {}

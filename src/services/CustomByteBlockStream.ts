@@ -4,7 +4,7 @@ type CustomByteBlockListener = (event: CustomByteBlockStreamEvent) => void;
 
 const listeners = new Set<CustomByteBlockListener>();
 const STREAM_DEBUG_ENABLED = true;
-const STREAM_DEBUG_LOG_INTERVAL_MS = 3000;
+const STREAM_DEBUG_LOG_INTERVAL_MS = 1000;
 
 let streamRxChunkCount = 0;
 let streamRxByteCount = 0;

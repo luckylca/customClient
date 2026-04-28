@@ -4,13 +4,13 @@ console.log("[VideoParser] 🚀 Annex B 连续 H264 裸流 Worker 启动！");
  * 当前协议理解：
  *
  * 外层可能是：
- * 0A AC 02 + A8 A7 + seq低 + seq高 + 270字节H264码流 + 其余填充/保留
+ * 0A AC 02 + A8 A7 + seq低 + seq高 + 291字节H264码流 + 其余填充/保留
  *
  * 或者直接是：
- * A8 A7 + seq低 + seq高 + 270字节H264码流 + 其余填充/保留
+ * A8 A7 + seq低 + seq高 + 291字节H264码流 + 其余填充/保留
  *
  * 注意：
- * 270 字节 payload 不是视频帧，只是连续 H264 裸流切片。
+ * 291 字节 payload 不是视频帧，只是连续 H264 裸流切片。
  */
 
 const FRAME_HEADER_0 = 0xA8;
@@ -22,13 +22,13 @@ const OUTER_PREFIX_SIZE = 3;
 const FRAME_SIZE = 300;
 const FRAME_SEQUENCE_OFFSET = 2;
 const FRAME_VIDEO_OFFSET = 4;
-const FRAME_VIDEO_BYTES = 270;
+const FRAME_VIDEO_BYTES = 291;
 
 const MAX_RAW_BUFFER_BYTES = 4 * 1024 * 1024;
 const MAX_STREAM_BUFFER_BYTES = 4 * 1024 * 1024;
 const MAX_ACCESS_UNIT_BYTES = 2 * 1024 * 1024;
 
-const RECENT_PACKET_CACHE_LIMIT = 128;
+const RECENT_PACKET_CACHE_LIMIT = 2048;
 
 let rawBuffer = new Uint8Array(0);
 let streamBuffer = new Uint8Array(0);
@@ -47,6 +47,7 @@ let parserErrors = 0;
 
 let lastPacketSequence: number | null = null;
 let codecSent = false;
+let spsResolution: { width: number; height: number } | null = null;
 let lastPayloadPreviewHex = "-";
 
 let recentPacketKeys: string[] = [];
@@ -95,7 +96,7 @@ const rememberPacketKey = (key: string) => {
 };
 
 setInterval(() => {
-    (self as any).postMessage({
+    (self as unknown as Worker).postMessage({
         type: "stats",
         rawUpdateCount: packetCount,
         lastRawLength: pendingBytes,
@@ -107,7 +108,7 @@ setInterval(() => {
         droppedPackets: gapResetCount,
         parserErrors,
     });
-}, 1000);
+}, 16);
 
 const startCodeLengthAt = (data: Uint8Array, index: number): number => {
     if (
@@ -396,7 +397,6 @@ const emitAccessUnit = (nals: Uint8Array[], hasVcl: boolean) => {
     if (waitForKeyframe) {
         if (!isKey) return;
 
-        console.log("[VideoParser] 🎉 组装到 Annex B Key Access Unit");
         waitForKeyframe = false;
     }
 
@@ -409,9 +409,11 @@ const emitAccessUnit = (nals: Uint8Array[], hasVcl: boolean) => {
     // 注意：
     // 这里不要因为 KEY 小就丢。
     // 在你的低码率场景下，几百字节的 IDR 是可能存在的。
-    console.log(
-        `[VideoParser] 📦 发送 AU: ${isKey ? "KEY" : "DELTA"} | NAL=${finalTypes.join(",")} | size=${data.length}`
-    );
+    if (isKey) {
+        console.log(
+            `[VideoParser] 📦 发送 AU: KEY | NAL=${finalTypes.join(",")} | size=${data.length}`
+        );
+    }
 
     const transferable = data.buffer.slice(
         data.byteOffset,
@@ -442,7 +444,7 @@ const extractNalUnits = (): Uint8Array[] => {
     const first = findStartCode(streamBuffer, 0);
 
     if (!first) {
-        // 保留最后几个 0，防止 start code 被切在两个 270 包之间
+        // 保留最后几个 0，防止 start code 被切在两个 291 包之间
         if (streamBuffer.length > 2000) {
             streamBuffer = streamBuffer.slice(streamBuffer.length - 4);
         }
@@ -513,7 +515,6 @@ const handleNal = (nal: Uint8Array) => {
             break;
     }
 
-    console.log(`[VideoParser] 🎞️ NAL: ${typeStr} | 大小: ${nal.length} 字节`);
 
     if (nalType === 7) {
         cachedSps = sanitizeNal(nal);
@@ -588,7 +589,7 @@ const parseCustomFrame = (frame: Uint8Array) => {
         const expectedSeq = (lastPacketSequence + 1) & 0xffff;
 
         if (seq === lastPacketSequence) {
-            // seq 相同但 payload 不同，说明协议可能不是“每个 270 字节包递增一次”
+            // seq 相同但 payload 不同，说明协议可能不是“每个 291 字节包递增一次”
             // 不要直接丢，否则会破坏连续码流
             console.warn(
                 `[VideoParser] seq 相同但 payload 不同: seq=${seq}，继续拼接`
@@ -606,7 +607,7 @@ const parseCustomFrame = (frame: Uint8Array) => {
 
     lastPacketSequence = seq;
 
-    // 关键：这里只是连续拼接 270 字节 H264 裸流
+    // 关键：这里只是连续拼接 291 字节 H264 裸流
     streamBuffer = appendBytes(streamBuffer, payload);
 
     for (const nal of extractNalUnits()) {

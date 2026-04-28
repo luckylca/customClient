@@ -62,12 +62,12 @@ const CUSTOM_BYTE_BLOCK_FRAME_SIZE = 300
 const CUSTOM_BYTE_BLOCK_HEADER_0 = 0xA8
 const CUSTOM_BYTE_BLOCK_HEADER_1 = 0xA7
 const CUSTOM_BYTE_BLOCK_SEQUENCE_BYTES = 2
-const CUSTOM_BYTE_BLOCK_VIDEO_BYTES = 270
-const CUSTOM_BYTE_BLOCK_RESERVED_BYTES = 24
+const CUSTOM_BYTE_BLOCK_VIDEO_BYTES = 291
+const CUSTOM_BYTE_BLOCK_RESERVED_BYTES = 5
 const CUSTOM_BYTE_BLOCK_VIDEO_OFFSET = 2 + CUSTOM_BYTE_BLOCK_SEQUENCE_BYTES
 const CUSTOM_BYTE_BLOCK_RESERVED_OFFSET = CUSTOM_BYTE_BLOCK_VIDEO_OFFSET + CUSTOM_BYTE_BLOCK_VIDEO_BYTES
 const CUSTOM_BYTE_BLOCK_CRC_OFFSET = CUSTOM_BYTE_BLOCK_RESERVED_OFFSET + CUSTOM_BYTE_BLOCK_RESERVED_BYTES
-const LOB_SHOT_RESERVED_SIZE = 24
+const LOB_SHOT_RESERVED_SIZE = 5
 let lastCustomByteBlockLogAt = 0
 let customByteBlockPendingUpdateCount = 0
 let customByteBlockPendingBytes: Uint8Array | null = null
@@ -113,7 +113,7 @@ const parseCustomByteBlockFrame = (bytes: Uint8Array): ParsedCustomByteBlockFram
         CUSTOM_BYTE_BLOCK_RESERVED_OFFSET,
         CUSTOM_BYTE_BLOCK_RESERVED_OFFSET + CUSTOM_BYTE_BLOCK_RESERVED_BYTES,
     )
-    const crc16 = frame.subarray(CUSTOM_BYTE_BLOCK_CRC_OFFSET, CUSTOM_BYTE_BLOCK_CRC_OFFSET + 2)
+    const crc16 = new Uint8Array(0) // CRC removed in the new protocol format
 
     return {
         frame,
@@ -157,16 +157,16 @@ const parseLobShotReservedPack = (reservedData?: Uint8Array | null): LobShotRese
     const modeBits = raw[2]
     const view = new DataView(raw.buffer, raw.byteOffset, raw.byteLength)
     const offsetAngle = view.getInt16(3, true)
-    const chassisMode = raw[5]
+
+    const jointMode = modeBits & 0x03
+    const chassisMode = (modeBits >> 2) & 0x03
+    const modeReserved = (modeBits >> 4) & 0x0f
 
     const onlineBools = [
         bit(flags, 0), bit(flags, 1), bit(flags, 2), bit(flags, 3), bit(flags, 4), bit(flags, 5),
         bit(flags, 6), bit(flags, 7), bit(flags, 8), bit(flags, 9), bit(flags, 10), bit(flags, 11), bit(flags, 12),
     ]
     const offlineMotorCount = onlineBools.filter((value) => !value).length
-
-    const jointMode = modeBits & 0x03
-    const modeReserved = (modeBits >> 2) & 0x3f
 
     return {
         onlineFlagsRaw: flags,
@@ -178,8 +178,8 @@ const parseLobShotReservedPack = (reservedData?: Uint8Array | null): LobShotRese
         jointrightMotorOnline: bit(flags, 5),
         yawMotorOnline: bit(flags, 6),
         pitchMotorOnline: bit(flags, 7),
-        frictionlfMotorOnline: bit(flags, 8),
-        frictionrfMotorOnline: bit(flags, 9),
+        frictionufMotorOnline: bit(flags, 8),
+        frictiondfMotorOnline: bit(flags, 9),
         frictionlbMotorOnline: bit(flags, 10),
         frictionrbMotorOnline: bit(flags, 11),
         loaderMotorOnline: bit(flags, 12),
@@ -326,11 +326,11 @@ export const useRobotStore = defineStore('robot', () => {
             }
         }
 
-        if (robot.value.CustomByteBlockData.lastFrame?.frameStart === undefined && customByteBlockPendingFrameStart >= 0) {
+        if (robot.value.CustomByteBlockData.lastFrame && robot.value.CustomByteBlockData.lastFrame.frameStart === undefined && customByteBlockPendingFrameStart >= 0) {
             robot.value.CustomByteBlockData.lastFrame.frameStart = customByteBlockPendingFrameStart
         }
 
-        if (robot.value.CustomByteBlockData.lastFrame?.frame === undefined && customByteBlockPendingFrameStart >= 0 && customByteBlockPendingBytes && customByteBlockPendingBytes.length >= customByteBlockPendingFrameStart + CUSTOM_BYTE_BLOCK_FRAME_SIZE) {
+        if (robot.value.CustomByteBlockData.lastFrame && robot.value.CustomByteBlockData.lastFrame.frame === undefined && customByteBlockPendingFrameStart >= 0 && customByteBlockPendingBytes && customByteBlockPendingBytes.length >= customByteBlockPendingFrameStart + CUSTOM_BYTE_BLOCK_FRAME_SIZE) {
             robot.value.CustomByteBlockData.lastFrame.frame = customByteBlockPendingBytes.subarray(customByteBlockPendingFrameStart, customByteBlockPendingFrameStart + CUSTOM_BYTE_BLOCK_FRAME_SIZE)
         }
 
@@ -370,12 +370,12 @@ export const useRobotStore = defineStore('robot', () => {
         robot.value.CustomByteBlockData.headerValid = customByteBlockPendingHeaderValid
         robot.value.CustomByteBlockData.data = customByteBlockPendingBytes || new Uint8Array(0)
 
-        if (now - lastCustomByteBlockLogAt >= CUSTOM_BYTE_BLOCK_LOG_INTERVAL_MS) {
-            lastCustomByteBlockLogAt = now
-            console.log(
-                `[RobotStore] CustomByteBlock length=${robot.value.CustomByteBlockRawLength} update=${robot.value.CustomByteBlockUpdateCount}\n${customByteBlockPendingBytes ? toHexLines(customByteBlockPendingBytes, 16, 4) : '-'}`
-            )
-        }
+        // if (now - lastCustomByteBlockLogAt >= CUSTOM_BYTE_BLOCK_LOG_INTERVAL_MS) {
+        //     lastCustomByteBlockLogAt = now
+        //     console.log(
+        //         `[RobotStore] CustomByteBlock length=${robot.value.CustomByteBlockRawLength} update=${robot.value.CustomByteBlockUpdateCount}\n${customByteBlockPendingBytes ? toHexLines(customByteBlockPendingBytes, 16, 4) : '-'}`
+        //     )
+        // }
 
         customByteBlockPendingUpdateCount = 0
         customByteBlockPendingBytes = null
@@ -629,7 +629,7 @@ export const useRobotStore = defineStore('robot', () => {
                 break
             case 'RobotStaticStatus':
                 robot.value.RobotStaticStatusData = normalized as RobotStaticStatus
-                console.log(`[RobotStore] Updated RobotStaticStatus: ${JSON.stringify(robot.value.RobotStaticStatusData)}`)
+                // console.log(`[RobotStore] Updated RobotStaticStatus: ${JSON.stringify(robot.value.RobotStaticStatusData)}`)
                 break
             case 'RobotDynamicStatus':
                 robot.value.RobotDynamicStatusData = normalized as RobotDynamicStatus

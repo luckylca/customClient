@@ -182,6 +182,9 @@ export const useSettingStore = defineStore('setting', () => {
                 },
             }));
             text = '小地图遮罩已切换';
+        } else if (scriptId === 'toggle_debug_panel') {
+            window.dispatchEvent(new CustomEvent('hud-debug-panel-toggle'));
+            text = '图传调试面板显示已切换';
         }  else {
             text = `未知脚本: ${scriptId}`;
         }

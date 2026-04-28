@@ -11,7 +11,7 @@
             等待 CustomByteBlock 图传...
         </div>
 
-        <div class="status-overlay">
+        <div v-show="showDebugPanel" class="status-overlay">
             <span class="status-pill" :class="statusClass">
                 {{ streamStatusText }}
             </span>
@@ -26,7 +26,7 @@
             <span class="status-item">关键帧 {{ syncedToKeyFrame ? "已同步" : "未同步" }}</span>
         </div>
 
-        <div class="debug-overlay">
+        <div v-show="showDebugPanel" class="debug-overlay">
             <div class="debug-title">CustomByteBlock / H264 状态</div>
             <div class="debug-row">视频结论: {{ decodeSummary }}</div>
             <div class="debug-row">更新次数: {{ rawUpdateCount }}</div>
@@ -44,7 +44,7 @@
             <div class="debug-row">绘制状态: {{ drawDebugText }}</div>
         </div>
 
-        <div class="health-overlay" :class="healthClass">
+        <div v-show="showDebugPanel" class="health-overlay" :class="healthClass">
             {{ decodeHealthHint }}
         </div>
     </div>
@@ -112,6 +112,11 @@ const frameSizeText = ref("-");
 const canvasSizeText = ref("-");
 const avgBrightnessText = ref("-");
 const drawDebugText = ref("尚未绘制");
+
+const showDebugPanel = ref(false);
+const handleToggleDebugPanel = () => {
+    showDebugPanel.value = !showDebugPanel.value;
+};
 
 const decoderConfigured = computed(() => {
     return !!decoder && decoder.state === "configured";
@@ -376,10 +381,6 @@ const drawVideoFrame = (frame: VideoFrame) => {
 
     frameSizeText.value = `display=${frame.displayWidth}x${frame.displayHeight}, coded=${frame.codedWidth}x${frame.codedHeight}`;
 
-    console.log(
-        `[Custom HUD] VideoFrame 输出: display=${frame.displayWidth}x${frame.displayHeight}, coded=${frame.codedWidth}x${frame.codedHeight}, canvas=${cssWidth}x${cssHeight}`
-    );
-
     if (frameWidth <= 0 || frameHeight <= 0) {
         drawDebugText.value = "VideoFrame 宽高异常";
         return;
@@ -405,6 +406,13 @@ const drawVideoFrame = (frame: VideoFrame) => {
     ctx.strokeStyle = "lime";
     ctx.lineWidth = 2;
     ctx.strokeRect(drawX, drawY, drawWidth, drawHeight);
+
+    // 如果未开启调试面板（或限制频率采样），跳过高负担的像素回读
+    if (!showDebugPanel.value) {
+        avgBrightnessText.value = "-";
+        drawDebugText.value = "已绘制（不采样亮度）";
+        return;
+    }
 
     const brightness = sampleCanvasBrightness(canvas, cssWidth, cssHeight);
 
@@ -724,6 +732,8 @@ const postChunkToWorker = (bytes: Uint8Array) => {
 };
 
 onMounted(() => {
+    window.addEventListener("hud-debug-panel-toggle", handleToggleDebugPanel);
+
     if (typeof VideoDecoder === "undefined") {
         unsupportedReason.value = "当前运行环境不支持 WebCodecs";
         return;
@@ -772,6 +782,8 @@ onMounted(() => {
 });
 
 onUnmounted(() => {
+    window.removeEventListener("hud-debug-panel-toggle", handleToggleDebugPanel);
+
     if (stopStreamSubscription) {
         stopStreamSubscription();
         stopStreamSubscription = null;

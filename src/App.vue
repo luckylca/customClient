@@ -57,19 +57,19 @@ const normalizeCustomByteBlockEvent = (payload: unknown): CustomByteBlockStreamE
   const lastFrame = event.lastFrame
     ? {
         ...event.lastFrame,
-        frame: toByteArray(event.lastFrame.frame),
-        videoData: toByteArray(event.lastFrame.videoData),
-        sidebandData: toByteArray(event.lastFrame.sidebandData),
-        crc16: toByteArray(event.lastFrame.crc16),
+        frame: toByteArray(event.lastFrame.frame) || undefined,
+        videoData: toByteArray(event.lastFrame.videoData) || undefined,
+        sidebandData: toByteArray(event.lastFrame.sidebandData) || undefined,
+        crc16: toByteArray(event.lastFrame.crc16) || undefined,
       }
     : undefined;
 
   return {
     ...event,
     data,
-    videoData: toByteArray(event.videoData),
-    sidebandData: toByteArray(event.sidebandData),
-    crc16: toByteArray(event.crc16),
+    videoData: toByteArray(event.videoData) || undefined,
+    sidebandData: toByteArray(event.sidebandData) || undefined,
+    crc16: toByteArray(event.crc16) || undefined,
     lastFrame,
   };
 };

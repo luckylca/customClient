@@ -36,7 +36,7 @@ const demoTick = useHudDemoTicker();
 
 const hasData = computed(() => !!robot.RobotDynamicStatusData);
 const useDemo = computed(() => demoMode.value || !hasData.value);
-console.log(robot.RobotDynamicStatusData);
+// console.log(robot.RobotDynamicStatusData);
 const dynamic = computed(() => (robot.RobotDynamicStatusData || {}) as Record<string, unknown>);
 const statics = computed(() => (robot.RobotStaticStatusData || {}) as Record<string, unknown>);
 const injury = computed(() => (robot.RobotInjuryStatData || {}) as Record<string, unknown>);

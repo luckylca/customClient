@@ -8,8 +8,8 @@ export class MqttService {
     private readonly customByteBlockHeader0 = 0xA8;
     private readonly customByteBlockHeader1 = 0xA7;
     private readonly customByteBlockSequenceLength = 2;
-    private readonly customByteBlockVideoLength = 270;
-    private readonly customByteBlockReservedLength = 24;
+    private readonly customByteBlockVideoLength = 291;
+    private readonly customByteBlockReservedLength = 5;
     private readonly customByteBlockVideoOffset = 2 + this.customByteBlockSequenceLength;
     private readonly customByteBlockReservedOffset = this.customByteBlockVideoOffset + this.customByteBlockVideoLength;
     private readonly customByteBlockCrcOffset = this.customByteBlockReservedOffset + this.customByteBlockReservedLength;
@@ -26,13 +26,13 @@ export class MqttService {
     private shouldReconnect = true;
     private bindLocalAddress = true;
     private readonly debugTopics: string[] = (
-        process.env.MQTT_DEBUG_TOPICS || 'CustomByteBlock'
+        process.env.MQTT_DEBUG_TOPICS || ''
     )
         .split(',')
         .map((item) => item.trim())
         .filter(Boolean);
     private readonly debugTopicSet = new Set(this.debugTopics);
-    private readonly debugTopicLogIntervalMs = 500;
+    private readonly debugTopicLogIntervalMs = 1000;
     private lastDebugLogAtByTopic: Record<string, number> = {};
 
     constructor(onMessageCallback?: (topic: string, data: unknown) => void) {
@@ -329,7 +329,7 @@ export class MqttService {
             this.customByteBlockReservedOffset,
             this.customByteBlockReservedOffset + this.customByteBlockReservedLength,
         );
-        const crc16 = frame.subarray(this.customByteBlockCrcOffset, this.customByteBlockCrcOffset + 2);
+        const crc16 = new Uint8Array(0); // CRC removed in the new protocol format
 
         return {
             frame,
@@ -408,7 +408,7 @@ export class MqttService {
             }
 
             console.log(
-                `[MQTT][DEBUG] topic=${topic} rawLen=${bytes.length} frameCount=${object.frameCount} trailing=${object.trailingBytes} lastFrameStart=${parsed.frameStart} frameLen=${parsed.frame?.length || 0} sequence=${parsed.sequenceId} headerValid=${parsed.headerValid ? 'yes' : 'no'} videoLen=${parsed.videoData?.length || 0} reservedLen=${parsed.sidebandData?.length || 0} crc16=${this.hexPreview(parsed.crc16 || new Uint8Array(0), 2)}\nvideo=${this.hexPreview(parsed.videoData || new Uint8Array(0), 32)}\nreserved=${this.hexPreview(parsed.sidebandData || new Uint8Array(0), 24)}`,
+                `[MQTT][DEBUG] topic=${topic} rawLen=${bytes.length} frameCount=${object.frameCount} trailing=${object.trailingBytes} lastFrameStart=${parsed.frameStart} frameLen=${parsed.frame?.length || 0} sequence=${parsed.sequenceId} headerValid=${parsed.headerValid ? 'yes' : 'no'} videoLen=${parsed.videoData?.length || 0} reservedLen=${parsed.sidebandData?.length || 0} crc16=${this.hexPreview(parsed.crc16 || new Uint8Array(0), 2)}\nvideo=${this.hexPreview(parsed.videoData || new Uint8Array(0), 32)}\nreserved=${this.hexPreview(parsed.sidebandData || new Uint8Array(0), 5)}`,
             );
             return;
         }
@@ -433,7 +433,7 @@ export class MqttService {
                             const header0 = bytes[start];
                             const header1 = bytes[start + 1];
                             if (header0 === 0xA8 && header1 === 0xA7) {
-                                const videoPayload = bytes.subarray(start + 4, start + 274);
+                                const videoPayload = bytes.subarray(start + 4, start + 295);
                                 fs.appendFileSync('video_dump.h264', videoPayload);
                             }
                         }
