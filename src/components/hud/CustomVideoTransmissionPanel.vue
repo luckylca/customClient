@@ -277,8 +277,9 @@ const updateCanvasSize = () => {
 
     if (!wrapper || !canvas || !ctx) return;
 
-    const width = Math.max(1, Math.floor(wrapper.clientWidth));
-    const height = Math.max(1, Math.floor(wrapper.clientHeight));
+    // 固定为 300x300
+    const width = 300;
+    const height = 300;
     const dpr = window.devicePixelRatio || 1;
 
     canvas.width = Math.floor(width * dpr);
@@ -815,10 +816,8 @@ onUnmounted(() => {
 <style scoped lang="sass">
 .custom-video-panel
     position: relative
-    width: 100%
-    height: 100%
-    min-width: 220px
-    min-height: 140px
+    width: 300px
+    height: 300px
     overflow: hidden
     border-radius: 12px
     background: radial-gradient(circle at 30% 20%, rgba(65, 95, 145, 0.24), rgba(4, 8, 20, 0.92) 58%)
@@ -826,8 +825,8 @@ onUnmounted(() => {
 .video-canvas
     position: relative
     z-index: 0
-    width: 100%
-    height: 100%
+    width: 300px
+    height: 300px
     display: block
     background: #050914
 

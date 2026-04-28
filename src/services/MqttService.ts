@@ -34,6 +34,8 @@ export class MqttService {
     private readonly debugTopicSet = new Set(this.debugTopics);
     private readonly debugTopicLogIntervalMs = 1000;
     private lastDebugLogAtByTopic: Record<string, number> = {};
+    private isDumpingH264 = false;
+    private dumpFileName = 'video_dump.h264';
 
     constructor(onMessageCallback?: (topic: string, data: unknown) => void) {
         console.log('Initializing MQTT Service...');
@@ -205,6 +207,17 @@ export class MqttService {
             console.log('MQTT client disconnected');
         });
         this.client = null;
+    }
+
+    public startDumpingH264(fileName: string = 'video_dump.h264'): void {
+        this.isDumpingH264 = true;
+        this.dumpFileName = fileName;
+        console.log(`Started dumping H264 to ${this.dumpFileName}`);
+    }
+
+    public stopDumpingH264(): void {
+        this.isDumpingH264 = false;
+        console.log('Stopped dumping H264');
     }
 
     private lastLogTime = 0;
@@ -425,7 +438,7 @@ export class MqttService {
             if (topic === 'CustomByteBlock') {
                 const bytes = new Uint8Array(payload);
                 
-                if (process.env.DUMP_H264 === 'true' && bytes.length >= 300) {
+                if ((this.isDumpingH264 || process.env.DUMP_H264 === 'true') && bytes.length >= 300) {
                     try {
                         const frameCount = Math.floor(bytes.length / 300);
                         for (let i = 0; i < frameCount; i++) {
@@ -434,11 +447,11 @@ export class MqttService {
                             const header1 = bytes[start + 1];
                             if (header0 === 0xA8 && header1 === 0xA7) {
                                 const videoPayload = bytes.subarray(start + 4, start + 295);
-                                fs.appendFileSync('video_dump.h264', videoPayload);
+                                fs.appendFileSync(this.dumpFileName, videoPayload);
                             }
                         }
                     } catch (err) {
-                        console.error('Failed to dump video to video_dump.h264', err);
+                        console.error(`Failed to dump video to ${this.dumpFileName}`, err);
                     }
                 }
 

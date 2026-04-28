@@ -53,6 +53,12 @@ app.whenReady().then(() => {
     // Store mqttService reference if needed for IPC later
     (global as any).mqttService = mqttService;
 
+    // 是否开启图传数据本地保存
+    const enableH264Dump = false;
+    if (enableH264Dump) {
+        mqttService.startDumpingH264('video_dump.h264');
+    }
+
     const devUrlFromArgv = process.argv[2];
     const devUrlFromEnv = process.env.VITE_DEV_SERVER_URL;
     const devUrl = devUrlFromArgv || devUrlFromEnv;
