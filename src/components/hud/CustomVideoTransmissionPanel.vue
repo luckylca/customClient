@@ -1,6 +1,6 @@
 <template>
     <div ref="wrapperRef" class="custom-video-panel">
-        <canvas ref="canvasRef" class="video-canvas"></canvas>
+        <canvas ref="canvasRef" class="video-canvas" :style="{ filter: `saturate(${videoSaturation})` }"></canvas>
 
         <div v-if="unsupportedReason" class="placeholder">
             {{ unsupportedReason }}
@@ -53,6 +53,9 @@
 <script setup lang="ts">
 import { computed, onMounted, onUnmounted, ref } from "vue";
 import { customByteBlockStream } from "@/services/CustomByteBlockStream";
+
+// 调整图传饱和度的大小 (1 代表 100% 原饱和度，1.2 代表增强 20% 饱和度，可以按需更改)
+const videoSaturation = ref(1.2);
 
 const TARGET_FPS = 10;
 const FRAME_INTERVAL_US = Math.floor(1_000_000 / TARGET_FPS);
@@ -605,9 +608,9 @@ const decodeAccessUnit = (data: Uint8Array, isKey: boolean) => {
     }
 
     // 低延迟：队列太长时丢 delta，不丢 key
-    if (!isKey && decoder.decodeQueueSize > 4) {
-        return;
-    }
+    // if (!isKey && decoder.decodeQueueSize > 4) {
+    //     return;
+    // }
 
     try {
         const chunk = new EncodedVideoChunk({
