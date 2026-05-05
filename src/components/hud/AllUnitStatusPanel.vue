@@ -17,7 +17,7 @@
                     </div>
 
                     <div class="unit-hp-text">
-                        {{ formatHp(unit.hp) }} / {{ unit.maxHp }}
+                        {{ formatHp(unit.hp) }}
                     </div>
 
                     <div class="unit-hp-bar">
@@ -52,7 +52,7 @@
                     </div>
 
                     <div class="unit-hp-text">
-                        {{ formatHp(unit.hp) }} / {{ unit.maxHp }}
+                        {{ formatHp(unit.hp) }}
                     </div>
 
                     <div class="unit-hp-bar">

@@ -224,11 +224,11 @@ export interface LobShotReservedPack {
     frictiondfMotorOnline?: boolean
     frictionlbMotorOnline?: boolean
     frictionrbMotorOnline?: boolean
-    loaderMotorOnline?: boolean
-    frictionMode?: boolean
-    visionMode?: boolean
-    powerMode?: boolean
-    jointMode?: number // 0-失能,1-上台阶,2-悬挂,3-收腿
+    loaderMotorOnline?: boolean //拨盘电机在线状态
+    frictionMode?: boolean //是否开启摩擦轮
+    visionMode?: boolean //是否开启视觉
+    powerMode?: boolean //是否开启超电模式
+    jointMode?: number //腿部电机状态 0-失能,1-上台阶,2-悬挂,3-收腿
     jointModeLabel?: string
     modeReserved?: number
     offsetAngle?: number // 单位度

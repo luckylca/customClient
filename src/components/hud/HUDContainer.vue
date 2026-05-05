@@ -382,6 +382,7 @@ import CustomVideoTransmissionPanel from './CustomVideoTransmissionPanel.vue';
 import AllUnitStatusPanel from './AllUnitStatusPanel.vue';
 import HeroModelPanel from './HeroModelPanel.vue';
 import RespawnOverlay from './RespawnOverlay.vue';
+import HeroLobShotHud from './HeroLobShotHud.vue';
 import { useSettingStore } from '@/stores/setting';
 import { useVideoStatsStore } from '@/stores/videoStats';
 import {
@@ -524,6 +525,8 @@ const widgetComponentById = (id: string) => {
             return markRaw(AllUnitStatusPanel);
         case 'hero-model-viewer':
             return markRaw(HeroModelPanel);
+        case 'hero-lob-shot':
+            return markRaw(HeroLobShotHud);
         default:
             return markRaw(HealthPanel);
     }
@@ -785,6 +788,20 @@ const defaultWidgets = (width = 1920, height = 1080): HudWidget[] => {
             h: 140,
             minW: 800,
             minH: 120,
+            visible: true,
+            locked: false,
+            z: 4,
+        },
+        {
+            id: 'hero-lob-shot',
+            title: '英雄数据监控',
+            component: markRaw(HeroLobShotHud),
+            x: Math.max((width - 300) / 2, padding),
+            y: Math.max(height - 200, 120),
+            w: 300,
+            h: 120,
+            minW: 240,
+            minH: 100,
             visible: true,
             locked: false,
             z: 4,
