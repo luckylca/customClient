@@ -355,7 +355,7 @@ const offlineMotorCount = computed(() => offlineMotorItems.value.length);
     gap: 8px
 
 .title
-    font-size: clamp(12px, 6cqh, 22px)
+    font-size: clamp(13px, calc(7cqh * var(--hud-content-scale, 1)), 26px)
     font-weight: 700
     letter-spacing: 0.04em
     white-space: nowrap

@@ -598,7 +598,7 @@ const defaultWidgets = (width = 1920, height = 1080): HudWidget[] => {
             minW: 64,
             minH: 64,
             visible: true,
-            locked: false,
+            locked: true,
             z: 4,
         },
         {
@@ -994,6 +994,13 @@ const normalizeLayout = () => {
         const y = clamp(widget.y, 0, Math.max(0, containerSize.height - height));
         return { ...widget, w: width, h: height, x, y };
     });
+
+    // 热量圆环：始终居中，圆心对准屏幕正中央（准星位置）
+    const heatRing = widgets.value.find((w) => w.id === 'heat-ring');
+    if (heatRing) {
+        heatRing.x = (containerSize.width - heatRing.w) / 2;
+        heatRing.y = (containerSize.height - heatRing.h) / 2;
+    }
 };
 
 const snapValue = (value: number) => {
@@ -1010,16 +1017,21 @@ const scheduleUpdate = (fn: () => void) => {
     });
 };
 
-const widgetStyle = (widget: HudWidget) => ({
-    transform: `translate3d(${widget.x}px, ${widget.y}px, 0)`,
-    width: `${widget.w}px`,
-    height: `${widget.h}px`,
-    zIndex: widget.z,
-    // 单独组件自定义样式
-    '--widget-opacity': widget.customSettings?.opacity?.toString() ?? 'inherit',
-    '--widget-mask-opacity': widget.customSettings?.maskOpacity?.toString() ?? 'inherit',
-    '--widget-blur': widget.customSettings?.blurIntensity ? `${widget.customSettings.blurIntensity}px` : 'inherit',
-});
+const widgetStyle = (widget: HudWidget) => {
+    // 热量圆环：始终居中，圆心对准屏幕正中央（准星位置），作为最终兜底
+    const heatX = widget.id === 'heat-ring' ? (containerSize.width - widget.w) / 2 : widget.x;
+    const heatY = widget.id === 'heat-ring' ? (containerSize.height - widget.h) / 2 : widget.y;
+    return {
+        transform: `translate3d(${heatX}px, ${heatY}px, 0)`,
+        width: `${widget.w}px`,
+        height: `${widget.h}px`,
+        zIndex: widget.z,
+        // 单独组件自定义样式
+        '--widget-opacity': widget.customSettings?.opacity?.toString() ?? 'inherit',
+        '--widget-mask-opacity': widget.customSettings?.maskOpacity?.toString() ?? 'inherit',
+        '--widget-blur': widget.customSettings?.blurIntensity ? `${widget.customSettings.blurIntensity}px` : 'inherit',
+    };
+};
 
 // 右键菜单相关函数
 const openWidgetMenu = (widget: HudWidget, event: MouseEvent) => {
@@ -1197,6 +1209,12 @@ const handlePointerMove = (event: PointerEvent) => {
             } else {
                 widget.w = Math.max(minW, right - left);
                 widget.h = Math.max(minH, bottom - top);
+            }
+
+            // 热量圆环 resize 时保持居中
+            if (widget.id === 'heat-ring') {
+                widget.x = (containerSize.width - widget.w) / 2;
+                widget.y = (containerSize.height - widget.h) / 2;
             }
         }
     });
