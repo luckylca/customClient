@@ -224,17 +224,20 @@ export interface LobShotReservedPack {
     frictiondfMotorOnline?: boolean
     frictionlbMotorOnline?: boolean
     frictionrbMotorOnline?: boolean
-    loaderMotorOnline?: boolean //拨盘电机在线状态
-    frictionMode?: boolean //是否开启摩擦轮
-    visionMode?: boolean //是否开启视觉
-    powerMode?: boolean //是否开启超电模式
-    jointMode?: number //腿部电机状态 0-失能,1-上台阶,2-悬挂,3-收腿
+    loaderMotorOnline?: boolean // 拨盘电机在线状态
+    frictionMode?: boolean // 是否开启摩擦轮
+    visionMode?: boolean // 是否开启视觉
+    powerMode?: boolean // 是否开启超电模式
+    jointMode?: number // 关节模式：0-失能,1-上台阶,2-悬挂,3-收腿
     jointModeLabel?: string
-    modeReserved?: number
-    offsetAngle?: number // 单位度
-    chassisMode?: number // 0-失能，1-自由，2-跟随，3-小陀螺
+    chassisMode?: number // 底盘模式：0-失能,1-自由,2-跟随,3-小陀螺
     chassisModeLabel?: string
-    reservedBytes?: Uint8Array // 后18字节保留位
+    bulletSpeed?: number // 弹速：0-11.5,1-11.3,2-16.3吊射,3-16.1吊射
+    bulletSpeedLabel?: string
+    reserved1?: number
+    modeReserved?: number
+    energy?: number // 超电能量 0~100
+    offsetAngle?: number // 底盘和归中位置的夹角 0~360°
     offlineMotorCount?: number
 }
 

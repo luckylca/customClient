@@ -149,18 +149,30 @@ const chassisModeLabel = (mode: number): string => {
     return map[mode] || `未知(${mode})`
 }
 
+const bulletSpeedLabel = (speed: number): string => {
+    const map: Record<number, string> = {
+        0: '11.5',
+        1: '11.3',
+        2: '16.3吊射',
+        3: '16.1吊射',
+    }
+    return map[speed] || `未知(${speed})`
+}
+
 const parseLobShotReservedPack = (reservedData?: Uint8Array | null): LobShotReservedPack | null => {
     if (!reservedData || reservedData.length < LOB_SHOT_RESERVED_SIZE) return null
 
     const raw = reservedData.subarray(0, LOB_SHOT_RESERVED_SIZE)
     const flags = raw[0] | (raw[1] << 8)
     const modeBits = raw[2]
-    const view = new DataView(raw.buffer, raw.byteOffset, raw.byteLength)
-    const offsetAngle = view.getInt16(3, true)
+    const energyAndAngle = raw[3] | (raw[4] << 8)
 
     const jointMode = modeBits & 0x03
     const chassisMode = (modeBits >> 2) & 0x03
-    const modeReserved = (modeBits >> 4) & 0x0f
+    const bulletSpeed = (modeBits >> 4) & 0x03
+    const reserved1 = (modeBits >> 6) & 0x03
+    const energy = energyAndAngle & 0x7f
+    const offsetAngle = (energyAndAngle >> 7) & 0x01ff
 
     const onlineBools = [
         bit(flags, 0), bit(flags, 1), bit(flags, 2), bit(flags, 3), bit(flags, 4), bit(flags, 5),
@@ -188,11 +200,13 @@ const parseLobShotReservedPack = (reservedData?: Uint8Array | null): LobShotRese
         powerMode: bit(flags, 15),
         jointMode,
         jointModeLabel: jointModeLabel(jointMode),
-        modeReserved,
-        offsetAngle,
         chassisMode,
         chassisModeLabel: chassisModeLabel(chassisMode),
-        reservedBytes: raw.subarray(6, 24),
+        bulletSpeed,
+        bulletSpeedLabel: bulletSpeedLabel(bulletSpeed),
+        reserved1,
+        energy,
+        offsetAngle,
         offlineMotorCount,
     }
 }

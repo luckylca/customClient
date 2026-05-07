@@ -17,6 +17,7 @@
         :style="{
             '--hud-opacity': settings.hudOpacity.toString(),
             '--hud-font-scale': settings.fontScale.toString(),
+            '--hud-content-scale': props.minimal ? '0.6' : '1',
             '--hud-grid': settings.gridSize + 'px',
             '--hud-widget-opacity': settings.widgetOpacity.toString(),
             '--hud-blur': settings.blurIntensity + 'px',
@@ -370,6 +371,8 @@ import PowerPanel from './PowerPanel.vue';
 import BufferPanel from './BufferPanel.vue';
 import ExperiencePanel from './ExperiencePanel.vue';
 import AmmoCounter from './AmmoCounter.vue';
+import HeatRingHud from './HeatRingHud.vue';
+import TripleRingHud from './TripleRingHud.vue';
 import Minimap from './Minimap.vue';
 import ModuleStatus from './ModuleStatus.vue';
 import EventLog from './EventLog.vue';
@@ -493,6 +496,10 @@ const widgetComponentById = (id: string) => {
             return markRaw(ModuleStatus);
         case 'ammo-counter':
             return markRaw(AmmoCounter);
+        case 'heat-ring':
+            return markRaw(HeatRingHud);
+        case 'triple-ring':
+            return markRaw(TripleRingHud);
         case 'health-panel':
             return markRaw(HealthPanel);
         case 'power-panel':
@@ -576,6 +583,34 @@ const defaultWidgets = (width = 1920, height = 1080): HudWidget[] => {
             h: 190,
             minW: 280,
             minH: 160,
+            visible: true,
+            locked: false,
+            z: 4,
+        },
+        {
+            id: 'heat-ring',
+            title: '热量圆环',
+            component: markRaw(HeatRingHud),
+            x: leftColumnX + 380,
+            y: 430,
+            w: 120,
+            h: 120,
+            minW: 64,
+            minH: 64,
+            visible: true,
+            locked: false,
+            z: 4,
+        },
+        {
+            id: 'triple-ring',
+            title: '状态三环',
+            component: markRaw(TripleRingHud),
+            x: leftColumnX + 520,
+            y: 410,
+            w: 160,
+            h: 160,
+            minW: 96,
+            minH: 96,
             visible: true,
             locked: false,
             z: 4,
@@ -932,6 +967,8 @@ const getResizeMinSize = (widget: HudWidget) => {
     };
 };
 
+const isSquareResizeWidget = (widget: HudWidget) => widget.id === 'heat-ring' || widget.id === 'triple-ring';
+
 const normalizeLayout = () => {
     // Safety check: Don't normalize if container is too small (e.g. initial load)
     if (containerSize.width < 100 || containerSize.height < 100) return;
@@ -944,8 +981,15 @@ const normalizeLayout = () => {
             widget.locked = true;
         }
         const { minW, minH } = getResizeMinSize(widget);
-        const width = clamp(widget.w, minW, Math.max(minW, containerSize.width - widget.x));
-        const height = clamp(widget.h, minH, Math.max(minH, containerSize.height - widget.y));
+        let width = clamp(widget.w, minW, Math.max(minW, containerSize.width - widget.x));
+        let height = clamp(widget.h, minH, Math.max(minH, containerSize.height - widget.y));
+        if (isSquareResizeWidget(widget)) {
+            const minSize = Math.max(minW, minH);
+            const maxSize = Math.max(minSize, Math.min(containerSize.width - widget.x, containerSize.height - widget.y));
+            const size = clamp(Math.min(width, height), minSize, maxSize);
+            width = size;
+            height = size;
+        }
         const x = clamp(widget.x, 0, Math.max(0, containerSize.width - width));
         const y = clamp(widget.y, 0, Math.max(0, containerSize.height - height));
         return { ...widget, w: width, h: height, x, y };
@@ -1123,10 +1167,37 @@ const handlePointerMove = (event: PointerEvent) => {
                 top = Math.min(top, bottom - minH);
             }
 
+            if (isSquareResizeWidget(widget)) {
+                const minSize = Math.max(minW, minH);
+                const anchorRight = direction.includes('w') && !direction.includes('e');
+                const anchorBottom = direction.includes('n') && !direction.includes('s');
+                const maxHorizontalSize = anchorRight ? right : containerSize.width - left;
+                const maxVerticalSize = anchorBottom ? bottom : containerSize.height - top;
+                const size = clamp(Math.max(right - left, bottom - top), minSize, Math.max(minSize, Math.min(maxHorizontalSize, maxVerticalSize)));
+
+                if (anchorRight) {
+                    left = right - size;
+                } else {
+                    right = left + size;
+                }
+
+                if (anchorBottom) {
+                    top = bottom - size;
+                } else {
+                    bottom = top + size;
+                }
+            }
+
             widget.x = left;
             widget.y = top;
-            widget.w = Math.max(minW, right - left);
-            widget.h = Math.max(minH, bottom - top);
+            if (isSquareResizeWidget(widget)) {
+                const size = Math.max(Math.max(minW, minH), right - left, bottom - top);
+                widget.w = size;
+                widget.h = size;
+            } else {
+                widget.w = Math.max(minW, right - left);
+                widget.h = Math.max(minH, bottom - top);
+            }
         }
     });
 };
@@ -1418,64 +1489,69 @@ onUnmounted(() => {
     pointer-events: none
     transition: opacity 0.18s ease
 
-.hud-layer.editing .hud-widget:not(.locked):hover .resize-handle,
-.hud-layer.editing .hud-widget.active:not(.locked) .resize-handle
+.hud-layer.editing:not(.minimal) .hud-widget:not(.locked)
+    overflow: visible
+
+    .resize-handle
+        pointer-events: auto
+
+.hud-layer.editing:not(.minimal) .hud-widget:not(.locked):hover .resize-handle,
+.hud-layer.editing:not(.minimal) .hud-widget.active:not(.locked) .resize-handle
     opacity: 1
-    pointer-events: auto
 
 .resize-n,
 .resize-s
-    left: 12px
-    right: 12px
-    height: 10px
+    left: 14px
+    right: 14px
+    height: 16px
     cursor: ns-resize
 
 .resize-e,
 .resize-w
-    top: 12px
-    bottom: 12px
-    width: 10px
+    top: 14px
+    bottom: 14px
+    width: 16px
     cursor: ew-resize
 
 .resize-n
-    top: 0
+    top: -10px
 
 .resize-s
-    bottom: 0
+    bottom: -10px
 
 .resize-e
-    right: 0
+    right: -10px
 
 .resize-w
-    left: 0
+    left: -10px
 
 .resize-ne,
 .resize-nw,
 .resize-se,
 .resize-sw
-    width: 14px
-    height: 14px
+    width: 22px
+    height: 22px
     border-radius: 4px
     background: rgba(255, 255, 255, 0.26)
 
 .resize-ne
-    top: 0
-    right: 0
+    top: -10px
+    right: -10px
     cursor: nesw-resize
 
 .resize-nw
-    top: 0
-    left: 0
+    top: -10px
+    left: -10px
     cursor: nwse-resize
 
 .resize-se
-    right: 0
-    bottom: 0
+    right: -10px
+    bottom: -10px
     cursor: nwse-resize
 
 .resize-sw
-    left: 0
-    bottom: 0
+    left: -10px
+    bottom: -10px
     cursor: nesw-resize
 
 .hud-settings

@@ -4,7 +4,7 @@
             <div class="title">英雄状态</div>
 
             <div class="right-info">
-                <span class="offline" :class="{ danger: offlineMotorCount > 0 }">
+                <span v-if="offlineMotorCount > 0" class="offline danger">
                     离线 {{ offlineMotorCount }}
                 </span>
 
@@ -26,16 +26,14 @@
             </div>
         </div>
 
-        <div class="motor-grid">
+        <div v-if="offlineMotorCount > 0" class="offline-motor-list">
             <div
-                v-for="item in motorItems"
+                v-for="item in offlineMotorItems"
                 :key="item.key"
-                class="motor-item"
-                :class="onlineClass(item.online)"
+                class="offline-motor-item"
                 :title="item.label"
             >
-                <span class="dot"></span>
-                <span class="name">{{ item.shortLabel }}</span>
+                {{ item.label }}
             </div>
         </div>
     </div>
@@ -191,12 +189,6 @@ const modeClass = (value?: number): string => {
     return value === 0 ? 'off' : 'on';
 };
 
-const onlineClass = (value?: boolean): string => {
-    if (value === true) return 'online';
-    if (value === false) return 'offline';
-    return 'unknown';
-};
-
 const jointModeText = computed(() => {
     if (lob.value.jointModeLabel) return lob.value.jointModeLabel;
 
@@ -339,13 +331,9 @@ const motorItems = computed(() => [
     },
 ]);
 
-const offlineMotorCount = computed(() => {
-    if (typeof lob.value.offlineMotorCount === 'number') {
-        return lob.value.offlineMotorCount;
-    }
+const offlineMotorItems = computed(() => motorItems.value.filter((item) => item.online === false));
 
-    return motorItems.value.filter((item) => item.online === false).length;
-});
+const offlineMotorCount = computed(() => offlineMotorItems.value.length);
 </script>
 
 <style scoped lang="sass">
@@ -435,61 +423,32 @@ const offlineMotorCount = computed(() => {
     overflow: hidden
     text-overflow: ellipsis
 
-.motor-grid
+.offline-motor-list
     display: grid
-    grid-template-columns: repeat(7, minmax(0, 1fr))
+    grid-template-columns: repeat(3, minmax(0, 1fr))
     gap: 1cqh 1cqw
     flex: 1
     min-height: 0
 
-.motor-item
+.offline-motor-item
     display: flex
     align-items: center
     justify-content: center
-    gap: 4px
     min-width: 0
-    padding: 0.7cqh 0.6cqw
+    padding: 0.7cqh 0.8cqw
     border-radius: 7px
-    font-size: clamp(7px, 2.8cqh, 11px)
-    background: rgba(255, 255, 255, 0.045)
-    border: 1px solid rgba(255, 255, 255, 0.08)
-
-    .dot
-        width: 6px
-        height: 6px
-        border-radius: 50%
-        flex-shrink: 0
-
-    .name
-        white-space: nowrap
-        overflow: hidden
-        text-overflow: ellipsis
-
-    &.online
-        color: var(--hud-text-secondary)
-
-        .dot
-            background: var(--md-health-high)
-            box-shadow: 0 0 6px var(--md-health-high)
-
-    &.offline
-        color: var(--md-health-low)
-        background: rgba(229, 115, 115, 0.12)
-
-        .dot
-            background: var(--md-health-low)
-            box-shadow: 0 0 6px var(--md-health-low)
-
-    &.unknown
-        color: var(--hud-text-tertiary)
-
-        .dot
-            background: rgba(255, 255, 255, 0.35)
+    font-size: clamp(8px, 3cqh, 12px)
+    color: var(--md-health-low)
+    background: rgba(229, 115, 115, 0.12)
+    border: 1px solid rgba(229, 115, 115, 0.22)
+    white-space: nowrap
+    overflow: hidden
+    text-overflow: ellipsis
 
 @media (max-width: 520px)
     .mode-row
         grid-template-columns: repeat(3, minmax(0, 1fr))
 
-    .motor-grid
-        grid-template-columns: repeat(4, minmax(0, 1fr))
+    .offline-motor-list
+        grid-template-columns: repeat(2, minmax(0, 1fr))
 </style>

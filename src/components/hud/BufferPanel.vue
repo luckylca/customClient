@@ -61,25 +61,25 @@ const bufferPercent = computed(() =>
 .section
     display: flex
     flex-direction: column
-    gap: 3cqh
+    gap: calc(3cqh * var(--hud-content-scale, 1))
     flex: 1
     justify-content: center
 
 .section-title
-    font-size: clamp(10px, 15cqh, 24px)
+    font-size: clamp(10px, calc(15cqh * var(--hud-content-scale, 1)), 24px)
     color: var(--hud-text-secondary)
     letter-spacing: 0.03em
 
 .value-row
     display: flex
     align-items: baseline
-    gap: 4cqw
+    gap: calc(4cqw * var(--hud-content-scale, 1))
 
 .value
-    font-size: clamp(16px, 35cqh, 48px)
+    font-size: clamp(16px, calc(35cqh * var(--hud-content-scale, 1)), 48px)
     font-weight: 600
 
 .max
-    font-size: clamp(10px, 15cqh, 24px)
+    font-size: clamp(10px, calc(15cqh * var(--hud-content-scale, 1)), 24px)
     color: var(--hud-text-tertiary)
 </style>
