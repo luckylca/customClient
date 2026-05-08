@@ -13,6 +13,8 @@ export interface StoredHudWidget {
     visible: boolean;
     locked: boolean;
     z: number;
+    layoutWidth?: number;
+    layoutHeight?: number;
     props?: Record<string, unknown>;
     customSettings?: {
         opacity?: number;

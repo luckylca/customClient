@@ -8,6 +8,17 @@
             <div class="stage-label">{{ stageLabel }}</div>
             <div class="stage-time">{{ countdown }}</div>
         </div>
+        <div class="mode-row">
+            <div
+                v-for="item in modeItems"
+                :key="item.key"
+                class="mode-chip"
+                :class="item.className"
+            >
+                <span class="mode-label">{{ item.label }}</span>
+                <span class="mode-value">{{ item.value }}</span>
+            </div>
+        </div>
         <div class="score">
             <div class="score-item">
                 <span class="label">红方</span>
@@ -40,6 +51,11 @@ const demoMode = inject('hudDemoMode', computed(() => false));
 const demoTick = useHudDemoTicker();
 
 const gameStatus = computed(() => (globalData.GameStatusData || {}) as Record<string, unknown>);
+const lobShotReserved = computed(() => (
+    robot.CustomByteBlockLobShotReservedData
+    || robot.CustomByteBlockData?.lobShotReserved
+    || null
+));
 const pickNumber = (key: string, fallback = 0): number => {
     const value = gameStatus.value[key];
     return typeof value === 'number' ? value : fallback;
@@ -47,6 +63,32 @@ const pickNumber = (key: string, fallback = 0): number => {
 const pickBoolean = (key: string, fallback = false): boolean => {
     const value = gameStatus.value[key];
     return typeof value === 'boolean' ? value : fallback;
+};
+const boolText = (value?: boolean): string => {
+    if (value === true) return '开';
+    if (value === false) return '关';
+    return '-';
+};
+const boolClass = (value?: boolean): string => {
+    if (value === true) return 'on';
+    if (value === false) return 'off';
+    return 'unknown';
+};
+const modeClass = (value?: number): string => {
+    if (typeof value !== 'number') return 'unknown';
+    return value === 0 ? 'off' : 'on';
+};
+const jointModeMap: Record<number, string> = {
+    0: '失能',
+    1: '上台阶',
+    2: '悬挂',
+    3: '收腿',
+};
+const chassisModeMap: Record<number, string> = {
+    0: '失能',
+    1: '自由',
+    2: '跟随',
+    3: '小陀螺',
 };
 
 const useDemo = computed(() => demoMode.value || !pickNumber('stageCountdownSec', 0));
@@ -87,6 +129,101 @@ const countdown = computed(() => {
 
 const teamLabel = computed(() => (robot.color === 'red' ? '红方' : robot.color === 'blue' ? '蓝方' : '未选'));
 const teamClass = computed(() => (robot.color === 'red' ? 'team-red' : robot.color === 'blue' ? 'team-blue' : 'team-neutral'));
+
+const demoModes = computed(() => {
+    const t = demoTick.value;
+    return {
+        frictionMode: Math.floor(t / 2500) % 2 === 0,
+        visionMode: Math.floor(t / 5000) % 3 !== 0,
+        powerMode: Math.floor(t / 3600) % 2 === 0,
+        chassisMode: Math.floor(t / 3200) % 4,
+        jointMode: Math.floor(t / 4200) % 4,
+    };
+});
+
+const chassisModeText = computed(() => {
+    if (useDemo.value) return chassisModeMap[demoModes.value.chassisMode];
+    if (lobShotReserved.value?.chassisModeLabel) return lobShotReserved.value.chassisModeLabel;
+    const mode = lobShotReserved.value?.chassisMode;
+    return typeof mode === 'number' ? (chassisModeMap[mode] || `未知${mode}`) : '-';
+});
+
+const jointModeText = computed(() => {
+    if (useDemo.value) return jointModeMap[demoModes.value.jointMode];
+    if (lobShotReserved.value?.jointModeLabel) return lobShotReserved.value.jointModeLabel;
+    const mode = lobShotReserved.value?.jointMode;
+    return typeof mode === 'number' ? (jointModeMap[mode] || `未知${mode}`) : '-';
+});
+
+const modeItems = computed(() => {
+    if (useDemo.value) {
+        return [
+            {
+                key: 'friction',
+                label: '摩擦',
+                value: boolText(demoModes.value.frictionMode),
+                className: boolClass(demoModes.value.frictionMode),
+            },
+            {
+                key: 'vision',
+                label: '视觉',
+                value: boolText(demoModes.value.visionMode),
+                className: boolClass(demoModes.value.visionMode),
+            },
+            {
+                key: 'power',
+                label: '超电',
+                value: boolText(demoModes.value.powerMode),
+                className: boolClass(demoModes.value.powerMode),
+            },
+            {
+                key: 'chassis',
+                label: '底盘',
+                value: chassisModeText.value,
+                className: modeClass(demoModes.value.chassisMode),
+            },
+            {
+                key: 'joint',
+                label: '腿',
+                value: jointModeText.value,
+                className: modeClass(demoModes.value.jointMode),
+            },
+        ];
+    }
+
+    return [
+        {
+            key: 'friction',
+            label: '摩擦',
+            value: boolText(lobShotReserved.value?.frictionMode),
+            className: boolClass(lobShotReserved.value?.frictionMode),
+        },
+        {
+            key: 'vision',
+            label: '视觉',
+            value: boolText(lobShotReserved.value?.visionMode),
+            className: boolClass(lobShotReserved.value?.visionMode),
+        },
+        {
+            key: 'power',
+            label: '超电',
+            value: boolText(lobShotReserved.value?.powerMode),
+            className: boolClass(lobShotReserved.value?.powerMode),
+        },
+        {
+            key: 'chassis',
+            label: '底盘',
+            value: chassisModeText.value,
+            className: modeClass(lobShotReserved.value?.chassisMode),
+        },
+        {
+            key: 'joint',
+            label: '腿',
+            value: jointModeText.value,
+            className: modeClass(lobShotReserved.value?.jointMode),
+        },
+    ];
+});
 
 const redScore = computed(() =>
     useDemo.value
@@ -149,12 +286,53 @@ const blueScore = computed(() =>
     font-weight: 500
     font-variant-numeric: tabular-nums
 
+.mode-row
+    display: grid
+    grid-template-columns: repeat(5, minmax(0, 1fr))
+    gap: 8px
+    flex: 1 1 auto
+    min-width: 280px
+    margin-left: 8px
+
+.mode-chip
+    display: flex
+    align-items: center
+    justify-content: center
+    gap: 4px
+    min-width: 0
+    padding: 6px 8px
+    border-radius: 999px
+    background: rgba(255, 255, 255, 0.06)
+    border: 1px solid rgba(255, 255, 255, 0.1)
+
+    &.on
+        color: var(--md-health-high)
+
+    &.off
+        color: var(--md-health-low)
+
+    &.unknown
+        color: var(--hud-text-tertiary)
+
+.mode-label
+    font-size: var(--md-label-small)
+    color: var(--hud-text-tertiary)
+    white-space: nowrap
+
+.mode-value
+    font-size: var(--md-label-medium)
+    font-weight: 600
+    white-space: nowrap
+    overflow: hidden
+    text-overflow: ellipsis
+
 // Score Display
 .score
     display: flex
     align-items: center
     gap: var(--md-spacing-sm)
     margin-left: auto
+    flex: 0 0 auto
 
 .score-item
     display: flex

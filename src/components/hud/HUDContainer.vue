@@ -417,6 +417,12 @@ const emit = defineEmits<{
 
 const containerRef = ref<HTMLElement | null>(null);
 const containerSize = reactive({ width: 1920, height: 1080 });
+const lastLayoutViewport = reactive({ width: 1920, height: 1080 });
+const isHydratingLayout = ref(true);
+const canPersistLayout = ref(false);
+const resizeSaveTimer = ref<number | null>(null);
+const RESIZE_SAVE_DEBOUNCE_MS = 240;
+const RESIZE_EPSILON = 0.5;
 
 const showSettings = ref(false);
 const activeWidgetId = ref<string | null>(null);
@@ -889,6 +895,13 @@ const isLayoutValid = (layout: HudWidget[]) => {
 const loadLayout = () => {
     const parsed = loadHudLayout();
     if (!parsed || !parsed.length) return false;
+
+    const layoutWidth = parsed.find((item) => item.layoutWidth && item.layoutWidth > 0)?.layoutWidth ?? containerSize.width;
+    const layoutHeight = parsed.find((item) => item.layoutHeight && item.layoutHeight > 0)?.layoutHeight ?? containerSize.height;
+    lastLayoutViewport.width = layoutWidth;
+    lastLayoutViewport.height = layoutHeight;
+    isHydratingLayout.value = true;
+
     const rebuilt = parsed.map((item) => ({
         ...item,
         // Top bar should be movable in edit mode for rapid layout tuning.
@@ -923,12 +936,19 @@ const loadSettings = () => {
 };
 
 const saveLayout = (force = false) => {
+    if (!canPersistLayout.value && !force) return;
     if (!settings.autosave && !force) return;
     const serialized: StoredHudWidget[] = widgets.value.map((widget) => {
         const { component, ...rest } = widget;
-        return rest;
+        return {
+            ...rest,
+            layoutWidth: containerSize.width,
+            layoutHeight: containerSize.height,
+        };
     });
     saveHudLayout(serialized);
+    lastLayoutViewport.width = containerSize.width;
+    lastLayoutViewport.height = containerSize.height;
 };
 
 const saveSettings = (force = false) => {
@@ -940,14 +960,83 @@ const saveSettings = (force = false) => {
 // But we keep isLayoutValid helper for loadLayout checks
 
 
+const scaleLayoutToContainer = (fromWidth: number, fromHeight: number, toWidth: number, toHeight: number) => {
+    if (fromWidth <= 0 || fromHeight <= 0 || toWidth <= 0 || toHeight <= 0) return;
+
+    const scaleX = toWidth / fromWidth;
+    const scaleY = toHeight / fromHeight;
+    const uniformScale = Math.min(scaleX, scaleY);
+
+    widgets.value.forEach((widget) => {
+        if (widget.id === 'all-unit-status') return;
+        if (widget.id === 'heat-ring') return;
+
+        widget.x *= scaleX;
+        widget.y *= scaleY;
+
+        if (isSquareResizeWidget(widget)) {
+            const scaledSize = Math.max(widget.minW || 0, widget.minH || 0, Math.min(widget.w, widget.h) * uniformScale);
+            widget.w = scaledSize;
+            widget.h = scaledSize;
+            return;
+        }
+
+        widget.w *= scaleX;
+        widget.h *= scaleY;
+    });
+
+    const heatRing = widgets.value.find((widget) => widget.id === 'heat-ring');
+    if (heatRing) {
+        const minSize = Math.max(heatRing.minW || 0, heatRing.minH || 0);
+        const size = Math.max(minSize, Math.min(heatRing.w, heatRing.h) * uniformScale);
+        heatRing.w = size;
+        heatRing.h = size;
+    }
+};
+
+const scheduleResizeLayoutSave = () => {
+    if (resizeSaveTimer.value !== null) {
+        window.clearTimeout(resizeSaveTimer.value);
+    }
+
+    resizeSaveTimer.value = window.setTimeout(() => {
+        resizeSaveTimer.value = null;
+        saveLayout();
+    }, RESIZE_SAVE_DEBOUNCE_MS);
+};
+
 const updateContainerSize = () => {
     if (!containerRef.value) return;
     const rect = containerRef.value.getBoundingClientRect();
     if (rect.width === 0 || rect.height === 0) return; // Guard against hidden/unmounted state
-    
-    containerSize.width = rect.width;
-    containerSize.height = rect.height;
+
+    const nextWidth = rect.width;
+    const nextHeight = rect.height;
+    const prevWidth = containerSize.width;
+    const prevHeight = containerSize.height;
+
+    if (Math.abs(nextWidth - prevWidth) < RESIZE_EPSILON && Math.abs(nextHeight - prevHeight) < RESIZE_EPSILON) {
+        return;
+    }
+
+    const resizeSourceWidth = isHydratingLayout.value ? lastLayoutViewport.width : prevWidth;
+    const resizeSourceHeight = isHydratingLayout.value ? lastLayoutViewport.height : prevHeight;
+
+    if (widgets.value.length > 0) {
+        scaleLayoutToContainer(resizeSourceWidth, resizeSourceHeight, nextWidth, nextHeight);
+    }
+
+    containerSize.width = nextWidth;
+    containerSize.height = nextHeight;
     normalizeLayout();
+
+    lastLayoutViewport.width = nextWidth;
+    lastLayoutViewport.height = nextHeight;
+    isHydratingLayout.value = false;
+
+    if (canPersistLayout.value) {
+        scheduleResizeLayoutSave();
+    }
 };
 
 const clamp = (value: number, min: number, max: number) =>
@@ -1348,8 +1437,13 @@ onMounted(async () => {
              normalizeLayout();
         } else {
              widgets.value = defaultWidgets(containerSize.width, containerSize.height);
+             lastLayoutViewport.width = containerSize.width;
+             lastLayoutViewport.height = containerSize.height;
+             isHydratingLayout.value = false;
         }
-        
+
+        canPersistLayout.value = true;
+
     });
     
     window.addEventListener('resize', updateContainerSize);

@@ -10,7 +10,7 @@
       "minW": 820,
       "minH": 72,
       "visible": true,
-      "locked": true,
+      "locked": false,
       "z": 6
     },
     {
