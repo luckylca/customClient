@@ -3,6 +3,46 @@ type CommonCommandPayload = {
 	param: number;
 };
 
+export type AmmoPurchaseRole = 'hero' | 'infantry';
+
+const HERO_AMMO_OPTIONS = [1, 2, 5, 10, 20] as const;
+const INFANTRY_AMMO_OPTIONS = [2, 5, 10, 20, 40] as const;
+
+const isValidAmmoQuantity = (role: AmmoPurchaseRole, quantity: number) => {
+	const options = role === 'hero' ? HERO_AMMO_OPTIONS : INFANTRY_AMMO_OPTIONS;
+	return options.includes(quantity as never);
+};
+
+const purchaseAmmoCommand = (role: AmmoPurchaseRole, quantity: number): boolean => {
+	if (!Number.isFinite(quantity) || !isValidAmmoQuantity(role, quantity)) {
+		return false;
+	}
+
+	return sendCommonCommand({
+		cmdType: role === 'hero' ? 2 : 1,
+		param: Math.trunc(quantity),
+	});
+};
+
+const getAmmoPurchaseOptions = (role: AmmoPurchaseRole): readonly number[] => {
+	return role === 'hero' ? HERO_AMMO_OPTIONS : INFANTRY_AMMO_OPTIONS;
+};
+
+const getAmmoCommandLabel = (role: AmmoPurchaseRole) => role === 'hero' ? '42mm' : '17mm';
+
+const getAmmoPurchaseDescription = (role: AmmoPurchaseRole, quantity: number) => `${getAmmoCommandLabel(role)} ${quantity}发`;
+
+const getAmmoPurchaseSuccessText = (role: AmmoPurchaseRole, quantity: number, nextAmmo: number) =>
+	`购买 ${getAmmoPurchaseDescription(role, quantity)}子弹指令已发送（当前子弹：${nextAmmo}）`;
+
+const getAmmoPurchaseFailureText = (role: AmmoPurchaseRole, quantity: number, ammoText: string) =>
+	`购买 ${getAmmoPurchaseDescription(role, quantity)}子弹发送失败（当前子弹：${ammoText}）`;
+
+const getAmmoPurchaseUnsupportedText = () => '当前机型不支持补弹';
+
+const getAmmoPurchaseInvalidQuantityText = (role: AmmoPurchaseRole, quantity: number) =>
+	`${getAmmoCommandLabel(role)} 不支持购买 ${quantity} 发`;
+
 type HeroDeployModePayload = {
 	mode: number;
 };
@@ -26,17 +66,11 @@ const sendCommonCommand = (payload: CommonCommandPayload): boolean => {
 };
 
 const AutoBuy42mm5 = (): boolean => {
-	return sendCommonCommand({
-		cmdType: 2,
-		param: 5,
-	});
+	return purchaseAmmoCommand('hero', 5);
 };
 
 const AutoBuy17mm20 = (): boolean => {
-	return sendCommonCommand({
-		cmdType: 1,
-		param: 20,
-	});
+	return purchaseAmmoCommand('infantry', 20);
 };
 
 const AutoResurrection = (): boolean => {
@@ -81,4 +115,21 @@ const sendRobotPerformanceSelection = (payload: RobotPerformanceSelectionPayload
 	return true;
 };
 
-export { AutoBuy42mm5, AutoBuy17mm20, AutoResurrection, AutoBuyResurrection, sendCommonCommand, sendHeroDeployMode, ToggleHeroDeployMode, sendRobotPerformanceSelection };
+export {
+	AutoBuy42mm5,
+	AutoBuy17mm20,
+	AutoResurrection,
+	AutoBuyResurrection,
+	sendCommonCommand,
+	sendHeroDeployMode,
+	ToggleHeroDeployMode,
+	sendRobotPerformanceSelection,
+	purchaseAmmoCommand,
+	getAmmoPurchaseOptions,
+	getAmmoCommandLabel,
+	getAmmoPurchaseDescription,
+	getAmmoPurchaseSuccessText,
+	getAmmoPurchaseFailureText,
+	getAmmoPurchaseUnsupportedText,
+	getAmmoPurchaseInvalidQuantityText,
+};

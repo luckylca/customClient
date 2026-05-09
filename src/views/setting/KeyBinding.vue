@@ -159,9 +159,9 @@ const availableScripts = [
     { id: 'auto_buy_17mm_20', name: '17mm 20发' },
     { id: 'Resurrection', name: '自动复活' },
     { id: 'toggle_minimap_overlay', name: '小地图遮罩开关' },
+    { id: 'toggle_bullet_purchase_overlay', name: '补弹面板开关' },
     { id: 'toggle_debug_panel', name: '图传调试面板开关' },
 ];
-
 const keyBindings = computed(() => settingStore.keyBindings);
 
 const showConfirmDialog = ref(false);

@@ -7,6 +7,7 @@ import { useGlobalStore } from './stores/globalData';
 import { useRobotStore } from './stores/robotData';
 import { useSettingStore } from './stores/setting';
 import Minimap from './components/hud/Minimap.vue';
+import BulletPurchaseOverlay from './components/hud/BulletPurchaseOverlay.vue';
 import type { CustomByteBlockStreamEvent } from './types/rmType';
 
 let inputHandler: InputHandler | null = null;
@@ -16,10 +17,19 @@ const settingStore = useSettingStore();
 const MAX_VISIBLE_STACK = 5;
 const scriptCloudItems = computed(() => [...settingStore.scriptNotifications].reverse().slice(0, MAX_VISIBLE_STACK));
 const showMinimapOverlay = ref(false);
+const showBulletPurchaseOverlay = ref(false);
 const { ipcRenderer } = (window as any).require ? (window as any).require('electron') : { ipcRenderer: null };
+
+const notifyCombatOverlay = (active: boolean) => {
+  window.dispatchEvent(new CustomEvent('combat-overlay-active', { detail: { active } }));
+};
 
 const setMinimapOverlay = (nextVisible: boolean) => {
   showMinimapOverlay.value = nextVisible;
+};
+
+const setBulletPurchaseOverlay = (nextVisible: boolean) => {
+  showBulletPurchaseOverlay.value = nextVisible;
 };
 
 const toggleMinimapOverlay = (nextVisible?: boolean) => {
@@ -28,6 +38,44 @@ const toggleMinimapOverlay = (nextVisible?: boolean) => {
     return;
   }
   showMinimapOverlay.value = !showMinimapOverlay.value;
+};
+
+const toggleBulletPurchaseOverlay = (nextVisible?: boolean) => {
+  if (typeof nextVisible === 'boolean') {
+    setBulletPurchaseOverlay(nextVisible);
+    return;
+  }
+  showBulletPurchaseOverlay.value = !showBulletPurchaseOverlay.value;
+};
+
+const isAnyGlobalOverlayVisible = computed(() => showMinimapOverlay.value || showBulletPurchaseOverlay.value);
+
+watch(isAnyGlobalOverlayVisible, (active) => {
+  notifyCombatOverlay(active);
+}, { immediate: true });
+
+watch(showBulletPurchaseOverlay, (visible) => {
+  if (visible) {
+    showMinimapOverlay.value = false;
+  }
+});
+
+watch(showMinimapOverlay, (visible) => {
+  if (visible) {
+    showBulletPurchaseOverlay.value = false;
+  }
+});
+
+const closeTopmostOverlay = () => {
+  if (showBulletPurchaseOverlay.value) {
+    showBulletPurchaseOverlay.value = false;
+    return true;
+  }
+  if (showMinimapOverlay.value) {
+    showMinimapOverlay.value = false;
+    return true;
+  }
+  return false;
 };
 
 const toByteArray = (input: unknown): Uint8Array | null => {
@@ -96,28 +144,6 @@ const handleCustomByteBlockStream = (_event: any, payload: unknown) => {
   robotStore.updateCustomByteBlockStats(event);
 };
 
-onMounted(() => {
-  inputHandler = new InputHandler();
-  if (ipcRenderer) {
-    ipcRenderer.on('mqtt-message', handleMqttMessage);
-    ipcRenderer.on('custom-byte-block-stream', handleCustomByteBlockStream);
-  }
-  window.addEventListener('hud-minimap-overlay', handleHudMinimapOverlay as EventListener);
-  window.addEventListener('keydown', handleHudEscapeKey);
-});
-
-onUnmounted(() => {
-  if (inputHandler) {
-    inputHandler.destroy();
-  }
-  if (ipcRenderer) {
-    ipcRenderer.removeListener('mqtt-message', handleMqttMessage);
-    ipcRenderer.removeListener('custom-byte-block-stream', handleCustomByteBlockStream);
-  }
-  window.removeEventListener('hud-minimap-overlay', handleHudMinimapOverlay as EventListener);
-  window.removeEventListener('keydown', handleHudEscapeKey);
-});
-
 const handleHudMinimapOverlay = (event: Event) => {
   const customEvent = event as CustomEvent<{ visible?: boolean; toggle?: boolean }>;
   if (typeof customEvent.detail?.visible === 'boolean') {
@@ -131,11 +157,49 @@ const handleHudMinimapOverlay = (event: Event) => {
   toggleMinimapOverlay();
 };
 
+const handleHudBulletPurchaseOverlay = (event: Event) => {
+  const customEvent = event as CustomEvent<{ visible?: boolean; toggle?: boolean }>;
+  if (typeof customEvent.detail?.visible === 'boolean') {
+    setBulletPurchaseOverlay(customEvent.detail.visible);
+    return;
+  }
+  if (customEvent.detail?.toggle) {
+    toggleBulletPurchaseOverlay();
+    return;
+  }
+  toggleBulletPurchaseOverlay();
+};
+
 const handleHudEscapeKey = (event: KeyboardEvent) => {
-  if (event.key === 'Escape' && showMinimapOverlay.value) {
-    showMinimapOverlay.value = false;
+  if ((event.key === 'Escape' || event.key === 'Esc') && closeTopmostOverlay()) {
+    event.preventDefault();
+    event.stopPropagation();
   }
 };
+
+onMounted(() => {
+  inputHandler = new InputHandler();
+  if (ipcRenderer) {
+    ipcRenderer.on('mqtt-message', handleMqttMessage);
+    ipcRenderer.on('custom-byte-block-stream', handleCustomByteBlockStream);
+  }
+  window.addEventListener('hud-minimap-overlay', handleHudMinimapOverlay as EventListener);
+  window.addEventListener('hud-bullet-purchase-overlay', handleHudBulletPurchaseOverlay as EventListener);
+  window.addEventListener('keydown', handleHudEscapeKey, true);
+});
+
+onUnmounted(() => {
+  if (inputHandler) {
+    inputHandler.destroy();
+  }
+  if (ipcRenderer) {
+    ipcRenderer.removeListener('mqtt-message', handleMqttMessage);
+    ipcRenderer.removeListener('custom-byte-block-stream', handleCustomByteBlockStream);
+  }
+  window.removeEventListener('hud-minimap-overlay', handleHudMinimapOverlay as EventListener);
+  window.removeEventListener('hud-bullet-purchase-overlay', handleHudBulletPurchaseOverlay as EventListener);
+  window.removeEventListener('keydown', handleHudEscapeKey, true);
+});
 
 const parseEvent = (eventId: number, param: string) => {
     const params = param ? param.split(',') : [];
@@ -245,6 +309,11 @@ watch(() => globalStore.global.EnventData, (newEvents) => {
         </div>
       </div>
     </transition>
+
+    <BulletPurchaseOverlay
+      :visible="showBulletPurchaseOverlay"
+      @close="showBulletPurchaseOverlay = false"
+    />
   </v-app>
 </template>
 
@@ -254,7 +323,7 @@ html, body, #app {
   height: 100%;
   margin: 0;
   padding: 0;
-  overflow: hidden; /* 建议加上，防止出现默认滚动条 */
+  overflow: hidden;
 }
 header {
   line-height: 1.5;
@@ -318,129 +387,78 @@ nav a:first-of-type {
   color: rgb(var(--v-theme-on-primary));
   background: rgb(var(--v-theme-primary));
   box-shadow: 0 11px 15px -7px rgba(0, 0, 0, 0.2), 0 24px 38px 3px rgba(0, 0, 0, 0.14), 0 9px 46px 8px rgba(0, 0, 0, 0.12);
-  white-space: nowrap;
 }
 
 .notify-stack-enter-active,
-.notify-stack-leave-active {
-  transition: opacity 220ms ease, transform 220ms ease;
+.notify-stack-leave-active,
+.notify-stack-move {
+  transition: transform 220ms cubic-bezier(0.22, 1, 0.36, 1), opacity 220ms ease;
 }
 
 .notify-stack-enter-from,
 .notify-stack-leave-to {
   opacity: 0;
-  transform: translate(-50%, calc(var(--stack-y) - 14px)) scale(calc(var(--stack-scale) + 0.02));
+  transform: translate(-50%, calc(var(--stack-y) - 12px)) scale(0.94);
 }
 
-.notify-stack-move {
-  transition: transform 260ms cubic-bezier(0.22, 1, 0.36, 1), opacity 220ms ease;
+.notify-stack-leave-active {
+  position: absolute;
 }
 
 .minimap-mask {
   position: fixed;
   inset: 0;
-  z-index: 2147482900;
+  z-index: 2147482000;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 20px;
-  background: rgba(0, 0, 0, 0.72);
-  backdrop-filter: blur(10px);
+  padding: 32px;
+  background: rgba(3, 6, 14, 0.72);
+  backdrop-filter: blur(12px);
 }
 
 .minimap-mask-panel {
-  width: min(92vw, 1280px);
-  height: min(88vh, 920px);
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-  padding: 16px;
-  border-radius: 24px;
-  background: linear-gradient(180deg, rgba(14, 16, 22, 0.98), rgba(9, 10, 14, 0.98));
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.5);
+  width: min(1080px, calc(100vw - 64px));
+  max-height: calc(100vh - 64px);
+  padding: 20px 20px 24px;
+  border-radius: 28px;
+  background: rgba(9, 14, 24, 0.88);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.32);
 }
 
 .minimap-mask-header {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: space-between;
   gap: 12px;
+  margin-bottom: 16px;
 }
 
 .minimap-mask-title {
-  color: rgba(255, 255, 255, 0.96);
-  font-size: 18px;
+  font-size: 28px;
   font-weight: 700;
+  color: rgb(var(--v-theme-on-surface));
 }
 
 .minimap-mask-subtitle {
-  margin-top: 4px;
-  color: rgba(255, 255, 255, 0.7);
-  font-size: 12px;
+  margin-top: 6px;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.62);
 }
 
 .minimap-mask-body {
-  flex: 1;
-  min-height: 0;
-}
-
-.minimap-mask-body :deep(.minimap),
-.minimap-mask-body :deep(.minimap-card) {
-  width: 100%;
-  height: 100%;
-}
-
-.minimap-mask-body :deep(.minimap-overlay) {
-  padding: 18px;
+  height: min(720px, calc(100vh - 180px));
+  min-height: 320px;
 }
 
 .minimap-overlay-fade-enter-active,
 .minimap-overlay-fade-leave-active {
-  transition: opacity 180ms ease;
+  transition: opacity 160ms ease;
 }
 
 .minimap-overlay-fade-enter-from,
 .minimap-overlay-fade-leave-to {
   opacity: 0;
-}
-
-@media (min-width: 1024px) {
-  header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
-  }
-
-  .logo {
-    margin: 0 2rem 0 0;
-  }
-
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
-  }
-
-  nav {
-    text-align: left;
-    margin-left: -1rem;
-    font-size: 1rem;
-
-    padding: 1rem 0;
-    margin-top: 1rem;
-  }
-}
-
-@media (max-width: 768px) {
-  .script-toast-stack {
-    top: 14px;
-  }
-
-  .script-toast-bubble {
-    min-width: 180px;
-    max-width: 340px;
-    padding: 8px 12px;
-  }
 }
 </style>

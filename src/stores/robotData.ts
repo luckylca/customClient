@@ -598,6 +598,18 @@ export const useRobotStore = defineStore('robot', () => {
         
     }
 
+    const getAmmoPurchaseRole = (): 'hero' | 'infantry' | null => {
+        const rawType = typeof robot.value.type === 'string' ? robot.value.type.replace(/\s/g, '') : ''
+        if (rawType === '英雄') return 'hero'
+        if (rawType.startsWith('步兵')) return 'infantry'
+
+        const robotId = String(robot.value.id ?? '')
+        if (robotId === '1' || robotId === '101') return 'hero'
+        if (['3', '4', '5', '103', '104', '105'].includes(robotId)) return 'infantry'
+
+        return null
+    }
+
     const applyLocalAmmoDelta = (delta: number): number => {
         if (!Number.isFinite(delta) || delta === 0) {
             const dynamic = robot.value.RobotDynamicStatusData as Record<string, unknown> | undefined
@@ -720,5 +732,5 @@ export const useRobotStore = defineStore('robot', () => {
                 break
         }
     }
-    return { robot, initRobot, setRobotMessage, updateCustomByteBlockStats, applyLocalAmmoDelta, applyLocalHeroDeployModeStatus }
+    return { robot, initRobot, setRobotMessage, updateCustomByteBlockStats, getAmmoPurchaseRole, applyLocalAmmoDelta, applyLocalHeroDeployModeStatus }
 })

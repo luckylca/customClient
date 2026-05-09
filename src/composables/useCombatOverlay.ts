@@ -41,9 +41,8 @@ export function useCombatOverlay() {
 
     const handleGlobalEsc = (event: KeyboardEvent) => {
         if (event.key !== 'Escape' && event.key !== 'Esc') return;
-        
-        // 如果全局遮罩（如复活遮罩）正在显示，Esc 键不应关闭/打开菜单（或者根据需求调整）
-        // 这里我们优先让 Esc 切换本地菜单状态
+        if (isGlobalOverlayActive.value && !overlay.value) return;
+
         overlay.value = !overlay.value;
 
         if (overlay.value) {

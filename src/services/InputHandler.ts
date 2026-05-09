@@ -114,7 +114,11 @@ export class InputHandler {
             if (this.settingStore && !e.repeat && !alreadyPressed) {
                 const binding = this.settingStore.keyBindings.find(b => b.key === e.code);
                 if (binding) {
-                    this.settingStore.triggerScript(binding.scriptId);
+                    const result = this.settingStore.triggerScript(binding.scriptId);
+                    if (result.consumed) {
+                        e.preventDefault();
+                        return;
+                    }
                 }
             }
             this.keysPressed.add(e.code);

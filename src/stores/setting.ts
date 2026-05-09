@@ -1,6 +1,15 @@
 import { defineStore } from 'pinia'
 import { ref, watch } from 'vue'
-import { AutoBuy42mm5, ToggleHeroDeployMode, AutoBuy17mm20, AutoResurrection } from '@/services/AutoTaskServices';
+import {
+    ToggleHeroDeployMode,
+    AutoResurrection,
+    purchaseAmmoCommand,
+    getAmmoPurchaseOptions,
+    getAmmoPurchaseSuccessText,
+    getAmmoPurchaseFailureText,
+    getAmmoPurchaseUnsupportedText,
+    getAmmoPurchaseInvalidQuantityText,
+} from '@/services/AutoTaskServices';
 import { useRobotStore } from '@/stores/robotData';
 
 export interface AppSettings {
@@ -25,6 +34,20 @@ export interface ScriptNotificationItem {
     createdAt: number;
 }
 
+export type ScriptTriggerResult = {
+    consumed?: boolean;
+};
+
+const PURCHASE_PANEL_SCRIPT_ID = 'toggle_bullet_purchase_overlay';
+
+const DEFAULT_KEY_BINDINGS: KeyBinding[] = [
+    {
+        key: 'KeyB',
+        keyName: 'B',
+        scriptId: PURCHASE_PANEL_SCRIPT_ID,
+    },
+];
+
 const defaultAppSettings = (): AppSettings => ({
     hideCursor: true,
     showCrosshair: true,
@@ -37,6 +60,50 @@ const defaultAppSettings = (): AppSettings => ({
 
 const APP_SETTINGS_KEY = 'rm-app-settings';
 const KEY_BINDINGS_KEY = 'rm-key-bindings';
+
+const mergeDefaultKeyBindings = (bindings: KeyBinding[]) => {
+    const merged = [...bindings];
+
+    DEFAULT_KEY_BINDINGS.forEach((binding) => {
+        const hasScript = merged.some((item) => item.scriptId === binding.scriptId);
+        const hasKey = merged.some((item) => item.key === binding.key);
+        if (!hasScript && !hasKey) {
+            merged.push(binding);
+        }
+    });
+
+    return merged;
+};
+
+const normalizeKeyBindings = (bindings: KeyBinding[]) => mergeDefaultKeyBindings(
+    Array.isArray(bindings) ? bindings.filter((item) => item?.key && item?.scriptId) : []
+);
+
+const getCurrentAmmoText = (robotStore: ReturnType<typeof useRobotStore>) => {
+    const dynamic = robotStore.robot.RobotDynamicStatusData as Record<string, unknown> | undefined;
+    const ammoRaw = dynamic?.remainingAmmo ?? dynamic?.remaining_ammo;
+    return typeof ammoRaw === 'number' ? String(ammoRaw) : '未知';
+};
+
+const openBulletPurchaseOverlay = () => {
+    window.dispatchEvent(new CustomEvent('hud-bullet-purchase-overlay', {
+        detail: {
+            toggle: true,
+        },
+    }));
+};
+
+const openMinimapOverlay = () => {
+    window.dispatchEvent(new CustomEvent('hud-minimap-overlay', {
+        detail: {
+            toggle: true,
+        },
+    }));
+};
+
+const openDebugPanel = () => {
+    window.dispatchEvent(new CustomEvent('hud-debug-panel-toggle'));
+};
 
 export const useSettingStore = defineStore('setting', () => {
     const appSettings = ref<AppSettings>(defaultAppSettings());
@@ -70,11 +137,15 @@ export const useSettingStore = defineStore('setting', () => {
         if (typeof window === 'undefined') return;
         try {
             const raw = localStorage.getItem(KEY_BINDINGS_KEY);
-            if (raw) {
-                keyBindings.value = JSON.parse(raw);
+            if (!raw) {
+                keyBindings.value = normalizeKeyBindings([]);
+                return;
             }
+
+            keyBindings.value = normalizeKeyBindings(JSON.parse(raw));
         } catch (error) {
             console.warn('Key bindings load failed:', error);
+            keyBindings.value = normalizeKeyBindings([]);
         }
     };
 
@@ -127,29 +198,49 @@ export const useSettingStore = defineStore('setting', () => {
         }, SCRIPT_NOTIFICATION_LIFETIME_MS);
     };
 
-    const triggerScript = (scriptId: string) => {
+    const purchaseAmmo = (quantity: number) => {
+        const role = robotStore.getAmmoPurchaseRole();
+        if (!role) {
+            const result = { ok: false, text: getAmmoPurchaseUnsupportedText() };
+            pushScriptNotification(result.text);
+            return result;
+        }
+
+        if (!getAmmoPurchaseOptions(role).includes(quantity)) {
+            const result = { ok: false, text: getAmmoPurchaseInvalidQuantityText(role, quantity) };
+            pushScriptNotification(result.text);
+            return result;
+        }
+
+        const ammoText = getCurrentAmmoText(robotStore);
+        const sent = purchaseAmmoCommand(role, quantity);
+        if (!sent) {
+            const result = { ok: false, text: getAmmoPurchaseFailureText(role, quantity, ammoText) };
+            pushScriptNotification(result.text);
+            return result;
+        }
+
+        const nextAmmo = robotStore.applyLocalAmmoDelta(quantity);
+        const result = { ok: true, text: getAmmoPurchaseSuccessText(role, quantity, nextAmmo) };
+        pushScriptNotification(result.text);
+        return result;
+    };
+
+    const triggerScript = (scriptId: string): ScriptTriggerResult => {
         const now = Date.now();
         const lastAt = scriptLastTriggeredAt[scriptId] || 0;
         if (now - lastAt < SCRIPT_TRIGGER_DEBOUNCE_MS) {
-            return;
+            return {};
         }
         scriptLastTriggeredAt[scriptId] = now;
 
-        const dynamic = robotStore.robot.RobotDynamicStatusData as Record<string, unknown> | undefined;
-        const ammoRaw = dynamic?.remainingAmmo ?? dynamic?.remaining_ammo;
-        const ammoText = typeof ammoRaw === 'number' ? String(ammoRaw) : '未知';
         let text = '';
+        let result: ScriptTriggerResult = {};
+
         if (scriptId === 'aim_assist') {
             text = '🎯 状态：辅助自瞄触发';
-            // TODO: execute actual logic
         } else if (scriptId === 'auto_buy_43mm_5' || scriptId === 'auto_buy_42mm_5') {
-            const sent = AutoBuy42mm5();
-            if (sent) {
-                const nextAmmo = robotStore.applyLocalAmmoDelta(5);
-                text = `自动购买 42mm 5发子弹指令已发送（当前子弹：${nextAmmo}）`;
-            } else {
-                text = `自动购买 42mm 5发子弹发送失败（当前子弹：${ammoText}）`;
-            }
+            text = purchaseAmmo(5).text;
         } else if (scriptId === 'Hero_Deploy_Mode_Change') {
             const heroMode = robotStore.robot.HeroDeployModeData as Record<string, unknown> | undefined;
             const statusRaw = heroMode?.status;
@@ -161,35 +252,30 @@ export const useSettingStore = defineStore('setting', () => {
                 ? `英雄部署模式切换指令已发送（${modeText}）`
                 : `英雄部署模式切换发送失败（当前模式：${currentStatus === 1 ? '部署中' : '未部署'}）`;
         } else if (scriptId === 'auto_buy_17mm_20') {
-            const sent = AutoBuy17mm20();
-            if (sent) {
-                const nextAmmo = robotStore.applyLocalAmmoDelta(20);
-                text = `自动购买 17mm 20发子弹指令已发送（当前子弹：${nextAmmo}）`;
-            } else {
-                text = `自动购买 17mm 20发子弹发送失败（当前子弹：${ammoText}）`;
-            }
+            text = purchaseAmmo(20).text;
         } else if (scriptId === 'Resurrection') {
             const sent = AutoResurrection();
-            if (sent) {
-                text = `自动复活指令已发送`;
-            } else {
-                text = `自动复活发送失败`;
-            }
+            text = sent ? '自动复活指令已发送' : '自动复活发送失败';
+        } else if (scriptId === PURCHASE_PANEL_SCRIPT_ID) {
+            openBulletPurchaseOverlay();
+            text = '补弹面板已切换';
+            result = { consumed: true };
         } else if (scriptId === 'toggle_minimap_overlay') {
-            window.dispatchEvent(new CustomEvent('hud-minimap-overlay', {
-                detail: {
-                    toggle: true,
-                },
-            }));
+            openMinimapOverlay();
             text = '小地图遮罩已切换';
+            result = { consumed: true };
         } else if (scriptId === 'toggle_debug_panel') {
-            window.dispatchEvent(new CustomEvent('hud-debug-panel-toggle'));
+            openDebugPanel();
             text = '图传调试面板显示已切换';
-        }  else {
+        } else {
             text = `未知脚本: ${scriptId}`;
         }
 
-        pushScriptNotification(text);
+        if (scriptId !== 'auto_buy_43mm_5' && scriptId !== 'auto_buy_42mm_5' && scriptId !== 'auto_buy_17mm_20') {
+            pushScriptNotification(text);
+        }
+
+        return result;
     };
 
     loadAppSettings();
@@ -206,6 +292,7 @@ export const useSettingStore = defineStore('setting', () => {
         resetAppSettings,
         removeScriptNotification,
         pushScriptNotification,
-        triggerScript
+        triggerScript,
+        purchaseAmmo,
     };
 })
