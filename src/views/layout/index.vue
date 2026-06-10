@@ -126,7 +126,6 @@ function finishSet() {
             loading.value = false
             // alert(`您选择了${selectedItem.value}机甲`)
             robotStore.initRobot(selectedColor.value, selectedItem.value)
-            ipcRenderer.send('app-toggle-fullscreen')
             ipcRenderer.send('start-mqtt-service', {
                 clientId: robotStore.robot.id,
                 robotId: robotStore.robot.id,

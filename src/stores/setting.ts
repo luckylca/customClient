@@ -46,6 +46,11 @@ const DEFAULT_KEY_BINDINGS: KeyBinding[] = [
         keyName: 'B',
         scriptId: PURCHASE_PANEL_SCRIPT_ID,
     },
+    {
+        key: 'Digit1',
+        keyName: '1',
+        scriptId: 'toggle_debug_panel',
+    },
 ];
 
 const defaultAppSettings = (): AppSettings => ({

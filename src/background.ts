@@ -17,9 +17,7 @@ const PERFORMANCE_SELECTION_QOS: 0 = 0;
 
 app.whenReady().then(() => {
     const win = new BrowserWindow({
-        fullscreen: false,
-        width: 1200,
-        height: 800,
+        fullscreen: true,
         webPreferences: {
             nodeIntegration: true,
             contextIsolation: false,
@@ -77,13 +75,6 @@ app.whenReady().then(() => {
     });
 })
 
-ipcMain.on('app-toggle-fullscreen', (event) => {
-    const win = BrowserWindow.fromWebContents(event.sender)
-    if (win) {
-        win.setFullScreen(!win.isFullScreen())
-        // win.webContents.insertCSS('html, body { cursor: none !important; }');
-    }
-})
 let canSentMqtt = false;
 let lastControlLogTime = 0;
 let controlRxCount = 0;

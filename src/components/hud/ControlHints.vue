@@ -87,10 +87,7 @@ const hints = computed<ControlHint[]>(() => {
     }
 
     items.push(
-        { key: 'open-menu', text: '按 P 打开菜单，连接图传源', level: 'info' },
         { key: 'match-menu', text: '按 ESC 打开比赛菜单', level: 'info' },
-        { key: 'edit-hud', text: '按 Ctrl+E 进入 HUD 编辑模式', level: 'info' },
-        { key: 'resize-hud', text: '拖动标题栏移动，拖动边缘调整大小', level: 'info' },
     );
 
     return items;
